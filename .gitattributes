@@ -1,0 +1,7 @@
+# 仓库里一律 LF；Windows 上检出时也不要变成 CRLF，
+# 否则 check.sh 在 Linux 上会死在 "/bin/sh^M"。
+* text=auto eol=lf
+*.sh text eol=lf
+*.cmd text eol=crlf
+*.lisp text eol=lf
+*.md text eol=lf

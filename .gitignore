@@ -1,0 +1,8 @@
+*.fasl
+*.fas
+*.lib
+*.err
+out/
+.cache/
+*~
+.DS_Store
