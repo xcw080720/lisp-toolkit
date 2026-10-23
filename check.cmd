@@ -24,6 +24,10 @@ echo == check-encoding ==
 if errorlevel 1 set FAIL=1
 
 echo.
+echo == advisory: check-touches (tools/*.lisp^) ==
+for %%F in (tools\*.lisp) do "%SBCL%" --script tools\check-touches.lisp "%%F"
+
+echo.
 if "%FAIL%"=="0" (echo -- all checks passed) else (echo -- some checks failed)
 exit /b %FAIL%
 

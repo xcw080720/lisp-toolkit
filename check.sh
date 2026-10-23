@@ -23,5 +23,9 @@ echo "== check-encoding =="
 "$SBCL_BIN" --script tools/check-encoding.lisp tools README.md check.sh check.cmd skills || fail=$((fail + 1))
 
 echo
+echo "== advisory: check-touches (tools/*.lisp) =="
+for f in tools/*.lisp; do "$SBCL_BIN" --script tools/check-touches.lisp "$f" || true; done
+
+echo
 if [ "$fail" -eq 0 ]; then echo "-- all checks passed"; else echo "-- $fail check group(s) failed"; fi
 exit "$fail"
