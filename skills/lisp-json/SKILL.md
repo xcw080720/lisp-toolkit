@@ -41,6 +41,36 @@ CL 最省的原因：没有类型系统要对付，key 用 cons 就够，递归�
 3. **BOM**：`Add-Content -Encoding utf8`（PowerShell）会写 BOM，SBCL 读到会当成字符。
    写日志一律用 `[IO.File]::WriteAllText` + `UTF8Encoding($false)`。
 
+## 第四个坑（2026-10-24 实测补）：`loop ... on` 不是逐元素拆构
+
+写对象/数组时最自然的写法是遍历 alist：
+
+```lisp
+(loop for (k . v) on al do ...)   ; ✗ 在 SBCL 上是错的
+(loop for (k . v) in al do ...)   ; ✓ 这个才对
+```
+
+**为什么**：`on` 和 `in` 都接受"拆构模式"，但语义差一档——
+
+```
+in → 每个元素绑一次，元素被拆到 (k . v)
+on → 每个"尾部"绑一次，第一个 (k . v) 拆的是整个列表，v 变成整条尾巴
+```
+
+实际报错（SBCL）：
+
+```
+Unhandled TYPE-ERROR: The value ("opsText" . "add") is not of type VECTOR
+  when binding #:V0
+```
+
+**代价**：一次实测里它让 16 条判据**同时**报 `stdout 非 JSON`，看起来像十六种不同的错。
+修法是两个字符（`on` → `in`）。
+
+> **规则**：遍历 alist 一律用 `in`。`on` 只在"需要看到剩余尾部"时才用（例如找第一个满足条件的）。
+
+---
+
 ## 判据写法建议
 
 - 不要逐字节比对整份 JSON 字符串（键序、空格、数字格式都会打架）；
