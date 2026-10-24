@@ -1,4 +1,4 @@
-> **想看这仓库在干什么、要花多少时间** → [docs/index.html](docs/index.html)（说人话版，1150 字）
+> **想看这仓库在干什么、要花多少时间** → [docs/knock.md](docs/knock.md)（说人话版，5 分钟读完）
 > **先读 [PROTOCOL.md](PROTOCOL.md)** —— 十四条测量纪律，每条都附它出生的那一刀。
 > 如果你只记得一条：**判据先证明能红，才允许它说「通过」。**
 # lisp-toolkit
@@ -344,3 +344,17 @@ README 顶部加了指针——新人进来第一眼看到的就是这份协议�
 > **工具也会假绿。** 它比判据更危险——判据的输出你会看，工具的输出你会跳过。
 
 `PROTOCOL.md` 现在十五条，其中十条防的是同一件事：「我以为我测过了」。
+---
+
+## 读什么
+
+| 你有多少时间 | 读这个 | 内容 |
+|---|---|---|
+| 5 分钟 | [`docs/knock.md`](docs/knock.md) | 说人话版：我原本以为什么、结果如何、我错了几次 |
+| 20 分钟 | [`PROTOCOL.md`](PROTOCOL.md) | 十五条测量纪律，每条附它出生的那一刀 |
+| 1 小时 | [`docs/experiment-report.md`](docs/experiment-report.md) | 完整报告：14 个实验、数字总表、十五次失败、未闭合清单 |
+| 想动手 | [`REPRODUCE.md`](REPRODUCE.md) | 三条命令，复算出跟我一样的数 |
+| 想用工具 | [`skills/mutation-testing`](skills/mutation-testing/SKILL.md) · [`tools/`](tools/) | 给你的判据打分：变异测试 + 门禁 |
+
+另有可打印版本：[`docs/one-pager.html`](docs/one-pager.html)（A4 单页）
+与 [`docs/index.html`](docs/index.html)（说人话 / 技术版一键切换）。
