@@ -1,4 +1,5 @@
-> **先读 [`PROTOCOL.md`](PROTOCOL.md)** —— 十四条测量纪律，每条都附它出生的那一刀。
+> **想看这仓库在干什么、要花多少时间** → [docs/index.html](docs/index.html)（说人话版，1150 字）
+> **先读 [PROTOCOL.md](PROTOCOL.md)** —— 十四条测量纪律，每条都附它出生的那一刀。
 > 如果你只记得一条：**判据先证明能红，才允许它说「通过」。**
 # lisp-toolkit
 

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>我用三十块钱，把自己「Lisp 更好」的信念测了一遍</title>
+<style>
+  :root{
+    --ink:#14181d; --muted:#6b7480; --line:#e6eaee; --bg:#fbfbfa; --card:#fff;
+    --accent:#0f766e; --warn:#a16207; --soft:#f3f6f7;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+    font-size:17px; line-height:1.85; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:720px; margin:0 auto; padding:64px 24px 96px}
+
+  /* 语言开关 */
+  .switch{
+    position:fixed; top:18px; right:18px; z-index:20;
+    display:flex; background:var(--card); border:1px solid var(--line);
+    border-radius:999px; padding:4px; box-shadow:0 2px 10px rgba(0,0,0,.06);
+  }
+  .switch button{
+    border:0; background:transparent; padding:7px 16px; border-radius:999px;
+    font:inherit; font-size:14px; color:var(--muted); cursor:pointer; transition:.15s;
+  }
+  .switch button.on{background:var(--ink); color:#fff}
+
+  h1{font-size:34px; line-height:1.35; letter-spacing:-.5px; margin:0 0 10px; font-weight:750}
+  .sub{color:var(--muted); font-size:16px; margin:0 0 44px}
+  h2{font-size:14px; letter-spacing:.12em; color:var(--muted); font-weight:600;
+     text-transform:uppercase; margin:56px 0 14px}
+  p{margin:0 0 18px}
+  .lead{font-size:20px; line-height:1.75}
+  strong{font-weight:650}
+  .hl{background:linear-gradient(transparent 62%, #d7ece9 62%); padding:0 2px}
+
+  .q{border-left:3px solid var(--line); padding-left:20px; color:var(--muted); font-style:normal; margin:22px 0}
+  .big{font-size:22px; line-height:1.6; font-weight:650; margin:28px 0; letter-spacing:-.2px}
+
+  .figs{display:grid; grid-template-columns:1fr; gap:14px; margin:26px 0}
+  .fig{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px 20px}
+  .fig .n{font-size:28px; font-weight:700; letter-spacing:-.5px; font-variant-numeric:tabular-nums}
+  .fig .n .u{font-size:15px; font-weight:500; color:var(--muted); margin-left:4px}
+  .fig .d{font-size:15px; color:var(--muted); margin-top:4px}
+
+  ol.fails{margin:18px 0 0; padding:0; list-style:none; counter-reset:f}
+  ol.fails li{position:relative; padding:0 0 14px 34px; counter-increment:f}
+  ol.fails li::before{
+    content:counter(f); position:absolute; left:0; top:4px; width:22px; height:22px;
+    border-radius:50%; background:var(--soft); color:var(--muted);
+    font-size:12px; text-align:center; line-height:22px; font-weight:600;
+  }
+  ol.fails b{font-weight:650}
+  ol.fails span{color:var(--muted)}
+
+  .todo{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:22px 24px; margin:26px 0}
+  .todo p{margin:0 0 12px}
+  .todo p:last-child{margin:0}
+
+  pre{background:var(--soft); border:1px solid var(--line); border-radius:10px;
+      padding:16px 18px; overflow:auto; font-size:13.5px; line-height:1.6;
+      font-family:ui-monospace,SFMono-Regular,Consolas,monospace; color:#26303a}
+  code{background:var(--soft); padding:1px 5px; border-radius:4px;
+       font-family:ui-monospace,Consolas,monospace; font-size:14px}
+
+  a{color:var(--accent); text-decoration:none; border-bottom:1px solid rgba(15,118,110,.3)}
+  a:hover{border-bottom-color:var(--accent)}
+
+  .end{border-top:1px solid var(--line); margin-top:64px; padding-top:28px; color:var(--muted); font-size:15px}
+
+  /* 技术版：只在 toggled 时显示 */
+  #tech{display:none}
+  body.tech #story{display:none}
+  body.tech #tech{display:block}
+  body.tech{font-size:16px}
+
+  table{width:100%; border-collapse:collapse; margin:16px 0; font-size:15px}
+  th,td{border-bottom:1px solid var(--line); padding:9px 10px; text-align:left; vertical-align:top}
+  th{background:var(--soft); font-size:13px; color:var(--muted); font-weight:600}
+  td.num{font-variant-numeric:tabular-nums; white-space:nowrap}
+
+  @media (max-width:560px){ h1{font-size:27px} .wrap{padding:44px 18px 72px} body{font-size:16px} }
+  @media print{ .switch{display:none} .wrap{max-width:none; padding:0} }
+</style>
+</head>
+<body>
+
+<div class="switch">
+  <button id="b-story" class="on">说人话</button>
+  <button id="b-tech">技术版</button>
+</div>
+
+<div class="wrap">
+
+<!-- ================= 说人话版 ================= -->
+<div id="story">
+
+  <h1>我用三十块钱，<br>把自己「Lisp 更好」的信念测了一遍</h1>
+  <p class="sub">结论和我预期相反。而且过程中我错了十五次，全部留着。</p>
+
+  <p class="lead">
+    我一直相信一件事：<strong>Lisp 那种写法，长期看一定更省。</strong>
+    一旦项目变大，它的优势就会显出来——所有教科书都这么说，我也这么觉得。
+  </p>
+
+  <p>
+    但"我一直相信"不是证据。所以我花了三十块钱的 token，把它变成了一个可以被人推翻的实验。
+  </p>
+
+  <h2>我原本以为</h2>
+  <p>
+    同一份需求、同一套验收标准，让 Lisp 和 JavaScript 各写一遍。Lisp 应该写得更少、改得更快，
+    项目越大人越轻松。我当时连交叉点都算出来了：大概在 <strong>19 到 34 个功能</strong>之间，
+    Lisp 就会开始反超。
+  </p>
+
+  <h2>我做了什么</h2>
+  <p>
+    我写了一份需求书，和一套会当场判对错的检查程序（36 条，每一条我都先证明它能报错，
+    才允许它说"通过"）。然后让十几个"互相看不见对方"的 AI 各写一遍——Lisp、JavaScript、
+    Java、Rust、Julia 都写了。
+  </p>
+  <p>
+    不给它们看彼此的实现。不许问人。同一个需求，同一套检查。
+  </p>
+
+  <h2>结果</h2>
+
+  <div class="figs">
+    <div class="fig">
+      <div class="n">10%<span class="u">以内的差距</span></div>
+      <div class="d">同一份需求、四个 AI、两种语言：代码量几乎打平。<br>
+        但我一开始量出来的差距是 <strong>4 倍</strong>——那不是语言的差距，是<b>谁把代码写成了单行</b>。</div>
+    </div>
+    <div class="fig">
+      <div class="n">1.93×<span class="u">Lisp 反而更长</span></div>
+      <div class="d">同样的十五个功能：Lisp 11460 字符，JavaScript 5933 字符。<br>
+        <strong>我原本以为会相反。</strong></div>
+    </div>
+    <div class="fig">
+      <div class="n">0<span class="u">行声明 vs 15 行</span></div>
+      <div class="d">唯一一个 Lisp 明显更省的地方：当要求是"每个操作自己报告它改了什么"时，
+        Lisp 的写法能自动算出来，另一种写法必须手写一张表——而且<b>那张表第一天就是错的</b>。</div>
+    </div>
+  </div>
+
+  <p class="big">所以我的结论变了：<br>Lisp 的价值不是"更省"，是<strong>「更早」和「更贴身」</strong>。</p>
+
+  <p>
+    它能在代码还没跑起来的时候就拒绝错误，而别的写法只能等测试。
+    这个能力，跟我最初想证明的东西完全不是一回事。
+  </p>
+
+  <h2>我错了几次</h2>
+  <p>十五次。挑三次最疼的说：</p>
+
+  <ol class="fails">
+    <li>
+      <b>我用了三个月的"代码行数"作指标，它是假的。</b>
+      <span>同一份代码，行数能差 4 倍，字符只差 7%。有人把每条记录压成一行，行数立刻从 13.9 掉到 2.1——<strong>语言没变，手变了</strong>。</span>
+    </li>
+    <li>
+      <b>我的检查程序本身会骗我。</b>
+      <span>它有十一次"显示通过但其实没测到"。最狠的一次：我加了一条规则，它在"根本没实现功能"的代码上也能通过——因为错误被另一条规则挡住了，输出刚好长得一样。</span>
+    </li>
+    <li>
+      <b>我的工具也骗我。</b>
+      <span>三次"我改了工具、以为改好了、其实没改"。有一次白跑了十五分钟才发现——因为三次结果一模一样，我以为稳定，其实是同一份旧代码在跑。</span>
+    </li>
+  </ol>
+
+  <p class="q">
+    这十五条现在写成了一份文件，每条都标着它是被哪一次失败打出来的。<br>
+    我没有删掉任何一条——<b>报告可以写得干净，但过程不能美化</b>。
+  </p>
+
+  <h2>这套东西能干什么</h2>
+  <div class="todo">
+    <p><strong>① 我能设计一个会被自己的数据推翻的实验。</strong><br>
+      不是"很严谨"，是<b>真的被推翻了，而且我留下了证据和过程</b>。这十五次是它有效的证明，不是它的污点。</p>
+    <p><strong>② 我能把"测不出来"变成"测得出来"。</strong><br>
+      同一份代码，我怎么知道我的测试到底覆盖了多少？我用变异测试给判据打分——主动制造错误，看它抓不抓得住。它当场抓出两个藏了整晚的真 bug。</p>
+    <p><strong>③ 我能把经验写成别人能用的东西。</strong><br>
+      七篇技能、两个通用工具、一份可复算的说明。别人 clone 下来跑三条命令，能得出跟我一样的数。</p>
+  </div>
+
+  <h2>证据在哪</h2>
+  <p>
+    全部公开，全部可复算。不用信我说的话，跑一遍就知道：
+  </p>
+  <pre>git clone https://github.com/xcw080720/lisp-toolkit
+
+node experiments/timetable-ab/metric.cjs runs/scale-lisp/impl.lisp   # → 11460
+node experiments/timetable-ab/gate.cjs                              # → 两个地板分都达标</pre>
+  <p>
+    里面还有：<a href="./experiment-report.html">完整实验报告</a>（含十五次失败）、
+    <a href="../PROTOCOL.md">十五条测量纪律</a>（每条附出处）、
+    <a href="../skills/">七篇技能</a>。
+  </p>
+
+  <h2>我在找什么</h2>
+  <div class="todo">
+    <!-- ↓↓↓ 这一句请用你自己的话改掉；只改这一句，别加条件 ↓↓↓ -->
+    <p>
+      我在找一个<strong>能把真实规模的问题交给我测</strong>的地方。
+      不是"给我一个实习"，是「你出题，我负责把它变成可复算的答案」。
+      如果你们团队正为某个技术选择吵，我可以把它做成一个能被推翻的实验——就像上面这份一样。
+    </p>
+    <!-- ↑↑↑ ↑↑↑ -->
+  </div>
+
+  <div class="end">
+    2026 年 10 月 · 一天之内做完的，从早上九点半到下午三点。
+  </div>
+
+</div>
+
+<!-- ================= 技术版 ================= -->
+<div id="tech">
+
+  <h1>抽象结构的成本：一次被自己的数据推翻的对照实验</h1>
+  <p class="sub">同一份规格 · 同一套判据（36 条）· 隔离上下文各写一遍 · 2026-10-24</p>
+
+  <h2>一句话</h2>
+  <p class="big">宏不是「更省」，是「更早」和「更贴近 body」。<br>
+    在"加一个 op 多少行"上它常常输；在"能否看见 body 内部"和"能否在展开期拒绝"上至今无对手。</p>
+
+  <h2>四条硬结论</h2>
+  <table>
+    <thead><tr><th style="width:27%">结论</th><th style="width:36%">数字（口径已标）</th><th>适用边界</th></tr></thead>
+    <tbody>
+      <tr><td>行数不是语言属性</td><td class="num">物理行差 <b>4.05×</b><br>非空白字符差 <b>7.6%</b></td><td>四个隔离 agent、同一 30 op 规格</td></tr>
+      <tr><td>宏在编写成本上输</td><td class="num">JS 5933 · Java 6970 · CL 11460 字符<br>（同一 15 op，非空白非注释）</td><td>大模型 + 联网 + 同一批人</td></tr>
+      <tr><td>宏在展开期校验上独占</td><td>关校验：重复声明 <b>19/19 全绿</b><br>开校验：加载即失败并点名</td><td><b>无条件</b>（与模型大小无关）</td></tr>
+      <tr><td>宏与表的痛点相同</td><td>两个不同作者写下同一句：<br>「这张表装得下 op，装不下时间轴」</td><td><b>无条件</b>（结构性质）</td></tr>
+    </tbody>
+  </table>
+
+  <h2>宏的四层账</h2>
+  <table>
+    <thead><tr><th style="width:26%">维度</th><th style="width:15%">谁赢</th><th>证据</th></tr></thead>
+    <tbody>
+      <tr><td>编写成本</td><td>表驱动</td><td>同一 15 op：CL 11460 vs JS 5933 字符（1.93×）</td></tr>
+      <tr><td>产物扇出<br><span style="color:#6b7480;font-size:13px">一条声明长 5 样</span></td><td>打平</td><td>三臂手改都是 <b>0</b>；成本 JS 2058 &lt; CL 5969 &lt; Java APT 18328 字符</td></tr>
+      <tr><td>body 级内嵌横切</td><td><b>宏</b></td><td>宏 <b>0 行声明</b>、body 改后手改 0 处；表 15 行且初始声明即错</td></tr>
+      <tr><td>展开期校验</td><td><b>宏独占</b></td><td>成对对照 C3a（关）19/19 vs C3b（开）加载即失败</td></tr>
+      <tr><td>运行时</td><td><b>宏 24%–68%</b></td><td>5.0 / 6.3 / 8.5 ns 每次 · 绝对量 1.3–3.5 ns</td></tr>
+    </tbody>
+  </table>
+
+  <h2>判据自身的成本-收益</h2>
+  <table>
+    <thead><tr><th>判据段</th><th class="num">条数</th><th class="num">字符</th><th class="num">JS 变异得分</th><th class="num">每 100 字符买到</th></tr></thead>
+    <tbody>
+      <tr><td>#1–#19（默认值 / 夹取 / 拒绝）</td><td class="num">19</td><td class="num">7398</td><td class="num">35.7%</td><td class="num"><b>0.48 点</b></td></tr>
+      <tr><td>#21–#36（JSON 代理对 / 空对象 / 字段语义）</td><td class="num">16</td><td class="num">8830</td><td class="num">42.9%</td><td class="num"><b>0.08 点</b></td></tr>
+    </tbody>
+  </table>
+  <p>边际效率掉到 <b>1/6</b>。但前段便宜一半是假象——后段贵是因为要先把"哪里会错"变成清单，那正是变异测试的产出。</p>
+
+  <h2>十五条测量纪律（节选）</h2>
+  <table>
+    <thead><tr><th style="width:12%">#</th><th>规则</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>判据先证明能红，才允许它说「通过」</td></tr>
+      <tr><td>2</td><td>对照组先证明「相反条件下会失败」，再引用它</td></tr>
+      <tr><td>5</td><td>行数不是语言属性，是排版属性</td></tr>
+      <tr><td>12</td><td>规格里写的不变量，也要先证明能红</td></tr>
+      <tr><td>14</td><td>变异得分必须绑定抽样数与基线绿</td></tr>
+      <tr><td>15</td><td>替换 / 生成之后，必须验证它真的发生了</td></tr>
+    </tbody>
+  </table>
+  <p>十五条里，十条防的是同一件事：<b>「我以为我测过了」</b>。</p>
+
+  <h2>复算</h2>
+  <pre>node experiments/timetable-ab/metric.cjs \
+  experiments/timetable-ab/runs/scale-lisp/impl.lisp \
+  experiments/timetable-ab/runs/scale-js/impl.js        # → 11460 / 5933
+
+node experiments/timetable-ab/gate.cjs --max 30         # → 两臂达地板分，exit 0</pre>
+
+  <h2>产物</h2>
+  <table>
+    <tbody>
+      <tr><td>仓库</td><td>github.com/xcw080720/lisp-toolkit · v2.5.1 · MIT</td></tr>
+      <tr><td>技能</td><td>7 篇（defop / json / cost / macro-value / repl / handoff / mutation-testing）</td></tr>
+      <tr><td>工具</td><td>mutate.cjs（变异测试）· gate.cjs（门禁）· metric.cjs（三口径体积）</td></tr>
+      <tr><td>报告</td><td>实验报告（含十五次失败与两条保留意见）· PROTOCOL.md · REPRODUCE.md</td></tr>
+    </tbody>
+  </table>
+
+  <div class="end">
+    完整报告与一页纸见桌面同名 HTML；编年史 1846 行保持只追加，未删改。
+  </div>
+
+</div>
+
+</div>
+
+<script>
+  const bs = document.getElementById('b-story'), bt = document.getElementById('b-tech');
+  function setMode(tech){
+    document.body.classList.toggle('tech', tech);
+    bs.classList.toggle('on', !tech);
+    bt.classList.toggle('on', tech);
+    try { localStorage.setItem('knock-mode', tech ? 'tech' : 'story'); } catch(e){}
+  }
+  bs.onclick = () => setMode(false);
+  bt.onclick = () => setMode(true);
+  try { if (localStorage.getItem('knock-mode') === 'tech') setMode(true); } catch(e){}
+</script>
+</body>
+</html>

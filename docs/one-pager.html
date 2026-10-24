@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>抽象结构值不值得 —— 一页纸</title>
+<style>
+  :root{
+    --ink:#161a1f; --muted:#5c6672; --line:#dfe4ea; --bg:#fff;
+    --accent:#0f766e; --warn:#b45309; --soft:#f6f8fa;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:#eef1f4;color:var(--ink);
+    font-family:-apple-system,"Segoe UI","Noto Sans SC","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased;}
+  .page{
+    width:210mm; min-height:297mm; margin:8mm auto; background:var(--bg);
+    padding:13mm 14mm 10mm; box-shadow:0 2px 18px rgba(0,0,0,.12);
+    font-size:10.2pt; line-height:1.5;
+  }
+  h1{font-size:19pt; margin:0 0 2mm; letter-spacing:-.3px; line-height:1.25;}
+  .sub{color:var(--muted); font-size:9.2pt; margin:0 0 5mm;}
+  h2{font-size:11pt; margin:6mm 0 2mm; padding-bottom:1mm; border-bottom:1.5px solid var(--ink);}
+  h2 .n{color:var(--accent); font-weight:700; margin-right:2mm;}
+  p{margin:0 0 2mm}
+  .lead{background:var(--soft); border-left:3px solid var(--accent); padding:3mm 4mm; margin:0 0 4mm; font-size:10.4pt;}
+  table{width:100%; border-collapse:collapse; margin:1mm 0 3mm; font-size:9.2pt;}
+  th,td{border-bottom:1px solid var(--line); padding:1.4mm 2mm; text-align:left; vertical-align:top;}
+  th{background:var(--soft); font-weight:600; font-size:8.8pt; color:var(--muted);}
+  td.num{font-variant-numeric:tabular-nums; white-space:nowrap;}
+  .win{color:var(--accent); font-weight:700;}
+  .lose{color:var(--warn); font-weight:700;}
+  ol.rules{margin:0; padding-left:0; list-style:none; counter-reset:r; columns:2; column-gap:7mm;}
+  ol.rules li{counter-increment:r; margin:0 0 1.5mm; font-size:9.1pt; break-inside:avoid; padding-left:6mm; position:relative;}
+  ol.rules li::before{content:counter(r); position:absolute; left:0; top:0; width:4.4mm; height:4.4mm;
+    background:var(--ink); color:#fff; border-radius:50%; font-size:7pt; text-align:center; line-height:4.4mm;}
+  code{background:var(--soft); padding:.3mm 1.2mm; border-radius:2px; font-size:8.8pt;
+    font-family:ui-monospace,Consolas,monospace;}
+  pre{background:var(--soft); border:1px solid var(--line); border-radius:3px; padding:2.5mm 3mm;
+    font-size:8.4pt; line-height:1.45; overflow:auto; margin:1mm 0 3mm;
+    font-family:ui-monospace,Consolas,monospace;}
+  footer{border-top:1px solid var(--line); margin-top:5mm; padding-top:2.5mm;
+    font-size:8.4pt; color:var(--muted); display:flex; justify-content:space-between; gap:4mm;}
+  .k{color:var(--ink); font-weight:600;}
+  @media print{
+    html,body{background:#fff}
+    .page{margin:0; box-shadow:none; width:auto; min-height:0; padding:11mm 12mm}
+    @page{size:A4; margin:0}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <h1>抽象结构值不值得 —— 用可复算的实验回答</h1>
+  <p class="sub">Common Lisp 宏 vs 表驱动 vs Java 注解处理器 · 同一份规格 · 同一套判据 · 隔离 agent 各写一遍 · 2026-10</p>
+
+  <div class="lead">
+    <strong>结论和我原本的预期相反。</strong>
+    宏在编写成本上<strong>输</strong>；它只在两处赢：<strong>能看见 body 内部</strong>，和<strong>能在展开期拒绝非法</strong>。
+    中途我的指标被证伪过一次（行数是排版属性），判据漏视野十五次，全部留在报告里。
+  </div>
+
+  <h2><span class="n">1</span>四条硬结论</h2>
+  <table>
+    <thead><tr><th style="width:30%">结论</th><th style="width:34%">数字（口径已标）</th><th>适用边界</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>行数不是语言属性</td>
+        <td class="num">物理行差 <span class="lose">4.05×</span><br>非空白字符差 <span class="win">7.6%</span></td>
+        <td>四个隔离 agent、同一份 30 op 规格</td>
+      </tr>
+      <tr>
+        <td>宏在编写成本上输</td>
+        <td class="num">JS 5933 · Java 6970 · CL 11460 字符<br>（同一 15 op 规格，非空白非注释）</td>
+        <td>大模型 + 联网 + 同一批人</td>
+      </tr>
+      <tr>
+        <td>宏在展开期校验上独占</td>
+        <td class="num">关校验：重复声明 <span class="lose">19/19 全绿</span><br>开校验：加载即失败，点名 <code>duplicate op name "add"</code></td>
+        <td><strong>无条件</strong>（与模型大小无关）</td>
+      </tr>
+      <tr>
+        <td>宏与表的痛点是同一个</td>
+        <td>两个不同作者、两种结构，写下同一句：<br>「<em>这张表装得下 op，装不下时间轴</em>」</td>
+        <td><strong>无条件</strong>（结构性质）</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2><span class="n">2</span>宏的四层账</h2>
+  <table>
+    <thead><tr><th style="width:26%">维度</th><th style="width:20%">谁赢</th><th>证据</th></tr></thead>
+    <tbody>
+      <tr><td>编写成本</td><td class="lose">表驱动</td><td>同一 15 op：CL 11460 vs JS 5933 字符（1.93×）</td></tr>
+      <tr><td>产物扇出<br><span style="color:#5c6672">一条声明长出 5 样产物</span></td><td>打平</td><td>三臂手改都是 <span class="win">0</span>；成本 JS 69 行 &lt; CL 229 &lt; Java APT 754</td></tr>
+      <tr><td>body 级内嵌横切<br><span style="color:#5c6672">“这次改了哪些字段”</span></td><td class="win">宏</td><td>宏 <strong>0 行声明</strong>、body 改后手改 0 处<br>表要 15 行声明，且初始声明就是错的（声明 8 个字段，实际改 1 个）</td></tr>
+      <tr><td>展开期校验</td><td class="win">宏独占</td><td>测试看不见的错误只有它挡得住（成对对照 C3a/C3b）</td></tr>
+      <tr><td>运行时开销</td><td class="win">宏 24%–68%</td><td>5.0 ns vs 6.3（哈希）vs 8.5（线性扫描）· 绝对量只有 1.3–3.5 ns</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:9.2pt"><strong>一句话</strong>：宏不是“更省”，是<strong>“更早”和“更贴近 body”</strong>。</p>
+
+  <h2><span class="n">3</span>判据本身的成本-收益（今天一直在测代码，从没测过判据）</h2>
+  <table>
+    <thead><tr><th>判据段</th><th class="num">条数</th><th class="num">字符成本</th><th class="num">JS 变异得分</th><th class="num">每 100 字符买到</th></tr></thead>
+    <tbody>
+      <tr><td>前段 #1–#19（默认值 / 夹取 / 拒绝）</td><td class="num">19</td><td class="num">7398</td><td class="num">35.7%</td><td class="num win">0.48 个百分点</td></tr>
+      <tr><td>后段 #21–#36（JSON 代理对 / 空对象 / 字段语义）</td><td class="num">16</td><td class="num">8830</td><td class="num">42.9%</td><td class="num lose">0.08 个百分点</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:9.2pt">边际效率掉到 <strong>1/6</strong>。但前段便宜一半是假象——后段贵，是因为<strong>要先把“哪里会错”变成清单才能写</strong>，那正是变异测试的产出。</p>
+
+  <h2><span class="n">4</span>十五条测量纪律（每条都附出生的那一刀）</h2>
+  <ol class="rules">
+    <li>判据先证明能红，才允许它说「通过」</li>
+    <li>对照组先证明「相反条件下会失败」，再引用它</li>
+    <li>预注册的规则先跑边界值，确认没有区间同时满足成立与否证</li>
+    <li>一条检查如果「不测也知道会通过」，它就不算检查</li>
+    <li>行数不是语言属性，是排版属性</li>
+    <li>数据不作废，只标适用范围</li>
+    <li>跨条件外推必须显式声明</li>
+    <li>熟练度与隔离不可兼得，一次实验只能买一个</li>
+    <li>技能包是常设条件，不是可选优化</li>
+    <li>复现失败比复现成功更值得记录</li>
+    <li>任何数字必须三件套：数值 + 口径 + 单位</li>
+    <li>规格里写的不变量，也要先证明能红</li>
+    <li>断言只查语义要点，不锁定某一种实现的措辞</li>
+    <li>变异得分必须绑定抽样数与基线绿</li>
+    <li>替换 / 生成之后，必须验证它真的发生了</li>
+  </ol>
+  <p style="font-size:9.2pt; margin-top:1mm"><strong>十五条里，十条防的是同一件事：「我以为我测过了」。</strong></p>
+
+  <h2><span class="n">5</span>这些东西能被别人验证吗</h2>
+  <pre>git clone https://github.com/xcw080720/lisp-toolkit
+node experiments/timetable-ab/metric.cjs runs/scale-lisp/impl.lisp   → 11460（非空白非注释字符）
+node experiments/timetable-ab/gate.cjs                               → 两臂达到地板分，exit 0</pre>
+  <p style="font-size:9.1pt">复现文档经过一次<strong>陌生 agent 盲跑</strong>修订：它挑出三处硬伤（口径写漏、Windows 命令不通、判据编号里没有 #20 而 <code>--only</code> 静默通过），已全部修掉并加了守卫。</p>
+
+  <footer>
+    <span class="k">lisp-toolkit v2.5.0 · 7 篇技能 · 2 个通用工具 · PROTOCOL.md</span>
+    <span>github.com/xcw080720/lisp-toolkit</span>
+  </footer>
+
+</div>
+</body>
+</html>

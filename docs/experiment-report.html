@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>抽象结构值不值得 —— 实验报告</title>
+<style>
+  :root{--fg:#1b1d21;--muted:#5f6672;--line:#dfe3e8;--bg:#fff;--soft:#f6f8fa;--accent:#1e6fbf;}
+  *{box-sizing:border-box}
+  body{margin:0;padding:0;background:var(--bg);color:var(--fg);
+       font:16px/1.75 "Segoe UI","Microsoft YaHei","PingFang SC",system-ui,sans-serif;}
+  .wrap{max-width:1040px;margin:0 auto;padding:56px 32px 96px}
+  header.top{border-bottom:3px solid var(--accent);padding-bottom:22px;margin-bottom:34px}
+  header.top h1{margin:0 0 10px;font-size:31px;line-height:1.3}
+  header.top .sub{color:var(--muted);font-size:14.5px}
+  nav.toc{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin:0 0 38px}
+  nav.toc b{display:block;margin-bottom:8px;font-size:14px;color:var(--muted);letter-spacing:.04em}
+  nav.toc a{display:block;padding:2px 0;color:var(--accent);text-decoration:none;font-size:15px}
+  nav.toc a:hover{text-decoration:underline}
+  h1{font-size:27px;margin:44px 0 14px;padding-top:10px}
+  h2{font-size:22px;margin:46px 0 14px;padding-top:14px;border-top:1px solid var(--line)}
+  h3{font-size:18px;margin:30px 0 10px;color:#2c3138}
+  h4{font-size:16px;margin:22px 0 8px;color:var(--muted)}
+  p{margin:11px 0}
+  code{background:#eef1f4;border-radius:4px;padding:1.5px 5px;font-size:13.5px;
+       font-family:"Cascadia Mono",Consolas,monospace}
+  pre{background:#f7f9fb;border:1px solid var(--line);border-left:3px solid var(--accent);
+      border-radius:8px;padding:14px 16px;overflow-x:auto;margin:14px 0}
+  pre code{background:none;padding:0;font-size:13px;line-height:1.65}
+  .tw{overflow-x:auto;margin:16px 0}
+  table{border-collapse:collapse;width:100%;font-size:14.5px}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:var(--soft);font-weight:600;white-space:nowrap}
+  tbody tr:nth-child(even){background:#fcfdfe}
+  blockquote{margin:16px 0;padding:12px 18px;background:#f8fafc;border-left:3px solid #9ab;
+             color:#2c3138;border-radius:0 8px 8px 0}
+  ul,ol{margin:12px 0 12px 24px;padding:0}
+  li{margin:5px 0}
+  hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+  a{color:var(--accent)}
+  footer{margin-top:60px;padding-top:18px;border-top:1px solid var(--line);
+         color:var(--muted);font-size:13px}
+  @media print{body{font-size:12pt}.wrap{max-width:none;padding:0}
+    h2{page-break-after:avoid}table,.tw{page-break-inside:avoid}nav.toc{display:none}}
+</style></head><body><div class="wrap">
+<header class="top"><h1>抽象结构值不值得 —— 实验报告</h1><div class="sub">14 个实验 · 36 条判据 · 十五条纪律 · 十五次自我推翻 | 结论与预期相反 | 2026-10-24</div></header>
+<nav class="toc"><b>目录</b><a href="#s0">0. 这份报告怎么读</a><a href="#s1">1. 结论</a><a href="#s2">2. 实验索引（14 个）</a><a href="#s3">3. 数字总表（口径写清，跨口径不可比）</a><a href="#s4">4. 十五次「我以为我测过了」索引</a><a href="#s5">5. 未闭合清单（明天从这里接）</a><a href="#s6">6. 文件地图</a><a href="#s7">7. 怎么复算（三条命令）</a><a href="#s8">8. 作者保留意见（<strong>未采纳为结论</strong>）</a></nav>
+<h1>抽象结构值不值得 —— 实验报告</h1>
+<p><strong>用同一份规格、同一套判据、多个隔离 agent，在 Lisp / JavaScript / Java / Rust / Julia 上各写一遍。</strong></p>
+<div class="tw"><table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td>报告日期</td><td>2026-10-24</td></tr><tr><td>实验数</td><td>14 个（成本 / 扇出 / 内嵌横切 / 展开期校验 / 运行时 / 交接 / 维护 / 变异）</td></tr><tr><td>判据</td><td>36 条不变量（每条都先证明能红）</td></tr><tr><td>自我推翻</td><td>15 次，全部保留在附录 A</td></tr><tr><td>可复算</td><td>三条命令，见第 5 节</td></tr><tr><td>结论</td><td><strong>与预期相反</strong>——见第 1 节</td></tr></tbody></table></div>
+<hr>
+<h2 id="s0">0. 这份报告怎么读</h2>
+<pre><code>只想看结论        → 第 1 节（四条硬结论 + 宏的四层账 + 判据成本-收益）
+想知道做了什么    → 第 2 节（14 个实验索引）
+想查某个数字      → 第 3 节（数字总表，按口径分 5 组，跨口径不可比）
+想知道我错在哪    → 第 4 节（十五次「我以为我测过了」）
+想接着往下做      → 第 5 节（未闭合清单，带成本估计）
+想自己跑一遍      → 第 7 节（三条命令）
+作者本人的保留意见 → 第 8 节（<strong>未采纳为结论</strong>）
+想看原始过程      → 附录 A（1846 行编年史，只追加，一条没删）
+想看测量纪律      → 附录 B（十五条，每条附出处）</code></pre>
+<p><strong>为什么还要保留一份"日志"</strong>：报告可以写得干净，但<strong>过程不能美化</strong>。<br>十五次错误里有五次错在工具本身——这些如果被整理掉，下次还会犯。</p>
+<hr>
+<h2 id="s1">1. 结论</h2>
+<h3>1.1 一句话</h3>
+<blockquote><strong>宏不是「更省」，是「更早」和「更贴近 body」。</strong><br>在"加一个 op 要多少行"上它常常输；在"能不能看见 body 内部"和"能不能在展开期拒绝"上，它至今没有对手。</blockquote>
+<h3>1.2 四条硬结论</h3>
+<div class="tw"><table><thead><tr><th>结论</th><th>数字（口径已标）</th><th>适用边界</th></tr></thead><tbody><tr><td>行数不是语言属性</td><td>物理行差 <strong>4.05×</strong>；非空白字符差 <strong>7.6%</strong></td><td>四个隔离 agent、同一份 30 op 规格</td></tr><tr><td>宏在编写成本上输</td><td>JS 5933 · Java 6970 · CL 11460 字符（同一 15 op，非空白非注释）</td><td>大模型 + 联网 + 同一批人</td></tr><tr><td>宏在展开期校验上独占</td><td>关校验：重复声明 <strong>19/19 全绿</strong>；开校验：加载即失败并点名</td><td><strong>无条件</strong>（与模型大小无关）</td></tr><tr><td>宏与表的痛点是同一个</td><td>两个不同作者、两种结构写下同一句：「这张表装得下 op，装不下时间轴」</td><td><strong>无条件</strong>（结构性质）</td></tr></tbody></table></div>
+<h3>1.3 宏的四层账</h3>
+<div class="tw"><table><thead><tr><th>维度</th><th>谁赢</th><th>证据</th></tr></thead><tbody><tr><td>编写成本</td><td><strong>表驱动</strong></td><td>同一 15 op：CL 11460 vs JS 5933 字符（1.93×）</td></tr><tr><td>产物扇出（一条声明长 5 样）</td><td>打平</td><td>三臂手改都是 <strong>0</strong>；成本 JS 2058 &lt; CL 5969 &lt; Java APT 18328 字符</td></tr><tr><td>body 级内嵌横切</td><td><strong>宏</strong></td><td>宏 <strong>0 行声明</strong>、body 改后手改 0 处；表要 15 行声明且初始声明就是错的</td></tr><tr><td>展开期校验</td><td><strong>宏独占</strong></td><td>测试看不见的错误只有它挡得住（成对对照 C3a/C3b）</td></tr><tr><td>运行时开销</td><td><strong>宏 24%–68%</strong></td><td>5.0 / 6.3 / 8.5 ns 每次——绝对量只有 1.3–3.5 ns</td></tr></tbody></table></div>
+<h3>1.4 判据本身的成本-收益</h3>
+<div class="tw"><table><thead><tr><th>判据段</th><th>条数</th><th>字符成本</th><th>JS 变异得分</th><th>每 100 字符买到</th></tr></thead><tbody><tr><td>前段 #1–#19（默认值 / 夹取 / 拒绝）</td><td>19</td><td>7398</td><td>35.7%</td><td><strong>0.48 个百分点</strong></td></tr><tr><td>后段 #21–#36（JSON 代理对 / 空对象 / 字段语义）</td><td>16</td><td>8830</td><td>42.9%</td><td><strong>0.08 个百分点</strong></td></tr></tbody></table></div>
+<p>边际效率掉到 <strong>1/6</strong>。但前段便宜一半是假象——后段贵，是因为<strong>要先把"哪里会错"变成清单才能写</strong>，<br>那正是变异测试的产出。</p>
+<hr>
+<h2 id="s2">2. 实验索引（14 个）</h2>
+<div class="tw"><table><thead><tr><th>#</th><th>实验</th><th>规格</th><th>臂</th><th>关键数字</th><th>报告位置</th></tr></thead><tbody><tr><td>1</td><td><strong>F 臂</strong>：JS 禁用 JSON 库</td><td><code>scale.spec.md</code> 5 op</td><td>JS+lib / JS 无库</td><td>4952 → 6044 字符（+1092）；生态价格</td><td>F 臂段</td></tr><tr><td>2</td><td><strong>六语言成本</strong></td><td>同上</td><td>JS / Java / Julia / CL / Rust</td><td>4952 / 6970 / 7316 / 9028 / 9390 字符</td><td>字符重算段</td></tr><tr><td>3</td><td><strong>crossover</strong>（30 op 交叉点）</td><td><code>crossover.spec.md</code></td><td>4 个正式 run（隔离）</td><td>行 8.50 vs 2.10（4.05×）；<strong>字符 244.2 vs 227.0（7.58%）</strong></td><td>见 <code>timetable-ab-crossover-20261024.md</code></td></tr><tr><td>4</td><td><strong>sugar</strong>（糖 vs 正规）</td><td><code>t-sugar.spec.md</code> 3 函数 8 断言</td><td>4 臂</td><td>JS 695/1274（1.83×）；CL 910/1393（1.53×）</td><td>RESULTS-sugar 段</td></tr><tr><td>5</td><td><strong>fanout</strong>（一条声明长 5 样）</td><td><code>fanout.spec.md</code></td><td>CL 宏 / JS 脚本 / <strong>Java APT</strong></td><td>2058 / 5969 / <strong>18328</strong> 字符；三臂手改 <strong>0</strong></td><td>fanout 段</td></tr><tr><td>6</td><td><strong>T2-b</strong>（展开期校验）</td><td><code>t2b.spec.md</code></td><td>CL 宏 + 探针</td><td>关校验 19/19 全绿 vs 开校验加载即失败</td><td>T2-b 段</td></tr><tr><td>7</td><td><strong>inline</strong>（body 级内嵌横切）</td><td><code>inline.spec.md</code></td><td>CL 宏 / JS 表</td><td>宏 4/4（<strong>声明 0 行</strong>） vs 表 2/4（15 行声明 + 1 处手改）</td><td>inline 段</td></tr><tr><td>8</td><td><strong>runtime</strong>（分发开销）</td><td>—</td><td>CL 内三种机制</td><td>5.0 / 6.3 / 8.5 ns 每次</td><td>运行时段</td></tr><tr><td>9</td><td><strong>t2a</strong>（宏生成宏）</td><td><code>t2a.spec.md</code></td><td>单宏 / 家族宏</td><td>606 vs 631 行；每形状 12/9/11 vs 45/22/23</td><td>t2a 段</td></tr><tr><td>10</td><td><strong>skillpack × REPL</strong></td><td><code>skillpack*.spec.md</code></td><td>四格</td><td>9028 → 7775（技能包）→ 6314（REPL）→ <strong>5957</strong>（both）</td><td>四格段</td></tr><tr><td>11</td><td><strong>relay</strong>（交接）</td><td><code>relay.spec.md</code></td><td>A 写文档 / B 只凭文档干活</td><td>首读 23919 vs 15880 字符；<strong>靠猜 5 vs 10</strong></td><td>relay 段</td></tr><tr><td>12</td><td><strong>iter</strong>（维护）</td><td><code>iter.spec.md</code></td><td>CL / JS</td><td>+289 vs +195 字符；3 轮 vs 2 轮；4 处 vs 3 处</td><td>iter 段</td></tr><tr><td>13</td><td><strong>mutation</strong>（给判据打分）</td><td><code>mutate.cjs</code></td><td>两臂</td><td>36 条判据：CL <strong>83.3%</strong> / JS <strong>64.7%</strong>（抽样 30）</td><td>变异段 + <code>MUTATION.md</code></td></tr><tr><td>14</td><td><strong>判据成本曲线</strong></td><td><code>--only</code> 前缀扫描</td><td>两臂</td><td>前 19 条 0.48 点/100 字符；后 16 条 <strong>0.08</strong></td><td>成本曲线段</td></tr></tbody></table></div>
+<hr>
+<h2 id="s3">3. 数字总表（口径写清，跨口径不可比）</h2>
+<h3>3.1 同一份 5 op 规格（可横向比）</h3>
+<div class="tw"><table><thead><tr><th>臂</th><th>物理行</th><th>代码行</th><th><strong>非空白非注释字符</strong></th></tr></thead><tbody><tr><td>JS + 标准库</td><td>206</td><td>163</td><td><strong>4952</strong></td></tr><tr><td>JS 手写 JSON</td><td>268</td><td>250</td><td><strong>6044</strong></td></tr><tr><td>Java</td><td>278</td><td>245</td><td><strong>6970</strong></td></tr><tr><td>Julia</td><td>441</td><td>407</td><td><strong>7316</strong></td></tr><tr><td>CL（脚本）</td><td>415</td><td>352</td><td><strong>9028</strong>（修 bug 前口径）</td></tr><tr><td>Rust</td><td>564</td><td>537</td><td><strong>9390</strong></td></tr></tbody></table></div>
+<h3>3.2 同一份 15 op 规格</h3>
+<div class="tw"><table><thead><tr><th>臂</th><th>物理行</th><th>字符</th><th>字符比</th></tr></thead><tbody><tr><td>JS 表驱动</td><td>310</td><td><strong>5933</strong></td><td>1.00×</td></tr><tr><td>CL 宏</td><td>475</td><td><strong>11460</strong></td><td><strong>1.93×</strong></td></tr></tbody></table></div>
+<h3>3.3 30 op（crossover，四个隔离 agent）</h3>
+<div class="tw"><table><thead><tr><th>口径</th><th>CL</th><th>JS</th><th>差</th></tr></thead><tbody><tr><td>物理行/op</td><td>8.50</td><td>2.10</td><td><strong>4.05×</strong></td></tr><tr><td>非空白字符/op</td><td>244.20</td><td>227.00</td><td><strong>7.58%</strong></td></tr></tbody></table></div>
+<h3>3.4 生成器固定成本（扇出）</h3>
+<div class="tw"><table><thead><tr><th>臂</th><th>字符</th><th>相对</th></tr></thead><tbody><tr><td>JS 脚本</td><td><strong>2058</strong></td><td>1.00×</td></tr><tr><td>CL 宏</td><td>5969</td><td>2.90×</td></tr><tr><td>Java APT</td><td><strong>18328</strong></td><td>8.91×</td></tr></tbody></table></div>
+<h3>3.5 变异得分（36 条判据，抽样 30）</h3>
+<div class="tw"><table><thead><tr><th>实现</th><th>基线</th><th>得分</th><th>地板</th></tr></thead><tbody><tr><td>CL</td><td>36/36</td><td><strong>83.3%</strong></td><td>83.3%</td></tr><tr><td>JS</td><td>36/36</td><td><strong>64.7%</strong></td><td>64.7%</td></tr></tbody></table></div>
+<hr>
+<h2 id="s4">4. 十五次「我以为我测过了」索引</h2>
+<div class="tw"><table><thead><tr><th>#</th><th>错在哪</th><th>谁发现的</th><th>落成哪条纪律</th></tr></thead><tbody><tr><td>1</td><td><code>tag-untag</code> 在 op 未实现时通过（走"未知 op 整批拒绝"蒙对）</td><td>自己</td><td>1</td></tr><tr><td>2</td><td>curv 臂 20 个新 op 零覆盖，19/19 全绿</td><td>自己</td><td>1、12</td></tr><tr><td>3</td><td>糖判据测不到边界（键序、假值、稳定性）</td><td>自己</td><td>13</td></tr><tr><td>4</td><td>T2-b 首版对<strong>无校验基线</strong>只报 1 条红（失败原因错）</td><td>自己</td><td>2</td></tr><tr><td>5</td><td>C3a 注入点在 <code>(main)</code> 之后 → <strong>结构性地必然通过</strong></td><td>实现方 + 我复核</td><td>2</td></tr><tr><td>6</td><td>inline 的 J1 只查"包含"，声明可以撒谎</td><td>JS 臂</td><td>13</td></tr><tr><td>7</td><td>把<strong>物理行数</strong>当因变量</td><td>交叉实验</td><td>5</td></tr><tr><td>8</td><td>预注册 H3 两个区间重叠 → 规则本身不可判定</td><td>自己</td><td>3</td></tr><tr><td>9</td><td>H3 被理解成"新行为未被老判据覆盖"（<strong>定义上必然为真</strong>）</td><td>两臂各自</td><td>4</td></tr><tr><td>10</td><td><code>--only</code> 对不存在的编号<strong>静默返回 0/0 exit 0</strong></td><td>盲复现者</td><td>10</td></tr><tr><td>11</td><td>变异计分 <strong>100% 假阳</strong>（基线已有 2 条红）</td><td>自己</td><td>14</td></tr><tr><td>12</td><td><code>#29</code> 断言锁死"periodTo 必须等于 2"（规格只说不得倒挂）</td><td>两臂都红</td><td>13</td></tr><tr><td>13</td><td><code>#31/#33</code> 锁死措辞与未定义行为（<code>match:""</code>）</td><td>两臂都红</td><td>13</td></tr><tr><td>14</td><td>给 <code>mutate.cjs</code> 加 <code>--only</code> 时<strong>字符串替换静默失败</strong>，却打印了"已加"</td><td>分数不动才察觉</td><td>10、1</td></tr><tr><td>15</td><td>规格里 D4 不变量在"<strong>根本没实现 undo</strong>"的版本上通过</td><td>CL 接手者</td><td>12</td></tr></tbody></table></div>
+<p><strong>其中 5 次错在工具本身</strong>（#10、#11、#14，以及 #5 的探针、#6 的断言）。</p>
+<hr>
+<h2 id="s5">5. 未闭合清单（明天从这里接）</h2>
+<div class="tw"><table><thead><tr><th>#</th><th>缺口</th><th>为什么重要</th><th>成本</th></tr></thead><tbody><tr><td>1</td><td><strong>小模型通道</strong></td><td>所有成本类结论都受"大模型熟练度"污染；只有 T2-b、扇出成立性、变异得分不受污染</td><td>等外部</td></tr><tr><td>2</td><td><strong>时间轴</strong>：同一 agent 连续 10 轮改同一项目</td><td>判据会腐化吗？今天所有数据都是单次快照</td><td>高</td></tr><tr><td>3</td><td><strong>协作规模</strong>：N&gt;2 个 agent</td><td>真实团队是分工 + 冲突 + 合并，只测过 1→2</td><td>高</td></tr><tr><td>4</td><td>CL 手写 JSON 到底多少字符（"≈100 行最省"仍是行口径）</td><td>补最后一条字符口径</td><td>低</td></tr><tr><td>5</td><td>JS 残留 9 条存活变异（日志文案 / <code>nf&gt;nt</code> / slots）</td><td>要把"日志语义"写进规格才可测</td><td>中</td></tr><tr><td>6</td><td><code>weixuezhang/app.js</code> 的 OPS 表化改动</td><td>未提交（"实验意义大于实际意义"）</td><td>低</td></tr></tbody></table></div>
+<hr>
+<h2 id="s6">6. 文件地图</h2>
+<pre><code>experiments/timetable-ab/
+├─ tasks/          14 份冻结规格（预注册）
+├─ cases/          公开/隐藏用例
+├─ runs/           453 个文件：每个臂一份实现 + 日志
+├─ check-scale.cjs     36 条判据（主判据）
+├─ check-t2b.cjs       展开期校验（成对对照）
+├─ check-inline.cjs    内嵌横切（真值 diff）
+├─ check-fanout.cjs    产物扇出（同步测试）
+├─ metric.cjs          三口径体积（行/代码行/字符）
+├─ mutate.cjs          变异测试（单臂）
+├─ gate.cjs            变异门禁（多臂 + 地板）
+├─ mutation-floors.json 地板分（绑定抽样数）
+├─ MUTATION.md         变异门禁说明与残留盲区
+└─ HANDOFF-*.md        交接文档
+
+reports/
+├─ timetable-ab-report-20261023.md      编年史（1846 行）
+├─ timetable-ab-crossover-20261024.md   交叉实验独立报告
+├─ timetable-ab-skillpack-repl-20261024.md
+└─ timetable-ab-INDEX.md                ← 本文件
+
+lisp-toolkit/（public, MIT）
+├─ PROTOCOL.md      十五条测量纪律（每条附出处）
+├─ REPRODUCE.md     四条可自验的复算步骤
+├─ skills/          7 篇：defop / json / cost / macro-value / repl / handoff / mutation-testing
+└─ tools/           mutate.cjs, gate.cjs, check-touches.lisp, md2html.cjs</code></pre>
+<hr>
+<h2 id="s7">7. 怎么复算（三条命令）</h2>
+<pre><code>node experiments/timetable-ab/metric.cjs \
+  experiments/timetable-ab/runs/scale-lisp/impl.lisp \
+  experiments/timetable-ab/runs/scale-js/impl.js
+# 期望：11289 / 5933（非空白非注释字符，误差 0）
+
+node experiments/timetable-ab/check-scale.cjs --impl &lt;任意实现&gt;
+# 空实现必须 0/36 全红，否则判据是假的
+
+node experiments/timetable-ab/gate.cjs --max 30
+# 期望：两臂达到地板分，exit 0</code></pre>
+<hr>
+<p>##---</p>
+<h2 id="s8">8. 作者保留意见（<strong>未采纳为结论</strong>）</h2>
+<p>数据是一回事，作者的判断是另一回事。两条保留意见记在这里，<strong>不并入上面任何结论</strong>。</p>
+<h3>8.1 "Lisp 在大项目上不会输"——本项目测不到这个规模</h3>
+<p><strong>作者意见</strong>：Lisp 的编写成本优势在大项目上才会显现；本项目是个小得不能再小的项目，<br><strong>甜区没有完全显现</strong>。</p>
+<p><strong>数据这边的边界</strong>（不反驳，只标范围）：</p>
+<pre><code>最大规模：30 op / 千行级
+所有成本结论都带着这个条件：大模型 + 联网 + 小规模 + 单作者
+交叉点 N* 在本项目里没被观测到（本轮代数值为负，即不存在正交叉点）</code></pre>
+<p><strong>所以</strong>：本报告能说的是"在这个规模上宏没占到便宜"，<br><strong>不能说的是"Lisp 在大项目上也不占便宜"</strong>——后者本项目没有证据，属于外推。</p>
+<h3>8.2 <code>iter</code>（维护成本）实验存在问题——结论暂缓采用</h3>
+<p><strong>作者意见</strong>：那一步实验的设计或执行有问题，先不谈。</p>
+<p><strong>数据这边的状态</strong>：<code>iter</code> 的结论（CL 是 JS 的 1.48 倍字符、多 1 轮、多 1 处改动）<br><strong>标记为暂缓</strong>，不作为结论引用。问题具体在哪，待重议后重跑。</p>
+<blockquote>这一条写在这里而不是删掉，是因为<strong>"我怀疑它有问题"本身也是一条信息</strong>——<br>删掉它，下一个人会把这个数当定论用。</blockquote>
+<hr>
+<h1>附录 A：编年史（按时间顺序，只追加）</h1>
+<h3>受控实验报告：同一份课表程序，两种语言，两条赛道</h3>
+<p>时间：2026-10-23 18:14–18:49（40 分钟内的 10 个 run）<br>目录：<code>experiments/timetable-ab/</code><br>性质：<strong>小项目</strong>（单个 ops 执行器，500 行以内）。记住这一点——结论全部受它约束。</p>
+<hr>
+<h3>0. 一句话结论</h3>
+<p><strong>在这个规模上，Lisp 的弱项暴露得比强项明显。</strong> 宏确实把"加一个 op"从 2–3 处压到 1 处，但为此多付的建造成本在 20 次重复以内收不回来；而 JS 靠标准库（<code>JSON.parse</code>）直接把体量压到 Lisp 的 40%。<br>时间维度的数据全部不可用（见 §6），所以本报告不回答"谁快"。</p>
+<hr>
+<h3>1. 设计</h3>
+<p>两条赛道分开计分，因为"能抄"只在一个赛道里是优势。</p>
+<div class="tw"><table><thead><tr><th>赛道</th><th>做什么</th><th>规则</th><th>判据</th></tr></thead><tbody><tr><td><strong>A 可捞性</strong></td><td>从零实现任务 A（中文大学课表，op: add/del/edit/move）</td><td>允许抄；记录来源</td><td>到全绿用时/轮数/抄了几段</td></tr><tr><td><strong>B 维护成本</strong></td><td>在已有实现上做 5 条改动</td><td>禁整文件重写（diff ≤40 行/次，删除 ≤30%）</td><td>触点、契约破坏、hidden 分数</td></tr></tbody></table></div>
+<p>冻结物（跑前登记哈希，跑后复核未变）：<br><code>tasks/A.spec.md</code>、<code>tasks/B.spec.md</code>、<code>tasks/changes.md</code>、<code>cases/public-A.json</code>、<code>cases/hidden-A.json</code>、<code>cases/hidden-B.json</code>、<code>oracle.js</code>、<code>oracle-B.js</code>、<code>score.cjs</code>、<code>score-B2.cjs</code>、<code>repl.mjs</code>。</p>
+<hr>
+<h3>2. 赛道 A：2×2（提示 × 语言）</h3>
+<p>计时 = log 首尾时间戳；行数 = LF 字节计数。</p>
+<div class="tw"><table><thead><tr><th>run</th><th>语言</th><th>提示</th><th>墙钟</th><th>命令</th><th>失败</th><th>public</th><th>hidden 结构</th><th>hidden 严格</th><th>抄了几段</th><th>行数</th></tr></thead><tbody><tr><td>run1</td><td>Lisp</td><td>许可+指路</td><td>87 s</td><td>11</td><td>4</td><td>3/3</td><td><strong>6/6</strong></td><td>2/6</td><td><strong>4</strong></td><td>470</td></tr><tr><td>run1n</td><td>Lisp</td><td>中立</td><td>93 s</td><td>12</td><td>8</td><td>3/3</td><td>5/6</td><td>—</td><td>0</td><td>424</td></tr><tr><td>run2</td><td>JS</td><td>许可+指路</td><td>44 s</td><td>6</td><td>0</td><td>3/3</td><td><strong>6/6</strong></td><td>1/6</td><td>0</td><td>178</td></tr><tr><td>run2n</td><td>JS</td><td>中立</td><td>42 s</td><td>8</td><td>1</td><td>3/3</td><td>5/6</td><td>0/6</td><td>0</td><td>206</td></tr><tr><td><strong>run1m</strong></td><td>Lisp</td><td><strong>宏暗示</strong></td><td>117 s</td><td>12</td><td>4</td><td>3/3</td><td><strong>6/6</strong></td><td>—</td><td>—</td><td><strong>338</strong></td></tr></tbody></table></div>
+<p>四个发现：</p>
+<ol>
+<li><strong>暗示确实引起抄</strong>：Lisp 从 0 段 → 4 段；但收益几乎为零（省 6 秒、多对 1 条用例）。</li>
+<li><strong>抄的是"缺件"，不是算法</strong>：JSON 解析骨架、匹配语义、中文文案模板——全是标准库不给的部分。</li>
+<li><strong>最大方差来自我的 spec</strong>：两个中立格（Lisp 与 JS 各自独立）栽在同一条（<code>add</code> 的 <code>day=0</code> 未夹到 1），因为规格里 <code>edit</code> 写了夹取、<code>add</code> 那行没写。<strong>同一份模糊，两种语言同等误读。</strong></li>
+<li><strong>run2 满分靠结构不靠抄</strong>：它写了一个共享的 <code>canonCourse</code> 规整函数，夹取对 <code>add</code>/<code>edit</code> 同时生效；run2n 逐 op 写就漏了。→ *一处规整 &gt; 抄一段代码。*</li>
+</ol>
+<hr>
+<h3>3. 赛道 B：四臂（同一份 changes.md、同一个 score-B2）</h3>
+<div class="tw"><table><thead><tr><th>臂</th><th>协议</th><th>基线</th><th>五条 diff</th><th>终行数</th><th>hidden-B</th><th>public-A</th><th>触点合计</th></tr></thead><tbody><tr><td>run3（Lisp 无宏，无提示）</td><td>逐条</td><td>470</td><td>+97/−19 = <strong>116</strong></td><td>548</td><td>8/8</td><td>1/3</td><td>未逐条计</td></tr><tr><td>run3m（Lisp 无宏，有提示）</td><td>一次性</td><td>470</td><td>+85/−17 = <strong>102</strong></td><td>538</td><td>8/8</td><td>1/3</td><td>未逐条计</td></tr><tr><td>run3x（<strong>Lisp 宏</strong>，从零建）</td><td>一次性</td><td>338</td><td>+76/−23 = <strong>99</strong></td><td>391</td><td>8/8</td><td>1/3</td><td><strong>11</strong></td></tr><tr><td>run4r（JS）</td><td>逐条</td><td>178</td><td>+71/−7 = <strong>78</strong></td><td>242</td><td>8/8</td><td>1/3</td><td>未逐条计</td></tr><tr><td>run4b（JS，断网样本）</td><td>逐条</td><td>178</td><td>+62/−5 = 67</td><td>235</td><td>8/8</td><td>1/3</td><td>—</td></tr></tbody></table></div>
+<p>端到端（建 + 五条改动，行变更）：Lisp 无宏 <strong>586</strong> / Lisp 有提示 <strong>572</strong> / Lisp 宏 <strong>437</strong> / JS <strong>256</strong>。</p>
+<h4>3.1 run3x 逐条触点（本轮信息量最大的一张）</h4>
+<div class="tw"><table><thead><tr><th>#</th><th>改动</th><th>动几处</th><th>宏吸收了什么</th></tr></thead><tbody><tr><td>1</td><td>新增 <code>swap</code></td><td><strong>1</strong></td><td>缺参校验、opsText 拼接、未知 op 兜底、失败不出文案</td></tr><tr><td>2</td><td><code>edit</code> 改 <code>weeks</code></td><td><strong>4</strong></td><td>无——撞上"一条 op 只能出 1 条日志"的框架上限，被迫改 main</td></tr><tr><td>3</td><td><code>add</code> 加 <code>remindOffsets</code></td><td><strong>4</strong></td><td>无——数据模型→JSON 序列化→文案→日志，字段流水线</td></tr><tr><td>4</td><td>日志加序号</td><td><strong>1</strong></td><td>序号只做在唯一出口，5 个 op 都不动</td></tr><tr><td>5</td><td>未知 op 整批拒绝</td><td><strong>1</strong></td><td>只碰执行入口，op 内部一行没改</td></tr></tbody></table></div>
+<h4>3.2 宏的边界（由实验数据反推）</h4>
+<ul>
+<li><strong>能吸收</strong>：按 op 的横切（校验 / 文案 / 兜底 / 失败语义 / 名册）→ 加 op 只写一条 <code>defop</code>。</li>
+<li><strong>不能吸收</strong>：字段的纵切（模型→序列化→文案→日志）、跨 op 的框架层（日志聚合、整批语义、输出契约）。</li>
+<li><strong>证据</strong>：run3x 的 4 次"改一处、另一处没跟上"<strong>全部落在后两类位置上</strong>（日志聚合 ×2、输出契约 ×1、括号 ×1），没有一次在 op 内部。</li>
+</ul>
+<h4>3.3 只有宏能消掉的那一处</h4>
+<p>run3m（无宏）在第 5 条自己标出：</p>
+<blockquote>白名单必须包含 #1 新加的 <code>swap</code>，否则 swap 会变成未知 op 被整批拒绝。这是整轮最险的一处耦合。</blockquote>
+<p>无宏实现里"已知 op 名单"是<strong>第二处必须手动同步的知识</strong>，漏掉 = 静默错误。<br>宏实现里名单就是 <code>defop</code> 注册表本身，<strong>加 op 自动进白名单</strong>。<br>→ 这才是"4 份副本 → 1 份"在活体实验里的复现：不是行数，是<strong>知识点数</strong>。</p>
+<hr>
+<h3>4. 提示能不能让 agent 想到宏？</h3>
+<p><strong>不能，至少不能靠一句话。</strong></p>
+<p>两次独立采样（run3m 与它之前的评估轮）都算了同一笔账并拒绝重构：</p>
+<blockquote>把 <code>apply-one</code> / <code>one-op-text</code> 里每个 op 的两段 body 合并到一处，需整体搬移约 100 行，<br>numstat 实测 <strong>+82/−64 = 146</strong>（另一轮算 142），预算 60。<br>不搬行只加注册表，等于<strong>多出第三处 op 名单</strong>，重复没消灭反而更难同步。</blockquote>
+<p>结果：无宏 + 提示的 diff（102）只比无提示（116）少 12%。</p>
+<p><strong>但"从零建"时提示有效</strong>：run1m 拿到同一句暗示后，自己写了 <code>defop</code> DSL，338 行完成，六条隐藏用例全过。差别在于——<strong>建的时候没有既成结构要推翻</strong>。</p>
+<hr>
+<h3>5. 小项目是 Lisp 的弱项（本报告的核心判断）</h3>
+<p>宏的收益按<strong>重复次数</strong>计，成本按<strong>一次性预付</strong>计：</p>
+<div class="tw"><table><thead><tr><th>项</th><th>数值</th></tr></thead><tbody><tr><td>建造成本（宏版 vs 无宏版）</td><td>多 3 分钟、少 132 行</td></tr><tr><td>每次"纯新增 op"节省</td><td>2–3 处 → 1 处（约省 12–15 行）</td></tr><tr><td>每次"带新字段的改动"节省</td><td><strong>0</strong>（宏不覆盖字段纵切）</td></tr><tr><td>本项目重复次数</td><td>5 条改动里只有 3 条吃到宏的好处</td></tr></tbody></table></div>
+<p><strong>结论：在 4 个 op、500 行以内、改动不到 8 条的规模上，宏的 ROE 是负的。</strong><br>转正条件（由 agent 自己给出，两次采样独立一致）：<strong>改动 ≥ 8 条 / 单条改动要在 3 处以上落地 / op 数 ≥ 8</strong>。</p>
+<p>这不是"Lisp 不行"，而是<strong>规模不匹配</strong>：这个项目小到连复制粘贴都懒得用（run2 一段没抄），自然也小到摊不平宏的预付。</p>
+<hr>
+<h3>6. 时钟对齐：时间维度全部作废</h3>
+<ul>
+<li><strong>行数</strong>：LF 计数与 numstat 累计 <strong>5/5 对账一致</strong>（run3=548、run3m=538、run3x=391、run4=235、run4r=242）。此前口头报的 542 是 agent 的 <code>Get-Content</code> 口径，已更正。</li>
+<li><strong>时间</strong>：10 个 run <strong>全部与其它 run 重叠</strong>（7 对重叠），无一次独占机器；且存在两种交互协议（逐条对话 / 一次性），同协议内方差达 <strong>3.5 倍</strong>（run3x 157 s vs run3m 549 s）。</li>
+</ul>
+<blockquote><strong>"谁快"这个问题，本报告不回答。</strong> 要回答需串行独占重跑最小四臂，约 25–30 分钟。</blockquote>
+<hr>
+<h3>7. 成本单列</h3>
+<div class="tw"><table><thead><tr><th>项</th><th>值</th><th>记在谁头上</th></tr></thead><tbody><tr><td>活体驱动 <code>repl.mjs</code></td><td>128 行 / 4,520 B，4 轮修正</td><td>作者（我），不是语言</td></tr><tr><td>语言自带 REPL</td><td>Lisp 有、Node 有</td><td>两边都是 0</td></tr></tbody></table></div>
+<p>按 10 个 run 摊 ≈ 12.8 行/run；按 50 个摊 ≈ 2.6 行/run。</p>
+<hr>
+<h3>8. 数据可信度声明</h3>
+<div class="tw"><table><thead><tr><th>维度</th><th>状态</th><th>理由</th></tr></thead><tbody><tr><td>hidden 分数</td><td>✅</td><td>脚本判定，<code>score-B2</code> 结构等价，文案不计分</td></tr><tr><td>行数 / diff</td><td>✅</td><td>LF 对齐 + numstat 对账 5/5</td></tr><tr><td>触点</td><td>⚠️ 部分</td><td>只有 run3x 逐条声明；其余三臂未逐条计</td></tr><tr><td>契约破坏</td><td>✅</td><td><code>public-A</code> 严格逐字节比较</td></tr><tr><td>用时</td><td>❌</td><td>全部重叠 + 协议不一</td></tr><tr><td>样本量</td><td>⚠️</td><td>每格 n=1（run4 有两次采样：run4b/run4r）</td></tr><tr><td>作者=评分者</td><td>⚠️</td><td>用例与参考实现同源；缓解手段是结构等价与公开/隐藏分离</td></tr></tbody></table></div>
+<hr>
+<h3>9. 复现</h3>
+<pre><code>cd experiments\timetable-ab
+$env:SBCL='...\tools\sbcl\PFiles\Steel Bank Common Lisp\sbcl.exe'; $env:SBCL_HOME=Split-Path $env:SBCL
+
+### 赛道 A（各臂）
+node score-semantic.cjs --impl runs\run1\impl.lisp --cases cases\hidden-A.json     # 6/6
+node score-semantic.cjs --impl runs\run1n\impl.lisp --cases cases\hidden-A.json    # 5/6
+node score-semantic.cjs --impl runs\run1m\impl.lisp --cases cases\hidden-A.json    # 6/6
+node score-semantic.cjs --impl runs\run2\impl.js --cases cases\hidden-A.json       # 6/6
+
+### 赛道 B（各臂终局）
+node score-B2.cjs --impl runs\run3\impl.lisp  --cases cases\hidden-B.json          # 8/8
+node score-B2.cjs --impl runs\run3m\impl.lisp --cases cases\hidden-B.json          # 8/8
+node score-B2.cjs --impl runs\run3x\impl.lisp --cases cases\hidden-B.json          # 8/8
+node score-B2.cjs --impl runs\run4r\impl.js   --cases cases\hidden-B.json          # 8/8</code></pre>
+<h3>10. 没做的事</h3>
+<ol>
+<li><strong>没有一次活体 REPL 的对照实验</strong>（REPL vs <code>--script</code> 同语言同任务）——"REPL 对 AI 更好"仍未验证。</li>
+<li>时间维度未取干净值。</li>
+<li>触点只在 run3x 上逐条计过。</li>
+<li><code>app.js</code> 一个字节没动；它的四份副本仍是真实负债。</li>
+<li>任务 B（英文课表）未跑，n 仍为 1。</li>
+</ol>
+<hr>
+<h4>追加：规模臂（5 op 起建 + 连续加 10 个 op，无 diff 预算）</h4>
+<p>规则与前面不同：<strong>不设 diff 预算、允许重写</strong>；两边都收到等价的"单源"提示（Lisp→宏，JS→表驱动/注册表）；判据换成 19 条<strong>不变量</strong>（只看状态，不看文案）。</p>
+<div class="tw"><table><thead><tr><th></th><th>JS（表驱动）</th><th>Lisp（宏）</th></tr></thead><tbody><tr><td>建 5 op</td><td><strong>171 行</strong></td><td>396 行</td></tr><tr><td>加到 15 op</td><td><strong>308 行</strong></td><td>467 行</td></tr><tr><td>10 个 op 的代码增量</td><td><strong>+137</strong></td><td><strong>+71</strong></td></tr><tr><td>每个 op 平均</td><td><strong>13.7 行</strong></td><td><strong>7.1 行</strong></td></tr><tr><td>每加一个 op 动几处</td><td><strong>1</strong></td><td><strong>1</strong></td></tr><tr><td>不变量</td><td>19/19</td><td>19/19</td></tr><tr><td>回归</td><td>每步 1–9 恒绿</td><td>每步 1–9 恒绿</td></tr></tbody></table></div>
+<h3>三个结论</h3>
+<ol>
+<li><strong>"1 处"不是 Lisp 的特性，是"单源"这个设计的特性。</strong> JS 用一张 <code>REG</code> 表就拿到了同样的触点曲线（每 op 恒 1 处）。之前把"加 op 只动一处"归给宏，是错的归因。</li>
+<li><strong>真正的差别在"每个 op 写多少行"</strong>：Lisp 7.0 vs JS 13.7，<strong>约 1:2</strong>。宏把"一条声明"压得比 JS 的对象字面量更紧（字段名、校验、文案、执行体挤在一行里，不需要 <code>{...}</code> 和逗号）。</li>
+<li><strong>交叉点不在"大项目"这种模糊说法上，是个数得出来的 op 数</strong>：</li>
+</ol>
+<ul>
+<li>建造超支 = 396 − 171 = <strong>225 行</strong></li>
+<li>每 op 省 = 13.7 − 7.1 = <strong>6.6 行</strong></li>
+<li>交叉点 ≈ <strong>34 个 op</strong></li>
+<li>但 Lisp 那 396 行里有约 <strong>100 行是手写 JSON 解析器</strong>（JS 用 <code>JSON.parse</code>，免费）。扣掉它：超支约 125 行 → 交叉点 ≈ <strong>19 个 op</strong>。</li>
+</ul>
+<h3>一条必须记下的隐患（两侧都有）</h3>
+<ul>
+<li><strong>JS</strong>：<code>stats</code> 为了不动执行器，用 <code>p._text</code> 把文案从 <code>run</code> 传给 <code>say</code>。若要求这层也类型化，第 15 个 op 就变成 <strong>2 处</strong>。</li>
+<li><strong>Lisp</strong>：<code>sort</code> / <code>stats</code> 这类"不针对具体课程、只改整体"的 op，用的是 <code>defop</code> 而不是 <code>defop-each</code>——宏提供的是一条<strong>每条课都要跑</strong>的表单。遇到"整表操作"时，宏的抽象形状对不上，得换一张表单。</li>
+</ul>
+<p>→ <strong>单源能覆盖"每条都要做一遍"的横切，覆盖不了"整表操作"和"框架层语义"。</strong> 这一点在两种语言里都成立。</p>
+<h3>检查器修正</h3>
+<p><code>tag-untag</code> 原本一条用例里连做 tag+untag，在"未知 op 整批拒绝"路径下会<strong>假绿</strong>（课表原样、<code>tag</code> 为 undefined 也算过）。已拆成 <code>tag</code>、<code>untag</code> 两条独立不变量，两侧重跑均 <strong>19/19</strong>。</p>
+<h3>收尾对账（两侧 agent 自报 vs 本报告口径）</h3>
+<div class="tw"><table><thead><tr><th>项</th><th>agent 自报</th><th>本报告（LF/净增量）</th><th>差异原因</th></tr></thead><tbody><tr><td>Lisp 终行数</td><td>467</td><td>467</td><td>一致</td></tr><tr><td>Lisp 每 op</td><td>7.8</td><td>7.1</td><td>agent 把收尾的 +1/−1 修正也算进分母</td></tr><tr><td>JS 每 op</td><td>13.7</td><td>13.7</td><td>一致</td></tr><tr><td>触点</td><td>恒 1</td><td>恒 1</td><td>一致（两侧独立声明）</td></tr></tbody></table></div>
+<h3>两条只有这一轮才看得见的缺陷</h3>
+<ol>
+<li><strong>假绿（两种语言都踩到）</strong>：<code>#15 tag-untag</code> 在 op 尚未实现时就通过——未知 op 触发整批拒绝，课表原样 + 日志 1 条，恰好满足断言。</li>
+</ol>
+<p>→ <strong>"不变量绿"只证明回归安全，不证明功能存在。</strong> 已拆成 <code>tag</code> / <code>untag</code> 两条。</p>
+<ol>
+<li><strong>契约缺口（我的 spec 欠约束）</strong>：空 <code>ops</code> 时输出 <code>courses:null</code> / <code>log:null</code> 还是 <code>[]</code>，规格没写。</li>
+</ol>
+<p>Lisp 侧自查发现并修掉（+1/−1）；JS 侧恰好输出 <code>[]</code>。<strong>这是我第三次在同一类地方漏写契约。</strong></p>
+<hr>
+<h4>追加：时间列（独占机器、同一协议、一次性 agent）</h4>
+<p>前面所有用时都作废（互相重叠 + 协议不一）。下表是重跑的：<strong>串行、独占、同一交互协议（一个 agent 连做）、同一判据</strong>。</p>
+<h3>建：从零做 5 个 op（scale.spec.md）</h3>
+<div class="tw"><table><thead><tr><th>臂</th><th>首末日志跨度</th><th>命令</th><th>impl 行数</th><th>判据</th></tr></thead><tbody><tr><td>JS</td><td><strong>30 秒</strong></td><td>8</td><td><strong>205</strong></td><td>9/9</td></tr><tr><td>Lisp · 只跑脚本</td><td>2 分 18 秒</td><td>8</td><td>414</td><td>9/9</td></tr><tr><td>Lisp · 可用活体</td><td>3 分 22 秒</td><td>18</td><td><strong>287</strong></td><td>9/9</td></tr></tbody></table></div>
+<p>倍率：<strong>JS 比 Lisp 快 4.6 倍</strong>（30 vs 138 秒，对脚本臂）/ <strong>6.7 倍</strong>（对活体臂）。</p>
+<p>⚠️ <strong>口径更正</strong>：此前写的「3.6 倍（30 vs 108 秒）」用的是 agent 自报的"到 9/9 时刻"，而 108 秒这个数在 <code>repl-g1</code> 的日志里<strong>查不到</strong>（该日志没有全绿行），只有自报。改口径为「首条日志 → 末条日志」，五个 run 全部可从日志机械复算，倍率随之从 3.6 变成 4.6。</p>
+<h3>改：同一份 changes.md 五条</h3>
+<div class="tw"><table><thead><tr><th>臂</th><th>首末日志跨度</th><th>命令</th><th>行数变化</th><th>判据</th></tr></thead><tbody><tr><td>Lisp（宏基线 338 行）</td><td>2 分 46 秒</td><td>18</td><td>338 → 399（+61）</td><td>hidden-B 8/8</td></tr><tr><td>JS（178 行）</td><td><strong>1 分 30 秒</strong></td><td>31</td><td>178 → 236（+58）</td><td>hidden-B 8/8</td></tr></tbody></table></div>
+<p>倍率：<strong>JS 比 Lisp 快 1.8 倍</strong>（90 vs 166 秒）。JS 侧命令数反而更多（31 vs 18）——它更多次地重跑自测，仍然更快。</p>
+<h3>这列数字能说和不能说的</h3>
+<p><strong>能说</strong>：</p>
+<ul>
+<li>建：JS 3.6×，改：JS 1.8×；</li>
+<li>两种语言在"改"上的时间差（76 秒）远小于"建"上的时间差（78 秒）——<strong>规模越大，建的优势越不值钱</strong>；</li>
+<li>Lisp 的 287 行（活体版）与 JS 的 205 行，差距 40%，这个差距<strong>全部来自手写 JSON 读写</strong>，不是语言本身。</li>
+</ul>
+<p><strong>不能说</strong>：</p>
+<ul>
+<li>样本各 1 次，方差未知。之前同臂重跑的墙钟方差曾达 3.5 倍（157 vs 549 秒），这次的 30/108/120 也可能有同量级误差；</li>
+<li>这仍是"这个模型 + 这套提示"的数字，不是语言的理论速度。</li>
+</ul>
+<h3>REPL 对照（同语言、同任务、同判据）</h3>
+<div class="tw"><table><thead><tr><th></th><th>G1 只跑脚本</th><th>G2 可用活体</th></tr></thead><tbody><tr><td>到 9/9</td><td><strong>1 分 48 秒</strong></td><td>2 分 00 秒</td></tr><tr><td>命令</td><td>8</td><td>17</td></tr><tr><td>impl 行数</td><td>414</td><td><strong>287</strong></td></tr><tr><td>首次即过</td><td>✅</td><td>✅</td></tr></tbody></table></div>
+<p><strong>REPL 没有省时间（慢 12 秒），省了 31% 的代码。</strong> 原因：G1 看不见 <code>*standard-output*</code> 的 external-format，选择"全 ASCII 输出 + \uXXXX 转义"的防御性设计；G2 在会话里 <code>fboundp</code>/<code>describe</code> 一次问清，直接走字节流——那套防御设计根本不需要存在。</p>
+<p>G2 另外拿到三样 G1 拿不到的：<code>macroexpand-1</code> 确认 <code>push</code> 到 cdr 改原对象、<code>restart</code> 表并选 <code>:abort</code> 后<strong>同进程</strong>继续算、<code>(load)</code> 后对边界 case 逐个试探（0.1 秒一个）。</p>
+<blockquote><strong>REPL 的价值不在快，在于不必绕着走。</strong></blockquote>
+<h3>时钟对齐后的第四条限制</h3>
+<p>所有计时都来自<strong>日志里的命令时间戳</strong>。agent 在两行命令之间写代码、读文件、思考的时间<strong>不在其中</strong>。<br>证据：<code>time-js-build</code> 的首条日志 19:14:27、首次全绿 19:14:34，间隔 7 秒——不可能凭空写出 205 行，说明整份实现是在<strong>第一条被记录的命令之前</strong>完成的。</p>
+<p>→ 所以这些秒数是<strong>下界</strong>，而且两侧的"漏记比例"不同（JS 一次性成文，Lisp 分多轮试错，后者漏记更多）。<strong>比率可以看，绝对值不能当真。</strong></p>
+<h3>计时协议 v2（下一轮起强制）</h3>
+<p>本轮所有秒数为<strong>命令跨度（下界）</strong>，不含写码与思考时间。下一轮起，每个 run 必须留三个时间戳：</p>
+<ul>
+<li><strong>T0</strong> 收到任务 / 开始读规格</li>
+<li><strong>T1</strong> <code>impl.*</code> 首次落盘</li>
+<li><strong>T2</strong> 判据首次全绿</li>
+</ul>
+<p>派生三个口径，报数时写明用哪个：<strong>命令跨度</strong>（T0↔末条命令）/ <strong>到全绿</strong>（T0→T2，含写码）/ <strong>纯写码</strong>（T1→T2，即返工成本）。</p>
+<p>协议全文见 <code>experiments/timetable-ab/TIMING.md</code>。缺 T1 的 run 只能报前两个口径，<strong>不许用命令跨度冒充"用时"</strong>。</p>
+<hr>
+<h4>追加：F 类实验——把 JS 的标准库关掉</h4>
+<h3>规则</h3>
+<p>JS 侧<strong>禁用 <code>JSON.parse</code> 与 <code>JSON.stringify</code></strong>，必须手写读取与写出。其余条件与前面完全一致（同一份 <code>scale.spec.md</code>、同一个 <code>check-scale.cjs</code>、同样 5 个 op、9/9 判据）。</p>
+<p>理由：让 JS 与 Lisp 站在同一起跑线——那边本来就没有内置 JSON。</p>
+<h3>结果</h3>
+<div class="tw"><table><thead><tr><th>臂</th><th>impl 行数</th><th>其中手写 JSON</th><th>用时</th></tr></thead><tbody><tr><td>JS + 标准库</td><td><strong>205</strong></td><td>0</td><td>30 秒</td></tr><tr><td>JS 手写 JSON</td><td><strong>267</strong></td><td>134 行</td><td>68 秒（命令跨度）/ 55 秒（T0→T2）</td></tr><tr><td>Lisp 活体版</td><td>287</td><td>≈100 行</td><td>202 秒</td></tr><tr><td>Lisp 脚本版</td><td>414</td><td>≈100 行 + 127 行 ASCII 兜底</td><td>138 秒</td></tr></tbody></table></div>
+<h3>三个差，分开看</h3>
+<div class="tw"><table><thead><tr><th>比较</th><th>行数差</th></tr></thead><tbody><tr><td>JS 自己有库 vs 无库</td><td>205 → 267 = <strong>+62</strong></td></tr><tr><td>两边都无库：Lisp 287 vs JS 267</td><td><strong>+20（约 7%）</strong></td></tr><tr><td>JS 有库 vs Lisp 脚本版：205 vs 414</td><td><strong>+209</strong></td></tr></tbody></table></div>
+<p><strong>关掉标准库之后，两种语言的行数差从 209 行缩到 20 行。</strong></p>
+<p>也就是说：之前那个"Lisp 差 40%~200 行"的结论，<strong>大头不是语言，是 JSON 库</strong>。<br>生态的价格可以标出来了：<strong>约 187 行</strong>（209 − 20）。</p>
+<h3>时间上的差仍然存在，但要把两笔开销扣清楚</h3>
+<ul>
+<li>JS 手写 JSON：68 秒</li>
+<li>Lisp 活体版：202 秒</li>
+</ul>
+<p>这 3 倍差里，至少两笔不是语言造成的：</p>
+<ol>
+<li><strong>Lisp 侧的 202 秒包含自建活体驱动</strong>（<code>live.mjs</code> + <code>q.mjs</code>，把 form 送进常驻 SBCL），JS 侧没有这步；</li>
+<li><strong>脚本版多出的 127 行 ASCII 兜底</strong>，也来自"没活体可问"的绕行。</li>
+</ol>
+<p>所以正确说法是：</p>
+<blockquote>行数差基本消失（209 → 20）；时间差仍在，但<strong>时间差里有相当一部分是"在 Lisp 里搭观测工具"的成本</strong>，而这件事 JS 不需要——它的运行时状态本来就是可直接读的。</blockquote>
+<h3>对原命题的修正</h3>
+<p>原来的说法："Lisp 输给 JS。"<br>现在的说法：<strong>"Lisp 输给 JSON.parse"，剩下的 20 行与 3 倍时间，才是语言与观测工具的账。</strong></p>
+<hr>
+<h4>追加：Rust 臂（std-only，无 crate）</h4>
+<p>同一份 <code>scale.spec.md</code>、同一个 <code>check-scale.cjs</code>、同样 5 个 op、9/9 判据。</p>
+<div class="tw"><table><thead><tr><th>项</th><th>值</th></tr></thead><tbody><tr><td>impl.rs</td><td><strong>563 行</strong></td></tr><tr><td>其中手写 JSON</td><td>246 行（读 186 + 写 60，占 44%）</td></tr><tr><td>编译</td><td>一次通过，<strong>0 条编译错误</strong></td></tr><tr><td>判据</td><td>9/9 一次过，零返工</td></tr><tr><td>T0→T2</td><td>52 秒（含读规格）</td></tr><tr><td>T1→T2</td><td><strong>4 秒</strong></td></tr></tbody></table></div>
+<h3>五臂行数总表</h3>
+<div class="tw"><table><thead><tr><th>臂</th><th>行数</th><th>手写 JSON</th><th>备注</th></tr></thead><tbody><tr><td>JS + 标准库</td><td><strong>205</strong></td><td>0</td><td>基准赢家</td></tr><tr><td>JS 手写 JSON</td><td>267</td><td>134</td><td></td></tr><tr><td>Lisp 活体版</td><td>287</td><td>≈100</td><td></td></tr><tr><td>Lisp 脚本版</td><td>414</td><td>≈100</td><td>另含 127 行 ASCII 兜底</td></tr><tr><td><strong>Rust std-only</strong></td><td><strong>563</strong></td><td>246</td><td><strong>最大</strong></td></tr></tbody></table></div>
+<h3>结论修正</h3>
+<p>之前那句"Rust 会破 400，说明笨重的是缺件不是 Lisp"——<strong>破是破了，但方向反了</strong>：</p>
+<blockquote>在"没有库"这个共同处境下，<strong>Rust 比 Lisp 重一倍</strong>（563 vs 287）。<br>所以"Lisp 笨重"这个印象，至少在<strong>这个任务形状上</strong>不成立；笨重的是 Rust 的类型样板与借用约束。</blockquote>
+<p>Rust 侧自己列的三笔开销（共约 55 行，占 10%）：</p>
+<ol>
+<li><code>enum V {Null,Bool,Num,Str,Arr,Obj(Vec&lt;(String,V)&gt;)}</code> 约 10 行，不可省；</li>
+<li>借用检查迫使 <code>swap</code> 改成"索引 + 快照写回"（约 22 行）；</li>
+<li><code>iter_mut</code> 里读 name 再写字段要先取 String（拖出一批 <code>to_string()</code>）。</li>
+</ol>
+<p>另：Rust 的 4 秒 T1→T2 与 0 编译错误，说明<strong>类型系统把错误前移到了写的时候</strong>——<br>这正好是"错误成本 = 发现时延 × 传播范围"的正面例子，但它换来的是 563 行的体积。</p>
+<hr>
+<h4>追加：曲率实验（curv-lisp）</h4>
+<p>基线 467 行（15 op，19/19），加 20 个 op 分四层，每步记录 LF 行数。</p>
+<h3>逐层增量</h3>
+<div class="tw"><table><thead><tr><th>层</th><th>类型</th><th>序列（本步新增行）</th><th>稳态边际</th></tr></thead><tbody><tr><td>L1</td><td>纯横切 <code>mark1..5</code></td><td>11, 3, 3, 3, 3</td><td><strong>3 行/op</strong></td></tr><tr><td>L2</td><td>组合两个已有 op <code>pair1..5</code></td><td>19, 2, 2, 2, 2</td><td><strong>2 行/op</strong></td></tr><tr><td>L3</td><td>组合上一层 <code>triple1..5</code></td><td>4, 2, 2, 2, 2</td><td><strong>2 行/op</strong></td></tr><tr><td>L4</td><td>参数化批处理 <code>bulk1..5</code></td><td>9, 2, 2, 2, 2</td><td><strong>2 行/op</strong></td></tr></tbody></table></div>
+<p>每层第一个 op 都贵（11/19/4/9）——那是一次性基建：L1 补 <code>note</code> 槽、L2 写 <code>defop-chain</code> 组合器、L4 写 <code>defop-bulk</code> 宏。<br><strong>去掉每层首个之后，稳态全部是 2 行/op，不随层深变贵。</strong></p>
+<p>总计 +79 行 / 20 op = <strong>3.95 行/op</strong>，比上一轮 scale 臂的 7.1 行/op 低 44%。</p>
+<h3>三个读数</h3>
+<ol>
+<li><strong>同层内没有曲率</strong>：5 个点的序列是 2,2,2,2,2（L2/L3/L4），分辨率足够判死"恒定"。</li>
+<li><strong>曲率出现在"维度"上，不在"数量"上</strong>：每新增一种<strong>组合方式</strong>（层），付 9–19 行一次性基建，之后该维度下所有 op 都是 2 行。</li>
+<li><strong>组合深度免费</strong>：L3（triple = pair + mark）与 L2 同为 2 行/op，说明叠一层不会更贵——这是本轮唯一像"复利"的东西。</li>
+</ol>
+<blockquote>修正后的模型：<strong>收益来自新增维度，不来自新增数量。</strong><br>加第 21 个 op 不会更便宜；加一种新的组合方式才会。</blockquote>
+<h3>方法论失误（第三次假绿）</h3>
+<p>19 条判据对新增的 20 个 op <strong>零覆盖</strong>。agent 自己发现 <code>sub-op</code> 误用 <code>list*</code>（运行时报 "is not a string designator"），而 19/19 依然全绿。</p>
+<p>→ <strong>本轮"全程无回归"只证明老功能没坏，不证明新 op 对。</strong><br>→ 与之前 <code>tag-untag</code> 在 op 未实现时通过是同一个病：<strong>判据没有随被测面扩展</strong>。</p>
+<h3>两笔要单列的成本</h3>
+<ul>
+<li><code>mark1</code> 那 11 行里 <strong>9 行是补数据模型</strong>（新增 <code>note</code> 槽），不算语言的每-op 成本；</li>
+<li><code>bulk5</code> 的 K=5 越过 <code>mark1..4</code> 上界，与 <code>bulk4</code> 等价（已在 log 注明）。</li>
+</ul>
+<hr>
+<h4>追加：横切关注点实验（audit）——复利真的存在，但不属于宏</h4>
+<p>需求：给<strong>每一个 op</strong> 加审计记录（<code>audit:[{op,n}]</code>）。三臂同一份需求、同一个判据（<code>check-audit.cjs</code>，每 op 单独跑一次；跑前已验证三个基线全红，无假绿）。</p>
+<div class="tw"><table><thead><tr><th>臂</th><th>op 数</th><th>基线</th><th><strong>改动处数</strong></th><th>净增行</th><th>每 op 处数</th><th>audit 判据</th><th>回归</th></tr></thead><tbody><tr><td><strong>Lisp 宏</strong>（<code>defop</code>）</td><td>15</td><td>467</td><td><strong>3</strong></td><td>+3</td><td><strong>0.2</strong></td><td>17/17</td><td>19/19</td></tr><tr><td><strong>JS 表驱动</strong>（<code>REG</code>）</td><td>15</td><td>308</td><td><strong>1</strong></td><td>+6（代码 3）</td><td><strong>0.07</strong></td><td>17/17</td><td>19/19</td></tr><tr><td><strong>Lisp 无宏</strong>（手写 <code>cond</code>）</td><td>5</td><td>548</td><td><strong>5</strong></td><td>+15</td><td><strong>1.0</strong></td><td>7/7</td><td>9/9</td></tr></tbody></table></div>
+<h3>三个读数</h3>
+<ol>
+<li><strong>横切成本确实与 N 解耦</strong>：宏 3 处、表 1 处，都不随 op 数增长；无宏版是每 op 一处（O(N)）。</li>
+</ol>
+<p>→ 你那个"多次函数"在<strong>这一维</strong>上成立：<code>f</code> 定义一次，作用在 N 个对象上。</p>
+<ol>
+<li><strong>但宏不是最优</strong>：JS 表驱动 1 处 &lt; 宏 3 处。</li>
+<li><strong>原因在抽象的边界</strong>：宏版把分发层拆成三个函数（<code>run-all</code> / <code>emit</code> / <code>main</code>），审计要穿过签名链 → 3 处；JS 版只有一个循环 + 一个出参 → 1 处。</li>
+</ol>
+<h3>新的一条规律（本轮真正的产出）</h3>
+<blockquote><strong>横切成本 = 这道关注点要穿过几层接口</strong>，与"有没有宏"无关。</blockquote>
+<ul>
+<li>宏把「op 内部」的知识消掉了，但<strong>新增了「分发层接口」</strong>；横切落在 op 外部，就得穿过这层接口。</li>
+<li>表驱动把声明和执行放在同一层，横切只穿一层。</li>
+</ul>
+<p>所以"复利"是<strong>架构属性</strong>，不是语言属性。这是第四次同一结论：<br>触点 1:1（scale 臂）→ 组合深度免费（curv 臂）→ 横切 O(1)（audit 臂），三次都属于<strong>单源设计</strong>，三次都不属于宏。</p>
+<h3>更正：无宏臂不是 O(N)——我的预测错了</h3>
+<p><code>audit-nomacro</code> 的真实结果是 <strong>0 处 per-op</strong>。它的 5 处改动是：</p>
+<div class="tw"><table><thead><tr><th>#</th><th>位置</th><th>内容</th><th>行数</th></tr></thead><tbody><tr><td>P1</td><td><code>run</code> L489</td><td>加 <code>audit</code> 累加器</td><td>+1</td></tr><tr><td>P2</td><td>L494–497</td><td>已知名单加 <code>sort</code>（<strong>检查器适配，非审计能力</strong>）</td><td>+3</td></tr><tr><td>P3</td><td>L509–516</td><td>整批拒绝分支输出单条</td><td>+7</td></tr><tr><td>P4</td><td>L521–524</td><td><code>dolist</code> 内 <code>push</code> 一条</td><td>+3</td></tr><tr><td>P5</td><td>L537–538</td><td>输出加 <code>audit</code> 键</td><td>+1</td></tr></tbody></table></div>
+<p><strong>审计本体 4 处 / +12 行；op 分支一行没动。</strong></p>
+<p>它自己的解释比我准：</p>
+<blockquote>分界线不是有宏/无宏，而是<strong>分发器是否已把 per-op 计数作为返回值带出来</strong>。<br><code>apply-one</code> 的第二返回值本来就是"生效条数 k"，<code>run</code> 的 <code>dolist</code> 是所有 op 的必经漏斗——审计只是把已有的 k 抄一份。</blockquote>
+<h3>所以三臂在"审计"这一维全部是 O(1)</h3>
+<div class="tw"><table><thead><tr><th>臂</th><th>审计插入点</th><th>是否随 op 数增长</th></tr></thead><tbody><tr><td>Lisp 宏</td><td>3（<code>run-all</code>/<code>emit</code>/<code>main</code> 签名链）</td><td>否</td></tr><tr><td>JS 表驱动</td><td>1（循环 + 出参）</td><td>否</td></tr><tr><td>Lisp 无宏</td><td>4（<code>run</code> 内漏斗）</td><td>否</td></tr></tbody></table></div>
+<p><strong>"O(1) vs O(N)" 这个对比没有出现。</strong> 宏省的是<strong>声明成本</strong>，不是<strong>接入成本</strong>。</p>
+<h3>修正后的规律</h3>
+<blockquote><strong>横切成本 O(1) 的前提是"分发器已有一个统一漏斗，且它携带 per-op 元数据"。</strong><br>这是架构性质。语言只决定"把这个漏斗写出来要多少行"。</blockquote>
+<h3>我自己错了三次，方向一致</h3>
+<ol>
+<li>"加 op 只动一处" → 归给宏，实际是单源设计（JS 表也做到）；</li>
+<li>"曲率不存在" → 归给语言，实际是分辨率不够（0.2 行/op 看不见）；</li>
+<li>"无宏是 O(N)" → 归给有无宏，实际取决于分发器有没有漏斗。</li>
+</ol>
+<p>三次都是同一个错误：<strong>把设计属性读成语言属性</strong>。</p>
+<h3>检查器缺陷（我的）</h3>
+<p><code>check-audit.cjs</code> 的 <code>order-3</code> 硬编码 <code>[del, add, sort]</code>，5-op 臂没有 <code>sort</code> → 整批拒绝 → 该条永远红。<br>无宏臂为守"不改 checker"的规矩，把 <code>sort</code> 登记进已知名单（P2 那 3 行）让 <code>order-3</code> 变绿——<strong>这 3 行是适配，不是审计</strong>，行数里已单列。<br>正确修法：<code>order-3</code> 应只使用被测臂真实拥有的 op。</p>
+<hr>
+<h4>追加：Julia 臂（同系对照）</h4>
+<p>同一份 <code>scale.spec.md</code>、同一个 <code>check-scale.cjs</code>（新增 <code>.jl</code> 分支，旧三臂回归仍全绿）。</p>
+<div class="tw"><table><thead><tr><th>项</th><th>值</th></tr></thead><tbody><tr><td>impl.jl</td><td><strong>439 行</strong>（纯 Base，无 JSON 包）</td></tr><tr><td>其中手写 JSON</td><td><strong>234 行</strong>（读 177 + 写 57）+ 33 行 <code>JObj</code> 值类型 = 267</td></tr><tr><td>自造宏</td><td><strong>0 个</strong>（只用了 7 处 Base 的 <code>@inbounds</code>）</td></tr><tr><td>判据</td><td>9/9，两次确认</td></tr><tr><td>T0→T2</td><td><strong>59 秒</strong></td></tr><tr><td>运行开销</td><td>裸启动 0.18 s + 脚本编译 0.44 s ≈ 0.62 s/次（无 precompile 缓存）</td></tr></tbody></table></div>
+<h3>我的预注册预测，两条都错</h3>
+<pre><code>预测：行数 230–280、大概率用宏
+实际：行数 439、零自造宏</code></pre>
+<h3>跨语言总表（同一 spec、同一 checker）</h3>
+<div class="tw"><table><thead><tr><th>臂</th><th>行数</th><th>手写 JSON</th><th>占比</th></tr></thead><tbody><tr><td>JS + 标准库</td><td><strong>205</strong></td><td>0</td><td>0%</td></tr><tr><td>JS 手写 JSON</td><td>267</td><td>134</td><td>50%</td></tr><tr><td>Lisp 活体版</td><td>287</td><td>≈100</td><td>35%</td></tr><tr><td>Lisp 脚本版</td><td>414</td><td>≈100（另 127 行 ASCII 兜底）</td><td>24%</td></tr><tr><td><strong>Julia</strong></td><td>439</td><td>267（含值类型）</td><td><strong>61%</strong></td></tr><tr><td>Rust std-only</td><td>563</td><td>246</td><td>44%</td></tr></tbody></table></div>
+<h3>三个读数</h3>
+<ol>
+<li><strong>Julia 没有赢，反而比 Lisp 活体版重 53%。</strong> 原因单一：它的 JSON 层 267 行，比 CL 的 ~100 行贵一倍以上——Julia 的类型系统让"通用 JSON 值"更难写（<code>JObj</code> 用并行数组保键序、<code>Union</code> 类型不稳、<code>UInt8</code> 与 <code>Char</code> 不能直接比）。</li>
+<li><strong>它自己没造宏，并给了量化理由</strong>：5 个 op 的分发是 5 分支 if 链，<code>@op</code> 只能省 ~2 行/op；而占 234 行的 JSON 是宏化不了的通用递归。它还建议"宏盈亏平衡点在 8–10 个 op 处实测"。</li>
+<li><strong>时间上它是今晚最省的一次</strong>（59 秒 T0→T2），但口径与旧臂不同（旧臂是命令跨度），<strong>不并入横向比较</strong>。</li>
+</ol>
+<h3>这一臂对"Lisp 系"命题的意义</h3>
+<p>Julia 是唯一"有宏 + 语法同系 + 基础库更厚"的对照。它输了，说明：</p>
+<blockquote><strong>输的不是"Lisp 系语法"，是"缺 JSON 库"这一件事。</strong><br>谁没有 JSON，谁就付 100–270 行；这笔钱语言再怎么优化也躲不开。</blockquote>
+<p>这也是第五次同一结论：决定成本的是<strong>库与分发结构</strong>，不是语言的血统。</p>
+<hr>
+<h4>追加：统计"反机器"的尝试——原指标失效，换指标后成立</h4>
+<h3>原指标（按失败次数）失效</h3>
+<p>各臂 log 里的 <code>exit≠0</code>：</p>
+<div class="tw"><table><thead><tr><th>臂</th><th>行</th><th>exit≠0</th></tr></thead><tbody><tr><td>f-rust</td><td>8</td><td><strong>0</strong></td></tr><tr><td>f-js-nojson</td><td>11</td><td><strong>0</strong></td></tr><tr><td>scale-lisp / scale-js</td><td>11 / 11</td><td><strong>0 / 0</strong></td></tr><tr><td>curv-lisp</td><td>21</td><td><strong>0</strong></td></tr><tr><td>audit-js</td><td>11</td><td><strong>0</strong></td></tr><tr><td>f-julia</td><td>11</td><td>1（PowerShell 格式串，非 Julia）</td></tr><tr><td>time-js-build</td><td>8</td><td>1（<code>node -e</code> 引号，非 JS）</td></tr><tr><td>repl-g1</td><td>8</td><td>1（fd-1 写 UTF-8，真 CL 环境事实）</td></tr></tbody></table></div>
+<p><strong>结论：这个指标测的是工具链，不是语言。</strong> 大多数坑在落盘之前就被规避掉了，<strong>规避无痕</strong>——<code>exit≠0</code> 少不等于规则少。</p>
+<h3>换指标：规避痕迹 = 为了让语言闭嘴而多写的行数</h3>
+<div class="tw"><table><thead><tr><th>语言</th><th>缺件型坑</th><th><strong>规则型坑</strong></th><th>规避痕迹（行）</th><th>证据</th></tr></thead><tbody><tr><td>CL 活体</td><td>2（<code>posix-argv</code>、fd-1 编码）</td><td><strong>0</strong></td><td>0</td><td>直接问 <code>fboundp</code>/<code>describe</code> 拿到 external-format</td></tr><tr><td>CL 脚本</td><td>2</td><td><strong>0</strong></td><td><strong>127</strong></td><td>全 ASCII + <code>\uXXXX</code> 兜底（属"缺观测"，不属"规则"）</td></tr><tr><td>JS + 库</td><td>0</td><td><strong>0</strong></td><td>0</td><td>—</td></tr><tr><td>JS 无库</td><td>1（缺 JSON）</td><td><strong>0</strong></td><td>0</td><td>手写解析器是功能，不是规避</td></tr><tr><td>Rust</td><td>1</td><td><strong>3</strong></td><td>~55</td><td><code>enum V</code> 10 + <code>triple</code> 快照 22 + <code>to_string</code> 散布</td></tr><tr><td>Julia</td><td>1</td><td><strong>15</strong></td><td>33+</td><td><code>JObj</code> 33 + 字节扫描重写</td></tr></tbody></table></div>
+<h3>判读</h3>
+<ol>
+<li><strong>规则型坑：CL = 0，JS = 0，Rust = 3，Julia = 15。</strong></li>
+<li>CL 与 JS 并列最低，<strong>而 CL 没有库、JS 有库</strong>——CL 用最少的规则做到了 JS 用库做到的事。</li>
+<li>但 CL 的<strong>缺件型坑最多（2 类）</strong>，这是它唯一的、也是真实的结构性劣势。</li>
+<li>CL 脚本版那 127 行规避<strong>不属于规则</strong>，属于"缺观测工具"；同一份代码在活体版里是 0 行。</li>
+</ol>
+<blockquote><strong>"最不反机器"成立，但必须限定为"规则型"这一维：CL 的规则数最少；它的劣势全在"缺件"这一维。</strong><br>缺件可以补（写一次 JSON 就永久有了），规则不能补（每个新文件都要重新遵守）。</blockquote>
+<hr>
+<h4>追加：熟练度曲线——归属错误的真正来源</h4>
+<h3>数据（全部 CL，同一批人写，越来越熟）</h3>
+<div class="tw"><table><thead><tr><th>尝试</th><th>op 数</th><th>领域代码</th><th><strong>行/op</strong></th></tr></thead><tbody><tr><td>run1（第 1 次，无宏）</td><td>4</td><td>370</td><td><strong>92.5</strong></td></tr><tr><td>run1m（第 2 次，宏暗示）</td><td>4</td><td>238</td><td><strong>59.5</strong></td></tr><tr><td>scale-lisp（后续）</td><td>15</td><td>367</td><td><strong>24.5</strong></td></tr><tr><td>curv-lisp（再后续）</td><td>35</td><td>446</td><td><strong>12.7</strong></td></tr></tbody></table></div>
+<pre><code>92.5 → 59.5 → 24.5 → 12.7     降 7.3 倍，且未平</code></pre>
+<h3>这意味着今晚的跨语言比较带着一条系统性偏差</h3>
+<p>此前写的「Lisp 7.1 行/op vs JS 13.7 行/op」，实际比较的是：</p>
+<ul>
+<li>一个<strong>刚开始学 CL</strong> 的模型（我，第四次）</li>
+<li>一个<strong>已经写过极多 JS</strong> 的模型（训练分布里占绝对多数）</li>
+</ul>
+<p><strong>这是熟练度差，不是语言差。</strong> 按既定规矩，学习成本必须单列，不得计入"语言更贵"。</p>
+<h3>交叉点因此不是常数</h3>
+<pre><code>CL 总成本 = 建 + c_cl × N
+JS 总成本 = 建 + 13.7 × N
+交叉点    ≈ (建_JS − 建_CL) / (13.7 − c_cl)</code></pre>
+<p>熟练度提高 → <code>c_cl</code> 下降 → <strong>交叉点左移</strong>：</p>
+<div class="tw"><table><thead><tr><th>c_cl</th><th>交叉点</th></tr></thead><tbody><tr><td>12.7（今天）</td><td>19–34 op</td></tr><tr><td>6（熟练后？）</td><td><strong>10–18 op</strong></td></tr></tbody></table></div>
+<p>今晚测到的 19–34 是"<strong>今天这只手</strong>"的交叉点，不是语言常数。</p>
+<h3>我的归属错误，逐条认领</h3>
+<div class="tw"><table><thead><tr><th>#</th><th>我当时的说法</th><th>实际</th></tr></thead><tbody><tr><td>1</td><td>"加 op 只动一处"归给宏</td><td>归给单源设计（JS 表也做到）</td></tr><tr><td>2</td><td>"曲率不存在"归给语言</td><td>分辨率不够（0.2 行/op 看不见）</td></tr><tr><td>3</td><td>"无宏是 O(N)"</td><td>取决于分发器有没有统一漏斗</td></tr><tr><td>4</td><td>"Lisp 更好/更差"</td><td>熟练度差，不是语言差</td></tr></tbody></table></div>
+<p>四次方向一致：<strong>把可变的实现条件读成不变的属性</strong>。这一条应写进协议，作为下一次实验的自检项：<br><strong>"这个差异消失了，如果我换一个人写 / 换一次熟练度？"</strong></p>
+<hr>
+<h4>追加：Java 臂——"课本语言"赢了 Lisp</h4>
+<p>同一份 <code>scale.spec.md</code>、同一个 19 条判据、同样无第三方库（JSON 手写）。</p>
+<div class="tw"><table><thead><tr><th>项</th><th>值</th></tr></thead><tbody><tr><td>impl.java</td><td><strong>277 行</strong></td></tr><tr><td>其中手写 JSON</td><td>126 行（读 74 + 写 52）= 45.5%</td></tr><tr><td>领域代码</td><td><strong>151 行</strong></td></tr><tr><td>判据</td><td>9/9，首跑即过，复跑一致</td></tr><tr><td>编译错误</td><td><strong>0 次</strong>（javac 只调用一次）</td></tr><tr><td>T0→T2</td><td><strong>47 秒</strong></td></tr></tbody></table></div>
+<h3>六语言总表（同一起跑线）</h3>
+<div class="tw"><table><thead><tr><th>臂</th><th>总行</th><th>手写 JSON</th><th>领域</th><th>时间</th></tr></thead><tbody><tr><td>JS + 标准库</td><td>205</td><td>0</td><td>205</td><td>30s（命令跨度）</td></tr><tr><td>JS 手写 JSON</td><td>267</td><td>134</td><td>133</td><td>55s（T0→T2）</td></tr><tr><td><strong>Java</strong></td><td><strong>277</strong></td><td>126</td><td><strong>151</strong></td><td><strong>47s（T0→T2）</strong></td></tr><tr><td>CL 活体</td><td>287</td><td>≈100</td><td>187</td><td>202s（命令跨度）</td></tr><tr><td>CL 脚本</td><td>414</td><td>≈100</td><td>314</td><td>138s（命令跨度）</td></tr><tr><td>Julia</td><td>439</td><td>267</td><td>172</td><td>59s（T0→T2）</td></tr><tr><td>Rust</td><td>563</td><td>246</td><td>317</td><td>—</td></tr></tbody></table></div>
+<h3>三个"没想到"</h3>
+<ol>
+<li><strong>Java 总分 277，比 CL 活体版（287）还少 10 行。</strong></li>
+<li><strong>领域代码 151 vs CL 187</strong>——"Java 笨重"在这条任务上不成立。</li>
+<li><strong>T0→T2 最快的一个无库臂</strong>（47s vs Julia 59s、JS 无库 55s），而且零编译错误。</li>
+</ol>
+<h3>又是我猜错的一次</h3>
+<p>我在开跑前写："Java 大概率在 400–600 之间"。实际 <strong>277</strong>。</p>
+<p><strong>这是今晚第三次"笨重直觉"翻车</strong>：Rust（猜 400+，实 563 但方向对）、CL（猜笨重，实最省）、Java（猜 400–600，实 277）。</p>
+<h3>Java 为什么没吃亏（它的自陈 + 我的判读）</h3>
+<ul>
+<li><strong>现代 Java 的糖真在生效</strong>：箭头 <code>switch</code>（16 case）、<code>instanceof</code> 模式匹配（18 处，14 处带绑定变量）、<code>Set.of</code>。</li>
+</ul>
+<p>它自报：模式匹配把"判类型 + 强转"合成一步，<strong>省了 14 段 if+cast</strong>；箭头 switch 省 break 与 fallthrough。</p>
+<ul>
+<li><strong>JSON 读只要 74 行</strong>：<code>Files.readString</code> + 手写 parser + switch 分派，比自己管字节流的 Rust（246）省一半以上。</li>
+<li><strong>异构 map + 少量强转</strong>就够了——<code>Map&lt;String,Object&gt;</code> + 4 处强转，比 <code>enum V{...}</code>（Rust 10 行）更省。</li>
+<li>代价也有，它列了 11 条（泛型擦除、拆箱、checked exception、<code>instanceof</code> 链、UTF-8 输出要显式 PrintStream……），<strong>但那些都是常数开销，没有随 op 数增长。</strong></li>
+</ul>
+<h3>结论修正</h3>
+<blockquote>"静态类型 + 语法糖"这套组合在这个任务形状上<strong>不收费</strong>。<br>反而是 Rust 的借用检查（структур 改写 22 行）和 Julia 的类型不稳定（267 行 JSON）在收费。</blockquote>
+<p>第七次同一教训：<strong>语言血统预测不了成本，任务形状和库的有无才能。</strong></p>
+<hr>
+<h4>追加：产物扇出实验（fanout）——复利真的存在，但门槛是"手要不要动"</h4>
+<p>判据 <code>check-fanout.cjs</code> 共 17 条，核心两条是<strong>同步测试</strong>：<br>改声明后重跑生成，产物必须自动跟着变。</p>
+<div class="tw"><table><thead><tr><th>臂</th><th>生成器行数（固定成本）</th><th>每样产物增量</th><th>同步 A 手改</th><th>同步 B 手改</th><th>判据</th></tr></thead><tbody><tr><td>CL 宏</td><td><strong>229</strong></td><td>待报</td><td><strong>0</strong></td><td><strong>0</strong></td><td>17/17</td></tr><tr><td>JS 生成器</td><td><strong>69</strong></td><td><strong>+4 行</strong></td><td><strong>0</strong></td><td><strong>0</strong></td><td>17/17</td></tr><tr><td>Java APT</td><td>进行中</td><td>—</td><td>—</td><td>—</td><td>—</td></tr></tbody></table></div>
+<h3>三个读数</h3>
+<ol>
+<li><strong>扇出成立</strong>：两臂都是"改声明，手不用动"。这是本实验唯一真想要的数，不是行数。</li>
+<li><strong>CL 的固定成本是 JS 的 3.3 倍（229 vs 69）</strong>。</li>
+</ol>
+<p>原因不是宏慢，是 <strong>CL 又得手写一遍 JSON reader</strong>——<code>decls.json</code> 是外部输入，<br>宏只负责展开，读不了 JSON。<strong>缺件的账又一次盖过语法优势。</strong></p>
+<ol>
+<li><strong>每样产物的增量是常数</strong>：JS 实测 +4 行（1 行 builder + 1 行注册表 + 注释），</li>
+</ol>
+<p>且第 6 样产物<strong>没有任何"记得去别处加一句"的隐性触点</strong>。<br>→ <strong>增量与 op 数无关，只与产物数线性相关。这才是"复利"的准确定义。</strong></p>
+<h3>一条只有 JS 会遇到的摩擦（新发现）</h3>
+<p><code>with</code> 是 JavaScript 保留字。<code>swap</code> 的形参在声明里叫 <code>with</code>，<br>生成 <code>client.js</code> 时 <code>function swap(match, with)</code> <strong>是语法错误</strong>（<code>node --check</code> 直接挂）。</p>
+<p>JS 臂的解法：自动降级为 <code>with$</code>，上一行注释保留声明原名，args 用字符串键 <code>{"with": with$}</code> 还原。</p>
+<blockquote><strong>CL 宏里不存在这个问题</strong>：宏展开出来的是符号，叫 <code>with</code> 也无所谓。<br>这揭示了一条生成器的隐性成本：<strong>只要产物是"另一种语言的源文本"，声明里的名字就必须可映射为合法标识符</strong>。<br>宏生成 Lisp 代码时不受此约束，生成别家语言时同样受限。</blockquote>
+<h3>判据的两个弱点（我的）</h3>
+<ol>
+<li><strong>text 一致性只比前两个字符</strong>（<code>slice(0,2)</code>），太松；agent 主动指出它"天然通过"。</li>
+</ol>
+<p>正确做法：解析渲染结果逐字比对，而不是前缀。</p>
+<ol>
+<li>判据会 <code>JSON.stringify</code> 重排 <code>decls.json</code>，臂只能把判据跑在副本目录里。</li>
+</ol>
+<p>应当只读。</p>
+<h3>更正两条（CL 臂交回后）</h3>
+<h4>更正 1：我上一条判断错了</h4>
+<p>我写："<strong>CL 宏没有这个问题</strong>——展开出来的是符号，叫 <code>with</code> 也无所谓。"</p>
+<p><strong>错。</strong> CL 臂生成的是 <strong>JavaScript 源文本</strong>，同样撞墙：</p>
+<pre><code>fanout-js  client.js:21  function swap(match, with$)   ← 合法
+fanout-cl  client.js:24  function swap(match, with)    ← SyntaxError</code></pre>
+<blockquote>保留字摩擦属于<strong>目标语言</strong>，不属于生成器的语言。<br>宏生成 Lisp 代码时不受限，生成别家语言时一样受限——CL 没有豁免权。</blockquote>
+<h4>更正 2：我的判据漏了一条本该有的检查</h4>
+<p>原判据只看 <code>client.js</code> 里"有没有出现 op 名"，<strong>从不解析它</strong>。于是：</p>
+<pre><code>按原判据：JS 17/17，CL 17/17   ← 但 CL 的 client.js 是语法坏文件
+补 node --check 后：JS 18/18，CL 17/18（那条红：function swap(match, with)）</code></pre>
+<p>已把 <code>client.js 必须过 node --check</code> 加进判据。<strong>这是判据缺陷，不是臂的错</strong>——<br>CL 臂自己也报了这件事，并<strong>刻意没有偷偷改名</strong>（改名会破坏"参数名 == params 逐字"和两臂可比性）。<br>这种"明知会红也不修饰"的做法是对的，记一笔。</p>
+<h3>两臂最终表</h3>
+<div class="tw"><table><thead><tr><th>臂</th><th>生成器行数</th><th>其中 JSON 过路费</th><th>每样产物增量</th><th>加第 6 样</th><th>手改</th><th>判据</th></tr></thead><tbody><tr><td>CL 宏</td><td>229</td><td><strong>88（38%）</strong></td><td>4–10 行</td><td><strong>+7 行</strong></td><td>0 / 0</td><td>17/18</td></tr><tr><td>JS 生成器</td><td><strong>69</strong></td><td>0（<code>JSON.parse</code>）</td><td><strong>+4 行</strong></td><td>+4 行</td><td>0 / 0</td><td><strong>18/18</strong></td></tr></tbody></table></div>
+<p><strong>真正的宏只有 <code>defmacro</code> 6 行 + 1 行调用；扇出本体 50 行。</strong> 剩下 88 行是"CL 没有 JSON"的过路费。</p>
+<h3>判读：这一局表驱动全面胜出</h3>
+<ol>
+<li><strong>固定成本</strong>：69 vs 229（CL 多 3.3 倍，其中 88 行是缺件）；</li>
+<li><strong>边际成本</strong>：+4 vs +7（渲染逻辑本身也更长）；</li>
+<li><strong>扇出都成立</strong>：0 手改，两边都做到"改声明，手不动"。</li>
+</ol>
+<blockquote>所以"复利"确实存在——但<strong>它不是 Lisp 的属性，是"有没有一个统一声明源 + 生成器"的属性</strong>。<br>CL 在这里唯一的独占优势（宏在展开期生成）被"读不到 JSON"抵掉了。</blockquote>
+<h4>Java APT 臂（第三臂，真·注解处理器）</h4>
+<p><code>decls.json → 注解源 → javac + Processor（service loader）→ Filer 输出 5 样</code>。<br>我核过：<code>META-INF/services/javax.annotation.processing.Processor</code> 内容为 <code>fanout.GenProc</code>，<br>产物走 <code>filer.createResource</code>，不是 <code>Files.write</code>。</p>
+<div class="tw"><table><thead><tr><th>臂</th><th>固定成本</th><th>第 6 样增量</th><th>手改 A/B</th><th>判据</th><th>静默失败风险</th></tr></thead><tbody><tr><td><strong>JS 脚本</strong></td><td><strong>69</strong></td><td><strong>+4</strong></td><td>0 / 0</td><td>18/18</td><td>低（脚本报错）</td></tr><tr><td>CL 宏</td><td>229（88 是 JSON 过路费）</td><td>+7</td><td>0 / 0</td><td>17/18</td><td>无</td></tr><tr><td><strong>Java APT</strong></td><td><strong>754</strong></td><td><strong>+18</strong></td><td>0 / 0</td><td>18/18</td><td><strong>高</strong></td></tr></tbody></table></div>
+<pre><code>Java / JS  = 10.9 倍
+Java / CL  = 3.3 倍</code></pre>
+<h3>三臂的共同点与分歧</h3>
+<p><strong>共同点（这才是结论）</strong>：<strong>扇出三臂全部成立，手改都是 0。</strong><br>→ "改声明、手不动"不是任何语言的专利，是"<strong>统一声明源 + 生成器</strong>"这个结构的性质。</p>
+<p><strong>分歧：越"正规"的机制越贵。</strong></p>
+<div class="tw"><table><thead><tr><th>Java 多付的</th><th>性质</th></tr></thead><tbody><tr><td>service 注册文件</td><td>1 行，但删掉后 <strong>javac 退出码 0、无警告、不生成</strong></td></tr><tr><td>两趟编译</td><td>1071ms + 618ms</td></tr><tr><td>Filer 约束</td><td>产物目录被 <code>-d</code> 绑架；同 round 同名资源只能 create 一次；只能顺序写</td></tr><tr><td>错误处理</td><td>处理器不能 throw，必须 <code>Messager.ERROR</code>；Emit 要自己把 Diagnostic 翻成非 0 退出码，否则"生成失败"被当成成功</td></tr></tbody></table></div>
+<p><strong>最贵的不是 754 行，是那条静默失败路径。</strong></p>
+<h3>我的 H3 估错了 10 倍</h3>
+<p>预注册写："Java APT 固定成本约 40–80 行"。实际 <strong>754</strong>。</p>
+<p>那 40–80 只是"能跑起来的最小处理器"，不含读声明（133 行手写 JSON）、校验、6 个格式化器、<br>两趟编译编排、诊断翻译。<strong>我第三次低估"正规机制"的固定成本</strong>（前两次：Rust 400+→563、Java 语言臂 400–600→277，<br>那次是高估；这次是低估。方向不同，毛病一样：拿局部印象当估算）。</p>
+<hr>
+<h3>数据保留声明与适用范围（必读，放在结论之前）</h3>
+<h3>声明</h3>
+<p><strong>本报告中的每一个实测数字都是真实数据，一律保留，不作废、不删除。</strong></p>
+<p>模型能力是一个<strong>变量</strong>，不是一个<strong>缺陷</strong>。在大模型上测到的数，是"这一格"的真实值；<br>换成小模型测到的，是"另一格"的真实值。两格并排放，才有曲线；删掉一格，只剩一个点，<br>什么也推不出来。</p>
+<p><strong>唯一要做的事是给每个数字标上它成立的边界</strong>，而不是把不合预期的数擦掉。</p>
+<h3>适用范围表</h3>
+<div class="tw"><table><thead><tr><th>结论</th><th>数值</th><th>成立条件</th><th>状态</th></tr></thead><tbody><tr><td>CL 每 op 行数</td><td>92.5 → 59.5 → 24.5 → 12.7</td><td>同一批人连写四次、大模型、联网</td><td><strong>真实</strong>，仅限此条件</td></tr><tr><td>交叉点 N*</td><td>19–34</td><td>大模型、<code>c_cl = 12.7</code></td><td><strong>真实</strong>，仅限此条件</td></tr><tr><td>糖 vs 正规（JS）</td><td>2.13×（30 vs 64）</td><td>大模型、3 函数 8 断言</td><td><strong>真实</strong>，仅限此条件</td></tr><tr><td>糖 vs 正规（CL）</td><td>1.76×（41 vs 72，已扣污染）</td><td>同上</td><td><strong>真实</strong>，仅限此条件</td></tr><tr><td>四臂首跑</td><td>全 8/8、零返工</td><td>大模型</td><td><strong>真实</strong>，仅限此条件</td></tr><tr><td>扇出固定成本</td><td>JS 69 / CL 229 / Java 754</td><td>大模型、一次写对</td><td><strong>真实</strong>，仅限此条件</td></tr><tr><td>扇出成立性</td><td>三臂手改 0/0</td><td><strong>无条件</strong></td><td>结构性质，与模型无关</td></tr><tr><td>判据能红</td><td>每轮都验过</td><td><strong>无条件</strong></td><td>判据属性，与模型无关</td></tr><tr><td>六语言行数</td><td>205 / 267 / 277 / 287 / 439 / 563</td><td>大模型、未固定排版</td><td><strong>真实</strong>，但行数含排版差</td></tr><tr><td>Java 静默失败</td><td>删 service 后 javac 仍 exit 0</td><td><strong>无条件</strong></td><td>工具行为，与模型无关</td></tr></tbody></table></div>
+<h3>读这张表的规矩</h3>
+<ol>
+<li><strong>"仅限此条件"不是"不成立"</strong>，是"换个能力可能变"；</li>
+<li>小模型数据到手后，<strong>不是替换，是并列</strong>——两行都留，中间那格由读者自己插值；</li>
+<li>任何"跨条件外推"都必须显式声明为外推，不能当成实测。</li>
+</ol>
+<h3>一句</h3>
+<blockquote><strong>删数据是最贵的错误——它让已经付过的成本变成零信息。</strong><br>标范围只是几个字的事。</blockquote>
+<hr>
+<h4>追加：T2-b —— 宏能挡住测试挡不住的东西（今晚唯一不受模型参数污染的结论）</h4>
+<h3>命题</h3>
+<blockquote>存在一种错误：<strong>19 条判据全绿，但代码是错的</strong>。宏能不能在<strong>展开期</strong>把它拦住？</blockquote>
+<h3>做法</h3>
+<p>给 <code>defop</code> 加<strong>展开期校验</strong>（校验写在宏展开器里，不在运行时）：同名重复 / 未知字段 /<br>缺 <code>:text</code> / 空 body / 空名字。净新增 <strong>84 行</strong>，op body 一行未动。</p>
+<p>对照组的设计是关键：</p>
+<pre><code>probe-duplicate 不是"抄一份像的"，而是"重放同一份源"
+  defop 展开时把 (need text body) 源码存进 *op-sources*
+  探针把它们重新拼成同一个 defop → 同一个展开 → 行为不可能不一致</code></pre>
+<h3>四组对照（我独立复核过，不经过判据脚本）</h3>
+<p>把重复声明插到 <strong><code>(main)</code> 之前</strong>，让它真正生效：</p>
+<div class="tw"><table><thead><tr><th>组</th><th>条件</th><th>结果</th></tr></thead><tbody><tr><td><strong>C3a</strong></td><td>关校验（<code>T2B_VALIDATE=0</code>）</td><td>加载 status=0，<strong><code>check-scale</code> 19/19 全绿</strong></td></tr><tr><td><strong>C3b</strong></td><td>开校验</td><td>加载 <strong>status=1</strong>，报错 <code>duplicate op name "add"</code>，且 <strong>stdout 为空</strong></td></tr></tbody></table></div>
+<p><code>stdout</code> 为空是"展开期"最硬的证据：<strong>错误发生在任何 op 执行之前</strong>。</p>
+<p>另一组（尾部注入）与它互为交叉验证；四种非法声明各自被拒，报错都点名<br>（<code>unknown field "notARealField"</code>、<code>missing :text</code>、<code>has empty body</code>、<code>empty op name ""</code>）。<br>未注入时 19/19 无误伤。</p>
+<h3>结论</h3>
+<blockquote><strong>宏能挡住一个测试挡不住的东西。</strong><br>这个价值不在"更省"，在"<strong>更早</strong>"——它把一类错误从运行时/测试期挪到了展开期。</blockquote>
+<p>而它只在<strong>成对对照</strong>下才成立：C3a 证明错误真实存在且不可见，C3b 证明宏把它拦住了。<br>单独引用 C3b 什么都证明不了。</p>
+<h3>这一条的适用范围</h3>
+<p><strong>无条件成立。</strong> 它不依赖模型大小、不依赖联网、不依赖排版：<br>"能否在展开期拒绝非法声明"是能力问题，不是成本问题。</p>
+<p>→ 也就是说：<strong>在我今晚所有"仅限大模型条件"的结论里，只有这一条可以直接引用。</strong></p>
+<h3>我的判据第五次假绿（同类）</h3>
+<p><code>check-t2b.cjs</code> 的 C3a 把探针注入在文件<strong>末尾</strong>，也就是 <code>(main)</code> 之后——<br>第二份声明即使 body 是垃圾，19/19 也照样成立。<strong>那一组是结构性地必然通过，等于没证。</strong></p>
+<p>真正让实验成立的是"注入到 <code>main</code> 之前"那组，由实现方主动补上、我另外独立复跑确认。</p>
+<p>这是今晚<strong>第五次</strong>同一形状的错误：<strong>把"能通过"当成"证明了"</strong>。<br>已固化成协议条款：<strong>任何对照组，必须先证明"它在相反条件下会失败"，再引用它。</strong></p>
+<hr>
+<h4>追加：inline 实验 —— 宏第一次在成本上赢，同时挖出 JS 基线一个真 bug</h4>
+<h3>需求（内嵌型横切，前面所有横切实验都没碰过）</h3>
+<blockquote>每个 op 执行完，必须准确知道<strong>它这次改了哪些字段</strong>（审计字段级 / undo / 冲突检测的现实需要）。<br>难点：这个信息必须来自 <strong>body 内部</strong>，不能在外面猜。</blockquote>
+<h3>两臂机制（唯一自变量）</h3>
+<div class="tw"><table><thead><tr><th>臂</th><th>怎么拿字段集</th><th>声明成本</th></tr></thead><tbody><tr><td><strong>CL 宏</strong></td><td>展开期<strong>把 body 里每个写入 place 改写成 <code>(fld obj "字段")</code></strong>，运行期沿唯一写入通道用 <code>equal</code> 比旧值，只记真变了的</td><td><strong>0 行</strong>（<code>defop</code> 形参里根本没有 writes 槽位）</td></tr><tr><td><strong>JS 表</strong></td><td>REG 里手写 <code>writes: [...]</code></td><td>15 行（每 op 一行）</td></tr></tbody></table></div>
+<h3>判据结果</h3>
+<div class="tw"><table><thead><tr><th>判据</th><th>CL 宏</th><th>JS 表</th></tr></thead><tbody><tr><td>J1 字段集 == 运行前后 diff 的真值</td><td>✅ <code>day,periodFrom</code></td><td>❌ <strong>声明 8 个，实际只改 1 个</strong></td></tr><tr><td>J2 body 多写 note → 自动含 note</td><td>✅ <strong>手改 0 处</strong></td><td>❌ 手改 <strong>1 处</strong></td></tr><tr><td>J3 撒谎的声明被抓</td><td>n/a（无表可撒）</td><td>✅ 抓到了</td></tr><tr><td>合计</td><td><strong>4/4</strong></td><td><strong>2/4</strong></td></tr></tbody></table></div>
+<p><strong>这是今晚宏第一次在成本上赢，而且赢在"声明成本 = 0"上。</strong></p>
+<h3>顺带挖出的真 bug（不是实验设计的问题）</h3>
+<p>同一个输入 <code>edit set {day:3, periodFrom:5, periodTo:6}</code>：</p>
+<pre><code>CL  ：day=3, periodFrom=5, periodTo=6     ✅
+JS  ：day=3, periodFrom=1, periodTo=2     ❌ 只改了 day
+日志：JS 却写着"键：day/periodFrom/periodTo"</code></pre>
+<p><strong>而 18 条判据全绿</strong>——因为 #5 只测了 <code>set {day:9}</code> 的夹取，<strong>从没测过 edit 改节次</strong>。</p>
+<p>已补第 19 条 <code>edit-periods-applied</code>（测 day + periodFrom + periodTo 三项都生效）。<br>补完后：CL 活体 20/20、<strong>JS 表 19/20（#19 红）</strong>、CL 脚本 #19 也过。</p>
+<blockquote>这是今晚<strong>第三次</strong>"判据盲区导致静默错"：<code>tag-untag</code>、<code>curv 的 20 个 op</code>、现在这条。<br>而且这次连<strong>日志都在撒谎</strong>——它报的键和实际改的键不一致。</blockquote>
+<h3>宏这条路的天花板（实现方实测，如实记）</h3>
+<p><strong>抓得到</strong>：<code>push</code> 到字段、动态字段名、lambda 内的写入、<code>incf/decf/rotatef/shiftf/psetf</code>。</p>
+<p><strong>抓不到</strong>：</p>
+<ul>
+<li>helper 函数里的 <code>(setf (course-day c) 9)</code> —— body 里只写 <code>(bump-day c)</code>，<strong>log 报 <code>-</code>，实际 day=9</strong>；</li>
+<li><code>funcall</code>/<code>apply</code> 间接写、<code>eval</code>/<code>compile</code>/<code>#.</code> 运行期构造的写入；</li>
+<li>值不变的写入（day 1→1）记 <code>-</code>（对 undo 正确，对"审计意图"会丢）；</li>
+<li>集合级变更（<code>setf *courses*</code>、sort、del、clear）不进字段集，这 4 个 op 恒 <code>-</code>。</li>
+</ul>
+<blockquote><strong>天花板 = "这个 op 的所有字段写入都发生在它自己的 body 里"。</strong><br>一旦绕出 body，推导退化成静默漏报——好在 v2 的真值对照会把它判红，不会混过去。</blockquote>
+<h3>判据侧的两次修正（都是我的）</h3>
+<ol>
+<li><strong>v1 的 J1 只查"包含"</strong>，声明可以撒谎；改成"与运行前后 diff 的真值<strong>完全相等</strong>"，并新增 J3 撒谎检测。</li>
+<li><strong>v1 的 J0 有转义 bug</strong>：假实现那段 JS 串里 <code>\"</code> 塌成 <code>"</code>，落盘后 Lisp 读不进去，</li>
+</ol>
+<p>于是 J0 对<strong>任何</strong> impl 恒红——又一个"看起来能红、其实红错原因"的假信号。v2 已修。</p>
+<h3>又栽在同一个坑里（第三次）</h3>
+<p><code>Julia</code> 臂这次跑出 0/9，原因是<strong>我又忘了设 <code>$env:JULIA</code></strong>（补上即 9/9）。<br>同一晚第三次。已写进操作清单：<strong>跑任何臂之前，先把三个环境变量一次性设好</strong>。</p>
+<hr>
+<h4>追加：运行时轴 —— 宏的"零抽象开销"到底值多少</h4>
+<p>前面所有实验测的都是<strong>写代码的成本</strong>。这一轮测<strong>展开后代码跑得多快</strong>——<br>这是唯一能用数字回答"宏没有运行时开销"这句话的办法。</p>
+<h3>设计（同一门语言内，排除跨语言干扰）</h3>
+<p>15 个 op，同一个调用序列，三种分派机制，各自 100 万次 × 5 轮取中位：</p>
+<div class="tw"><table><thead><tr><th>机制</th><th>形态</th></tr></thead><tbody><tr><td><strong>A 宏展开 case</strong></td><td><code>defop</code> 在编译期把 op 名摊成 <code>case</code> 子句 → 编译成跳转表</td></tr><tr><td>B hash-table</td><td><code>gethash</code> 查表 + <code>funcall</code></td></tr><tr><td>C alist 扫描</td><td><code>assoc</code> 线性找 + <code>funcall</code></td></tr></tbody></table></div>
+<p>三者都在<strong>符号</strong>上分派（<code>case</code> 用 <code>eql</code>，表用 <code>eq</code>），保证同一起跑线。<br>自检：三种机制返回值都必须是 1,000,000（已通过）。</p>
+<h3>结果</h3>
+<div class="tw"><table><thead><tr><th>机制</th><th>ns/次</th><th>相对</th></tr></thead><tbody><tr><td><strong>A 宏展开 case</strong></td><td><strong>5.0</strong></td><td>1.00×</td></tr><tr><td>B hash-table</td><td>6.3</td><td>1.24×</td></tr><tr><td>C alist 扫描</td><td>8.5</td><td>1.68×</td></tr></tbody></table></div>
+<h3>判读</h3>
+<ol>
+<li><strong>"宏零开销"是真的</strong>：编译期摊平的 <code>case</code> 比查表快 24%，比线性扫描快 68%。</li>
+<li><strong>但绝对量很小</strong>：每次省 1.3 ns / 3.5 ns。100 万次才省 1.3 ms / 3.5 ms。</li>
+<li><strong>真实 op 的执行体比一次分派贵两个数量级</strong>（改课表、算提醒、写日志），</li>
+</ol>
+<p>所以这个差异在实际业务里几乎看不见。</p>
+<ol>
+<li><strong>alist 只比 case 慢 68%</strong>——线性扫描 15 个元素本来就不贵。</li>
+</ol>
+<p>"为性能上哈希表"在这个规模上是个伪需求。</p>
+<h3>这条的适用范围</h3>
+<p><strong>无条件。</strong> 它是运行时属性，不依赖模型大小、不依赖联网、不依赖排版。<br>和 T2-b（展开期校验）一样，属于今晚可以直接引用的硬结论。</p>
+<h3>一句总结今晚的四层账</h3>
+<div class="tw"><table><thead><tr><th>维度</th><th>谁赢</th><th>是否受模型参数影响</th></tr></thead><tbody><tr><td>编写成本（行数/触点）</td><td>表驱动赢或打平</td><td><strong>受影响</strong>（熟练度）</td></tr><tr><td>产物扇出（改声明手改几处）</td><td>打平（都 0 手改）</td><td>不受（结构性质）</td></tr><tr><td>body 级内嵌横切</td><td><strong>宏赢</strong>（0 声明 vs 15 行声明 + 1 处手改）</td><td>不受（结构性质）</td></tr><tr><td>展开期校验</td><td><strong>宏独占</strong>（测试看不见的错误只有它挡得住）</td><td>不受（能力性质）</td></tr><tr><td>运行时开销</td><td><strong>宏赢 24%–68%</strong>，但绝对量 1.3–3.5 ns</td><td>不受（运行时属性）</td></tr></tbody></table></div>
+<hr>
+<h4>追加：t2a —— 宏生成宏（二阶 DSL）：单宏已经够用，二阶买的是"改动半径"</h4>
+<h3>两臂</h3>
+<div class="tw"><table><thead><tr><th>臂</th><th>机制</th><th>终局</th><th>净增</th><th>引擎改动</th></tr></thead><tbody><tr><td><strong>S 单宏</strong></td><td>一个 <code>defop</code></td><td>606 行 / 24 op</td><td>+139</td><td>宏体槽位 <strong>0</strong>、分支 <strong>0</strong>；执行层 11 行（只付一次）</td></tr><tr><td><strong>F 宏生成宏</strong></td><td><code>defop-family</code> 生一族宏</td><td>631 行 / 24 op</td><td>+164</td><td><code>defop-family</code> 本体 24 行；引擎改 <strong>1 次 / +2 行</strong>；结果通道 5 行</td></tr></tbody></table></div>
+<p>两臂判据全绿：<code>check-scale</code> 20/20、<code>verify</code> 9/9、<code>red</code> 9/9。<br>F 臂另有 <code>diff-legacy</code> 14/14（老 15 个 op 行为逐字节不变）。</p>
+<h3>关键发现一：单宏根本不用改</h3>
+<p>S 臂加三种形状（整表 / 只读统计 / 返回集合），<strong><code>defop</code> 上槽位 0 个、分支 0 个，已有 15 个声明改动 0 行</strong>。</p>
+<p>原因很结构性：<code>defop</code> 的槽位是 <code>:need</code> / <code>:text</code> + <strong>任意 body</strong>。<br><strong>只要 body 自由，它天生吃得下任意形状</strong>——二阶 DSL 的卖点（加形状不碰宏体）在这个任务上不存在。</p>
+<h3>关键发现二：H1 成立与否取决于口径</h3>
+<div class="tw"><table><thead><tr><th>口径</th><th>S 单宏（每形状首次）</th><th>F 二阶（每形状首次）</th><th>H1（F ≤ S/2）</th></tr></thead><tbody><tr><td><strong>结构化返回</strong>（<code>results:[{op,value}]</code>）</td><td>45 / 22 / 23 行</td><td><strong>12 / 9 / 11 行</strong></td><td><strong>成立</strong>（约 1/3）</td></tr><tr><td><strong>最小实现</strong>（数字只写进日志）</td><td><strong>9</strong> / 22 / 23 行</td><td>12 / 9 / 11 行</td><td><strong>不成立</strong>（B 形状 F 更贵）</td></tr></tbody></table></div>
+<p>差异的来源是 S 臂在形状 B 自愿加了 28 行"参数化排序"（硬编码只需 9 行）。<br><strong>两个数都保留</strong>，读者自己判断哪个更接近他的场景。</p>
+<h3>关键发现三：H3 命中，天花板是"数据契约"</h3>
+<p>形状 D 要<strong>返回集合</strong>。两臂都躲不开：都得在宏之外开一条 result 通道<br>（S：11 行；F：5 行 + 2 处）。</p>
+<blockquote><strong>无论一个宏、一族宏、还是一张表，都要在某个地方处理"这个 op 要返回东西"，而且只付一次。</strong><br>这是抽象层级之上的共同天花板。</blockquote>
+<h3>关键发现四：我的规格前提错了（重要）</h3>
+<p>F 臂用 <code>probe-shapes</code> 实测：<strong>原 15 个 op 里只有 4 个（rename/trim/shift/tag）属于"形状 A"，<br>其余 11 个的 body 已经各写各的（RAW）</strong>。</p>
+<p>也就是说：<code>defop</code> 当初统一的只是<strong>登记面</strong>（字段校验 + 取值），<strong>不是 body 形状</strong>。</p>
+<blockquote>这解释了为什么前 15 个 op 上宏没省到钱：<strong>它统一的那一层本来就不贵</strong>。<br>我写规格时假设"15 个 op 是同一种形状"，这个假设在 body 层是错的。</blockquote>
+<h3>最终判读</h3>
+<pre><code>行数        ：二阶 DSL 更贵（631 vs 606，+25 行）
+每形状增量  ：二阶 DSL 更省（12/9/11 vs 45/22/23，或 vs 9/22/23）
+改动半径    ：二阶 DSL 更小（引擎 2 行 vs 单宏每次形状都碰执行层）
+天花板      ：一样，都是数据契约</code></pre>
+<blockquote><strong>二阶 DSL 买的不是行数，是"改动半径"——加形状只追加一条 7–15 行的隔离声明，<br>24 个 op 与引擎不动。但每形状仍要付一条声明，所以收益要随"每形状的 op 数"增长才回本。</strong></blockquote>
+<p><strong>在本实验的规模（3 op/形状）上：大致打平。</strong></p>
+<hr>
+<h3>【重要】行数口径作废声明与替代指标</h3>
+<p>交叉实验（<code>reports/timetable-ab-crossover-20261024.md</code>）用四个<strong>隔离上下文</strong>的 agent、<br>同一份 30 op 规格、同一套 30 条判据，量了三种口径：</p>
+<div class="tw"><table><thead><tr><th>实现</th><th>物理行/op</th><th>非空非注释行/op</th><th><strong>非空白字符/op</strong></th></tr></thead><tbody><tr><td>正式轮 CL</td><td>8.50</td><td>6.50</td><td><strong>244.20</strong></td></tr><tr><td>正式轮 JS</td><td><strong>2.10</strong></td><td><strong>1.00</strong></td><td><strong>227.00</strong></td></tr><tr><td>轮 2 CL</td><td>12.10</td><td>10.10</td><td>381.20</td></tr><tr><td>轮 2 JS</td><td>7.30</td><td>6.30</td><td>216.30</td></tr></tbody></table></div>
+<pre><code>物理行差 4.05 倍
+非空白字符差 7.58%</code></pre>
+<h3>结论</h3>
+<blockquote><strong>行数不是语言属性，是排版属性。</strong><br>JS 那位把每条 REG 压成一行，行数立刻从 13.9 掉到 2.1——语言没变，手变了。</blockquote>
+<h3>本报告中受影响、必须重新标注的数字</h3>
+<div class="tw"><table><thead><tr><th>位置</th><th>原数</th><th>现在怎么读</th></tr></thead><tbody><tr><td>六语言行数表（205/267/277/287/439/563）</td><td>行数</td><td><strong>含排版差</strong>，不可跨语言直接比；只能同语言内部比</td></tr><tr><td>每 op 边际 "Lisp 2–7 行 vs JS 13.7 行"</td><td>行数</td><td><strong>作废</strong>；改用非空白字符，实测 CL 244 vs JS 227（差 7.6%）</td></tr><tr><td>交叉点 19–34</td><td>由行数推出</td><td><strong>作废</strong>；行数变排版就变，交叉点跟着变</td></tr><tr><td>扇出固定成本 69 / 229 / 754 行</td><td>行数</td><td>同一作者同日写成，<strong>可比性尚可</strong>，但仍应附字符数复核</td></tr><tr><td>t-sugar 30/64、41/72 行</td><td>行数</td><td>同上，同语言同任务，方向可用，幅度待字符数复核</td></tr></tbody></table></div>
+<h3>替代指标（从现在起默认用这个）</h3>
+<pre><code>首选：非空白字符/op      （人写多少东西，与排版无关）
+次选：非空非注释行/op    （半独立于排版）
+参考：物理行/op          （只用于同语言内部，或明确标注"含排版"）</code></pre>
+<h3>配套的两处协议修正（来自同一份报告）</h3>
+<ol>
+<li><strong>N\* 公式写反了</strong>：<code>(建_JS − 建_CL) / (c_js − c_cl)</code> 只在 <code>c_js &gt; c_cl</code> 时给正数；</li>
+</ol>
+<p>样本一翻方向就得到"落进 10–30"的假阳性。判读时必须先看分母符号。</p>
+<ol>
+<li><strong>H3 与"隔离上下文"不可兼得</strong>：要测熟练度就得同一 agent 连做两轮（H1/H2 被串味）；</li>
+</ol>
+<p>要隔离就得换人（H3 变成作者方差）。<strong>一次实验只能选一个。</strong></p>
+<hr>
+<h4>追加：用字符重算六语言成本表（去掉注释与空白）</h4>
+<p><code>metric.cjs</code>：剥注释 → 去空白 → 数字符。三个口径同时给。</p>
+<h3>5 个 op（同一份 <code>scale.spec.md</code>，可直接横向比）</h3>
+<div class="tw"><table><thead><tr><th>臂</th><th>物理行</th><th>代码行</th><th><strong>字符</strong></th><th>字符 vs JS+库</th></tr></thead><tbody><tr><td>JS + 标准库</td><td>206</td><td>163</td><td><strong>4952</strong></td><td>1.00×</td></tr><tr><td>JS 手写 JSON</td><td>268</td><td>250</td><td>6044</td><td>1.22×</td></tr><tr><td><strong>Java</strong></td><td>278</td><td>245</td><td><strong>6970</strong></td><td>1.41×</td></tr><tr><td>Julia</td><td>441</td><td>407</td><td><strong>7316</strong></td><td>1.48×</td></tr><tr><td>CL（脚本版）</td><td>415</td><td>352</td><td><strong>9028</strong></td><td>1.82×</td></tr><tr><td>Rust</td><td>564</td><td>537</td><td><strong>9390</strong></td><td>1.90×</td></tr></tbody></table></div>
+<p><strong>排序没变，但幅度变了</strong>：按行 CL 是 JS 的 2.01×，按字符是 <strong>1.82×</strong>。</p>
+<h3>15 个 op（CL vs JS 表驱动）</h3>
+<div class="tw"><table><thead><tr><th>臂</th><th>物理行</th><th>代码行</th><th>字符</th><th>行比</th><th><strong>字符比</strong></th></tr></thead><tbody><tr><td>CL（<code>scale-lisp</code>）</td><td>468</td><td>395</td><td><strong>11289</strong></td><td>1.51×</td><td><strong>1.90×</strong></td></tr><tr><td>JS（<code>scale-js</code>）</td><td>310</td><td>272</td><td><strong>5933</strong></td><td>1.00×</td><td>1.00×</td></tr></tbody></table></div>
+<p><strong>这里字符比反而比行比更大。</strong> 为什么？JS 那份被压成了 19 字符/行（很挤），<br>行数少但字符没少；CL 那份 24 字符/行。所以<strong>行数低估了 JS 的真实体量</strong>。</p>
+<h3>与交叉实验的差别（关键）</h3>
+<div class="tw"><table><thead><tr><th>场景</th><th>行比</th><th>字符比</th></tr></thead><tbody><tr><td>交叉实验（30 op，<strong>同一模型、同一天、同一指令</strong>）</td><td>4.05×</td><td><strong>1.076×</strong></td></tr><tr><td>本报告的 15 op 臂（<strong>不同天、不同作者状态</strong>）</td><td>1.51×</td><td><strong>1.90×</strong></td></tr></tbody></table></div>
+<p>两边方向相反。说明：</p>
+<blockquote><strong>字符数比行数稳，但也不是纯语言属性——它还带着"作者当天的写法风格"。</strong><br>交叉实验那 7.6% 之所以干净，是因为两边<strong>同一模型、同一天、同一句指令</strong>。</blockquote>
+<h3>因此修正尺子的使用规则</h3>
+<pre><code>要比较语言  → 必须同时固定：同一模型 + 同一天 + 同一份规格 + 同一句指令
+             指标用「非空白非注释字符」，行数只作参考
+普通报数    → 字符 + 行 + 代码行 三个一起给，不单独引用行数</code></pre>
+<p><strong>本报告旧结论的新读法</strong>：</p>
+<div class="tw"><table><thead><tr><th>原结论</th><th>行数口径</th><th>字符口径</th></tr></thead><tbody><tr><td>CL 手写 JSON ≈100 行，全语言最省</td><td>100 行</td><td>待单独测（下一步）</td></tr><tr><td>CL 建 5 op = 287 行 vs JS 205 行</td><td>1.40×</td><td><strong>1.82×</strong>（同一对实现）</td></tr><tr><td>CL 15 op = 468 行 vs JS 310 行</td><td>1.51×</td><td><strong>1.90×</strong></td></tr><tr><td>扇出 229 / 69 / 754 行</td><td>—</td><td>待重测</td></tr></tbody></table></div>
+<p><strong>结论：CL 并没有因为"行数虚高"而被冤枉——按字符算，它比 JS 更啰嗦。</strong><br>行数作废这件事，改变的是"4 倍"那种夸张说法，不是方向。</p>
+<hr>
+<h4>追加：skillpack 实验 —— 技能包省的不是字符，是"会踩的坑"</h4>
+<h3>结果</h3>
+<div class="tw"><table><thead><tr><th>臂</th><th>非空白字符</th><th>代码行</th><th>物理行</th><th>判据</th><th>返工</th></tr></thead><tbody><tr><td><strong>A 无技能包</strong>（<code>repl-g1</code>）</td><td><strong>9028</strong></td><td>352</td><td>415</td><td>9/9</td><td>—</td></tr><tr><td><strong>B 有技能包</strong>（<code>skillpack-cl</code>）</td><td><strong>7775</strong></td><td>302</td><td>365</td><td>9/9</td><td><strong>1 轮</strong>（先 0/9）</td></tr></tbody></table></div>
+<pre><code>字符：7775 / 9028 = 86.1%
+预注册 H1（&lt; 80%）→ 不成立
+预注册 H2（首次即 9/9）→ 不成立（先 0/9，defop 形参写法错一次）</code></pre>
+<h3>但用字符数评判技能包，是选错了因变量</h3>
+<p>B 臂自己交了一份"哪条真帮到了"的清单，全部可判定：</p>
+<div class="tw"><table><thead><tr><th>技能包里的哪一条</th><th>它因此做了什么</th><th>不做会怎样</th></tr></thead><tbody><tr><td><code>lisp-json</code>：「键序必须保持输入顺序，<strong>不要用 hash-table</strong>」</td><td>对象一律走保序 alist，<code>weeks</code> 固定 <code>type/from/to</code></td><td>判据 #1 用 <code>JSON.stringify</code> 逐字节比，<strong>键序错就红</strong></td></tr><tr><td><code>lisp-defop</code>：「手写 <code>known-op-p</code> 名单 → 必漏」</td><td>整批拒绝改成对注册表 <code>find-if</code> 一次查询</td><td>#8 未知 op 整批拒绝会漏</td></tr><tr><td><code>lisp-defop</code>：「手写 per-op 文案分支 → 必漏」</td><td>5 个 op 名只出现一次</td><td>文案与 op 名册不一致</td></tr><tr><td><code>lisp-macro-value</code>：ASCII 兜底那一节</td><td>writer 只把输出字符转 <code>\uXXXX</code>，<strong>6 行</strong></td><td>基线臂为此付了 <strong>127 行</strong></td></tr><tr><td><code>lisp-macro-value</code>：天花板（helper 内写入宏抓不到）</td><td>改用 <code>set-fld</code> 唯一写入口 + <code>equal</code> 比旧值</td><td>走宏展开期改写会留一个静默漏报</td></tr></tbody></table></div>
+<p><strong>它自己说得很清楚</strong>：</p>
+<blockquote>「读到那句之前，我的默认写法就是 hash-table。」</blockquote>
+<p>也就是说：<strong>这条知识在模型的经验里不存在，技能包把它补上了，并且避免了一个一定会红的错误。</strong></p>
+<h3>结论：技能包的产出是"避免的错误"，不是"省下的字符"</h3>
+<pre><code>字符数能测到的：−13.9%（H1 不成立）
+字符数测不到的：
+  · 一个会因为键序而红的判据被提前避免
+  · 一个 127 行的 ASCII 兜底被 6 行替代
+  · 一个"宏抓不到 helper 写入"的天花板被绕开</code></pre>
+<blockquote><strong>技能包在冷门知识上是经验替代品。</strong><br>模型对 CL 的先验薄（这正是今晚"熟练度曲线 92.5→12.7"的根因），<br>技能包把别人（或自己）踩过的坑变成<strong>写之前就知道的事</strong>。</blockquote>
+<h3>因此定的规矩</h3>
+<p><strong>技能包是常设条件，不是可选优化。</strong> 以后所有 CL/JS 对照臂都先喂 <code>lisp-toolkit/skills/</code> 下的对应篇目，<br>并在报告里注明"本臂已读技能包：x / y / z"，否则两组不可比。</p>
+<hr>
+<h4>追加：技能包 × REPL 四格（已独立复核）</h4>
+<h3>四格（同一规格、同一判据，我另外用 <code>metric.cjs</code> 复核过）</h3>
+<div class="tw"><table><thead><tr><th>臂</th><th>字符</th><th>代码行</th><th>物理行</th><th>判据</th></tr></thead><tbody><tr><td>无技能包 · script</td><td>9028</td><td>352</td><td>415</td><td>9/9</td></tr><tr><td>无技能包 · live</td><td>6314</td><td>242</td><td>288</td><td>9/9</td></tr><tr><td>有技能包 · script</td><td>7775</td><td>302</td><td>365</td><td>9/9</td></tr><tr><td><strong>有技能包 · live</strong></td><td><strong>5957</strong></td><td><strong>219</strong></td><td><strong>255</strong></td><td>9/9 + #19</td></tr></tbody></table></div>
+<pre><code>REPL 收益（无技能包）：  9028 → 6314 = −30.06%
+REPL 收益（有技能包）：  7775 → 5957 = −23.38%
+技能包收益（script）：   9028 → 7775 = −13.88%
+技能包收益（live）：     6314 → 5957 = −5.65%   ← 技能包的边际收益被 REPL 吃掉一半以上</code></pre>
+<h3>发现一：口径再次决定结论</h3>
+<div class="tw"><table><thead><tr><th>口径</th><th>无技能包→有技能包，REPL 收益</th><th>读出来的结论</th></tr></thead><tbody><tr><td><strong>字符</strong></td><td>30.06% → <strong>23.38%</strong></td><td>部分替代（替代率 ≈ 1/4）</td></tr><tr><td><strong>物理行</strong></td><td>30.60% → <strong>30.14%</strong></td><td>几乎没变，看不出替代</td></tr></tbody></table></div>
+<p><strong>同一个实验，两套结论。行数这一维第三次被证明不能当因变量。</strong></p>
+<h3>发现二：REPL 的产出是"看见"，不是"少写"（这轮最重要）</h3>
+<p>判据 9/9 全绿之后，REPL 还抓出<strong>两个判据永远看不见的错</strong>：</p>
+<pre><code>(jw (jparse "{\"a\":[2.5,1.0,1e7,…]}"))
+    → 修好前输出 2.5d0（非法 JSON）——19 条 fixture 全是整数，永远不会碰到
+
+(op-edit {match:"高数", set:{day:9, periodFrom:5}})
+    → 修好前 periodTo 被静默改成 5（改了 set 之外的键）</code></pre>
+<blockquote><strong>"判据说没坏"和"REPL 说哪里坏了"是两件事。</strong><br>这和 T2-b 是同一个形状：<strong>存在测试挡不住、只有"能问/能看"才发现的错误。</strong></blockquote>
+<h3>发现三：技能包与 REPL 确实部分替代，机制看得见</h3>
+<p>SP-live 臂报告：<strong>技能包里"ASCII <code>\uXXXX</code> 兜底（127 行）"这条它没照做</strong>，理由是</p>
+<pre><code>(stream-external-format *standard-output*)   ; REPL 一句话就查到了答案</code></pre>
+<p>技能包给的是"提前防御"（127 行兜底），REPL 给的是"当场问清"（1 次调用）。<br><strong>两者解决的是同一件事：避免绕过。</strong> 所以一个用得越多，另一个的边际收益越小。</p>
+<h3>我的预注册有一个硬错误（H3）</h3>
+<p>我写的是：</p>
+<pre><code>H3 成立：收益 &lt; 31%
+H3 否证：收益 ≥ 20%</code></pre>
+<p><strong>区间 [20%, 31%) 同时满足两条。</strong> 实测 23.38% 正好落进这个洞——规则本身不可判定，不是实验的问题。</p>
+<p>修法（已写进协议）：</p>
+<ul>
+<li>要么把否证线改成 <code>≥31%</code>（消除重叠）；</li>
+<li>要么承认它是<strong>连续量</strong>，报"替代率"，不设二元阈值。</li>
+</ul>
+<blockquote>这是今晚第 <strong>八</strong> 次同类错误：<strong>判据/规则自己没被检验过</strong>。<br>新增协议条款：<strong>预注册的每一条必须先在纸上跑一遍边界值，确认没有区间同时满足成立与否证。</strong></blockquote>
+<hr>
+<h3>历史遗留清理（字符口径重算三张表）</h3>
+<h3>一、扇出三臂（生成器本体）</h3>
+<div class="tw"><table><thead><tr><th>臂</th><th>物理行</th><th>代码行</th><th><strong>字符</strong></th><th>字符比</th><th>行比</th></tr></thead><tbody><tr><td>JS 生成器 <code>emit.cjs</code></td><td>70</td><td>53</td><td><strong>2058</strong></td><td>1.00×</td><td>1.00×</td></tr><tr><td>CL 宏 <code>emit.lisp</code></td><td>230</td><td>188</td><td><strong>5969</strong></td><td><strong>2.90×</strong></td><td>3.29×</td></tr><tr><td>Java APT（<code>Emit</code>+<code>Op</code>+<code>GenProc</code>）</td><td>757</td><td>639</td><td><strong>18328</strong></td><td><strong>8.91×</strong></td><td>10.80×</td></tr></tbody></table></div>
+<p>幅度按字符略缩（2.90 vs 3.29；8.91 vs 10.80），<strong>排序不变</strong>：<br>JS ≪ CL ≪ Java。扇出这一局的结论不变。</p>
+<h3>二、t-sugar 四臂（糖 vs 正规）</h3>
+<div class="tw"><table><thead><tr><th>臂</th><th>物理行</th><th>代码行</th><th>字符</th></tr></thead><tbody><tr><td>JS 糖</td><td>31</td><td>24</td><td><strong>695</strong></td></tr><tr><td>JS 正规</td><td>65</td><td>58</td><td><strong>1274</strong></td></tr><tr><td>CL 糖</td><td>42</td><td>34</td><td><strong>910</strong></td></tr><tr><td>CL 正规（含污染）</td><td>107</td><td>94</td><td><strong>2052</strong></td></tr><tr><td>CL 正规（<strong>扣掉手写排序 659 字符</strong>）</td><td>73</td><td>60</td><td><strong>1393</strong></td></tr></tbody></table></div>
+<pre><code>JS 正规/糖：1274 / 695 = 1.83×   （行口径 2.13×）
+CL 正规/糖：1393 / 910 = 1.53×   （行口径修正后 1.76×）</code></pre>
+<p><strong>两个口径给出同一个排序：JS 的糖收益 &gt; CL 的糖收益。</strong><br>幅度都缩了约 15%（1.83 vs 2.13；1.53 vs 1.76）。</p>
+<blockquote>那个 659 字符的手写归并排序，是被我<strong>不对称的禁用清单</strong>逼出来的（JS 允许 <code>.sort(fn)</code>，CL 禁 <code>sort</code>）。<br>已扣除，并把污染量第一次量化了。</blockquote>
+<h3>三、"固定排版后重比行数"这条遗留：<strong>自动消解</strong></h3>
+<p>它本来是交叉实验留的作业（两臂都"一 op 一行"再比行数）。但既然主指标已改为<br><strong>非空白字符</strong>，排版在定义上就不参与计算 —— <strong>这条作业不需要再做</strong>。</p>
+<p>真正还需要"固定排版"的场合只有一种：<strong>有人坚持要报物理行</strong>。那时才需要它。</p>
+<h3>四、仍未闭合的遗留（列清楚，不含糊）</h3>
+<div class="tw"><table><thead><tr><th>#</th><th>遗留</th><th>状态</th></tr></thead><tbody><tr><td>1</td><td>CL 手写 JSON 到底多少字符（原"≈100 行最省"）</td><td><strong>未测</strong>，需要按函数边界切两块量</td></tr><tr><td>2</td><td>T2 体积没留档（SP-live 首绿 6057？终态 5957）</td><td><strong>无法补</strong>，只能写成协议条款：<strong>首绿时必须跑一次 metric</strong></td></tr><tr><td>3</td><td>N* 公式改对后重跑一轮</td><td>未做；需先平熟练度（小模型通道）</td></tr><tr><td>4</td><td><code>weixuezhang/app.js</code> 的 OPS 表化改动</td><td>未提交（用户决定：“实验意义大于实际意义”）</td></tr><tr><td>5</td><td>六语言表的 Java/Julia/Rust 只有 5-op 数据</td><td>已用字符重算，够用；15-op 只有 CL/JS 一对</td></tr></tbody></table></div>
+<hr>
+<h4>追加：iter —— 真实维护成本（改需求要几轮、碰几处、会不会弄坏别处）</h4>
+<h3>因变量换了</h3>
+<p>前面所有实验测"写多少"。这一轮测<strong>接手一个已经 20/20 的实现，改 3 个需求</strong>。<br>三个需求故意分层：D1 单点行为 → D2 字段间约束 → D3 日志/执行流。</p>
+<h3>结果</h3>
+<div class="tw"><table><thead><tr><th>臂</th><th>D1</th><th>D2</th><th>D3</th><th>总轮数</th><th>改动处</th><th>新增字符</th><th>弄红原 20 条</th></tr></thead><tbody><tr><td><strong>CL</strong></td><td>1 / 2 处 / +242</td><td>0（代码）+1（判据）</td><td>1 / 2 处 / +47</td><td><strong>3</strong></td><td><strong>4</strong></td><td><strong>+289</strong>（11289→11578）</td><td>否</td></tr><tr><td><strong>JS</strong></td><td>1 / 1 处 / +160</td><td>0 / 0 处 / +0</td><td>1 / 2 处 / +35</td><td><strong>2</strong></td><td><strong>3</strong></td><td><strong>+195</strong>（5933→6128）</td><td>否</td></tr></tbody></table></div>
+<pre><code>字符：CL +289 vs JS +195 → CL 是 JS 的 1.48 倍
+轮数：3 vs 2
+改动处：4 vs 3</code></pre>
+<p><strong>预注册判定</strong>：H1（CL 轮数更少）<strong>否</strong>；H2（JS 改动处更少）<strong>成立</strong>；H3（出现回归）<strong>否</strong>（两臂都没弄红原有判据）。</p>
+<blockquote>注意：维护成本这一局<strong>表驱动赢</strong>，方向和"编写成本"一致。<br>但它赢的量很小（1.48 倍字符、1 处改动），远小于编写成本阶段的差距。</blockquote>
+<h3>发现一：D2 是"零改动需求"——两臂都是</h3>
+<p>规格里的 D2（<code>edit</code> 只给一端时保持 <code>periodFrom &lt;= periodTo</code>）<strong>两臂都早就实现了</strong>：</p>
+<ul>
+<li>CL：<code>edit</code> 的 <code>periodFrom</code> 分支自己就把 <code>pto</code> 抬到 <code>pfrom</code>（impl.lisp:317–318）</li>
+<li>JS：存量 <code>if (c.periodTo &lt; c.periodFrom)</code> 那行（impl.js:89）本来就兜住</li>
+</ul>
+<p>两臂都是 <strong>0 处改动、0 新增字符</strong>。实际花的时间全在<strong>写一条能红的不变量</strong>上。</p>
+<blockquote><strong>维护成本的大头不是"写代码"，是"确认它已经在、并且钉住它"。</strong><br>这也是为什么"轮数"这个指标两臂都低——需求本身不重，重的是判断"要不要改"。</blockquote>
+<h3>发现二（本轮最重要）：两种结构的痛点撞在同一个地方</h3>
+<p>两臂的 fresh agent 各自独立地写下了同一句话，只是用词不同：</p>
+<blockquote><strong>CL 臂</strong>：「宏把每个 op 的知识收成一条表单，但<strong>跨 op 的机制（日志装配、跳过标记、字段间约束）全都落在宏外面</strong>——<br>改一次需求得同时维护宏外的两处隐式接口，而没有任何判据守着那条接口。」</blockquote>
+<blockquote><strong>JS 臂</strong>：「<strong>表管住了 op 的四种声明，却没管住 op 之间的语义</strong>——<br>加后缀改的是 add 的写路径，真正变的是 9 个 match op 的读路径和日志契约，这两样不在任何一张表里。」</blockquote>
+<p><strong>两种结构（宏 / 表）的痛点是同一个：跨 op 的机制没有单一知识源。</strong><br>D3（<code>[skip]</code> 日志标记）在两臂都落在"宏/表之外"，都必须回到执行器里打补丁：</p>
+<div class="tw"><table><thead><tr><th>臂</th><th>D3 的补丁位置</th></tr></thead><tbody><tr><td>CL</td><td><code>run-op</code> 加第三返回值 ↔ <code>run-all</code> 的 <code>multiple-value-bind</code> 元数（impl.lisp:275–277 ↔ 429–436）</td></tr><tr><td>JS</td><td><code>runOp</code> 加 <code>skip:true</code> ↔ 日志拼装加分支（impl.js:285 ↔ 310–311）</td></tr></tbody></table></div>
+<blockquote><strong>这解释了为什么"加一个 op"两臂都 O(1)、而"加一个跨 op 的需求"两臂都要摸两处</strong>：<br>单源化方案收拢的是"一个 op 的知识"，从没收拢"op 之间、op 与执行器之间"的知识。</blockquote>
+<h3>发现三：我的 H3 又被两个臂各自"测试错"了一次</h3>
+<p>两个臂都把 H3 理解成"<strong>新行为是否被原有判据覆盖</strong>"——那是<strong>定义上必然为真</strong>的<br>（老判据写在需求出现之前，当然不覆盖）。两臂都给出了"三次改坏、原 20 条全绿"的证据，<br>这只能证明"新需求没被老判据保护"，不能证明"改动引入了回归"。</p>
+<p><strong>H3 本意是后者：改动过程中有没有把原有行为弄坏。</strong> 两臂的记账里都写着"弄红原 20 条 = 否"，<br>所以 <strong>H3 否</strong>。</p>
+<blockquote>这是今晚第 <strong>九</strong> 次同类：<strong>判据/规则在定义上就无法失败</strong>。<br>已并入协议条款：<strong>一条检查如果"不测也知道会通过"，它就不算检查。</strong></blockquote>
+<h3>更正一条臂的自述（我的复核）</h3>
+<p>JS 臂报「D1 让 <code>del match=高数</code> 由删 1 门变删 2 门」。我实测：</p>
+<pre><code>改之前的基线 scale-js：add 高数 ×2 后 del match=高数 → 也是"删除 2 门"
+改之后的 iter-js   ：同样 → "删除 2 门"</code></pre>
+<p><strong>删 2 门是基线本来就有的行为</strong>（match 用子串匹配），D1 只是把第二门改名成 <code>高数(2)</code>，<br>仍然含 <code>高数</code>。<strong>这条"语义扩张"的归因不成立</strong>——但它指向的真问题成立：<br><code>add</code> 与 9 个 match 系 op 之间<strong>没有任何判据锁着子串匹配的语义</strong>。</p>
+<hr>
+<h4>追加：relay —— 子 agent 转接子 agent（A 写文档，B 只凭文档+代码干活）</h4>
+<h3>结构</h3>
+<pre><code>A 段：读实现，只写一份 HANDOFF.md（不许改代码，用固定 5 节模板）
+B 段：fresh 上下文，只允许读「自己的 impl + 自己的 HANDOFF + 需求书」，实现 D4/D5/D6</code></pre>
+<p>三个新需求<strong>全部踩在跨 op 机制上</strong>：<code>undo</code>（跨 op 记忆）、日志序号（执行器级）、match 命中计数（op 间共享语义）。</p>
+<h3>A 段产出</h3>
+<div class="tw"><table><thead><tr><th>臂</th><th>HANDOFF 字符</th><th>它自己指出的痛处</th></tr></thead><tbody><tr><td>CL</td><td>3476</td><td>「op 的知识被劈成两半……<strong>跨 op 记忆根本没有落脚点</strong>」</td></tr><tr><td>JS</td><td>5127</td><td>「<strong>这张表装得下 op，装不下时间轴</strong>」</td></tr></tbody></table></div>
+<p><strong>两个不同作者、两种不同结构，写下同一句话。</strong></p>
+<h3>B 段（JS 已完成）</h3>
+<pre><code>check-scale 20/20 保持，verify 3/3（三条新不变量对原版全红）
+实现零返工：三块全部首跑即绿
+体积：6128 → 6801 字符（metric 口径，+11%）
+首读三份材料 15880 字符（impl 8934 / HANDOFF 5173 / 规格 1773，均为<strong>原始字符</strong>）</code></pre>
+<h4>B 臂的重建点（它自己列出来的）</h4>
+<div class="tw"><table><thead><tr><th>需求</th><th>重建了什么</th><th>为什么必须新造</th></tr></thead><tbody><tr><td>D4 undo</td><td>模块级 <code>hist{op,snap,n}</code>，循环体独占维护</td><td>「没有任何地方保存上一条改了什么」</td></tr><tr><td>D6 hits</td><td><code>WeakMap</code> 以对象同一性为键</td><td>塞课程对象会被白名单漏掉；平行数组会被 splice/sort 错位</td></tr><tr><td>D5 [+k]</td><td>唯一日志拼接点加后缀</td><td>另一处硬编码 <code>1)</code> 不经主拼接点</td></tr></tbody></table></div>
+<p>它还白拿了两个副产品：</p>
+<ul>
+<li><code>undo</code> 连 <code>sort</code> 都能还原（<strong>用 log 反推前态做不到</strong>）；</li>
+<li>“不能连续撤销”是 <code>hist.op</code> 自动变成 <code>'undo'</code> 的结构副产品，<strong>不需要额外分支</strong>。</li>
+</ul>
+<h3>这一轮最重要的发现：交接文档缺的不是信息，是<strong>裁决规则</strong></h3>
+<p>B 臂原话：</p>
+<blockquote><strong>「材料最缺的不是信息量，而是两条裁决规则：规格与文档冲突时谁优先，以及这些行号属于哪一版。」</strong></blockquote>
+<p>它列出的六条误解里，<strong>两条是版本问题</strong>：</p>
+<ol>
+<li>HANDOFF 第 3 节的行号是<strong>改动前</strong>的版本，文档从未声明——改完第一块后<strong>全线飘</strong>；</li>
+<li>规格里写“JS 臂 318 行 / 6128 字符”，实际是 <strong>317 行 / 8934 原始字符</strong>——<strong>口径没写</strong>。</li>
+</ol>
+<blockquote>这是<strong>第三次</strong>同一件事咬人：数字不写口径 = 数字失效。<br>已升级为协议条款：<strong>任何数字必须三件套——数值 + 口径 + 单位，缺一件就算没写。</strong></blockquote>
+<h3>另一条判据级发现</h3>
+<p>B 臂顺带证明：<strong><code>check-scale</code> 的 20 条判据不看日志文本</strong>。<br>D5 给每行加了 <code> [+k]</code>，而 #9（log-numbering）与 #18（stats）<strong>依然全绿</strong>。</p>
+<p>→ 日志措辞类需求可以在 20/20 的绿伞下<strong>静默跑偏</strong>，只有新写的不变量能拦。<br>这是继 <code>tag-untag</code>、curv 20 op、<code>periodFrom</code> 之后<strong>第四次</strong>同类：<strong>判据覆盖的是行为，不是契约</strong>。</p>
+<h3>B 段结果（CL 已完成）</h3>
+<pre><code>check-scale 20/20 保持；verify 3/3（用阶段快照做隔离矩阵，每条只在本需求缺失时红）
+实现轮数：D4 = 3 轮（前 2 轮是括号错，非设计）、D5 = 1、D6 = 1
+新增字符：+968 / +94 / +611 = +1673
+首读字符：23919（impl 18273 + HANDOFF 3873 + 规格 1773）
+靠猜：D4 2 处、D5 0 处、D6 3 处 = 5 处</code></pre>
+<h4>两臂对照</h4>
+<div class="tw"><table><thead><tr><th>项</th><th>CL B</th><th>JS B</th></tr></thead><tbody><tr><td>check-scale</td><td>20/20</td><td>20/20</td></tr><tr><td>verify</td><td>3/3（隔离矩阵）</td><td>3/3（对原版全红）</td></tr><tr><td>首读字符</td><td><strong>23919</strong></td><td><strong>15880</strong></td></tr><tr><td>靠猜处数</td><td><strong>5</strong></td><td><strong>10</strong></td></tr><tr><td>文档里的硬错</td><td>1 处（<code>i</code> 与 <code>k</code> 同义）</td><td>1 处（untag/clear/swapDay 越界统计）</td></tr><tr><td>独立发现的同一件事</td><td>「自测只跑 check-scale」是废话</td><td>同</td></tr></tbody></table></div>
+<p><strong>预注册判定</strong>：H1（CL 误解更少）<strong>成立</strong>（5 vs 10）；H2（JS 需读字符更少）<strong>成立</strong>（−34%，因为 JS 实现本身小）；H3（两臂都新增跨 op 状态）<strong>完全成立</strong>。</p>
+<h3>本轮最重要：<strong>我规格里写的那条 D4 不变量，对"没实现 undo"的版本是绿的</strong></h3>
+<p>CL 的 B 段自己发现并实测了这件事。我复验：</p>
+<pre><code>输入：add A → undo（在未实现 undo 的版本上）
+输出：{"opsText":"","courses":[],"log":["1) 拒绝：未知 op undo…"],"n":0}</code></pre>
+<p>因为<strong>未知 op 会让整包 ops 一条都不执行</strong>，所以 <code>courses</code> 空、<code>n=0</code>——<br><strong>恰好与我规格里 D4 的断言同形</strong>。只有加"log 有 2 条且第 2 条是撤销"才会红。</p>
+<blockquote>这是今晚第 <strong>十一</strong> 次同类错误，而且这次错在<strong>规格里的断言本身没被验证过</strong>。<br>已升级协议：<strong>规格里写的不变量，也必须先在"完全没实现该需求"的版本上跑一遍，必须红。</strong></blockquote>
+<h3>两条关于"交接"的硬结论</h3>
+<p><strong>① 文档给的是行号锚点，不是契约锚点</strong><br>CL 的 B 段：一动手，<code>436/429</code> 就变成 <code>447/451</code>，后续引用全部要重算。</p>
+<p><strong>② 两臂各自写出了一处"实质错误"</strong></p>
+<ul>
+<li>CL 的 HANDOFF 说「<code>i</code> 就是 D5 要的 <code>k</code>，同义」——<strong>硬错</strong>，照抄必红（<code>k</code> 是 ops 下标含 skip，<code>i</code> 是成功条数）；</li>
+<li>JS 的 HANDOFF 说「要统计 untag/clear/swapDay 的命中」——<strong>越界</strong>（规格说"被 match 命中"，这四个 op 没有 match）。</li>
+</ul>
+<blockquote><strong>交接文档最危险的不是漏写，是"写得很确定但是错的"。</strong><br>漏写，接手的人会去读代码；写错，他会照着错的做。</blockquote>
+<h3>另一条判据级发现（两臂独立命中）</h3>
+<blockquote>「自测只跑 check-scale」是废话——<strong>它对新行为零覆盖，三条需求全做完照样 20/20</strong>。</blockquote>
+<p>这与 JS B 段那句互相印证：「check-scale 那 20 条<strong>不看日志文本</strong>，D5 改了每行格式，#9 和 #18 依然绿」。</p>
+<hr>
+<h4>追加：变异测试 —— 给判据本身打分（把"假阳"做成研究对象）</h4>
+<p>今晚被"判据看不见的错误"咬了十一次。这一轮反过来<strong>主动制造错误</strong>，看判据抓不抓得住。</p>
+<p><code>mutate.cjs</code>：对实现做<strong>单点变异</strong>（翻转比较符、改常量、删一行），逐个喂给 <code>check-scale</code>。</p>
+<ul>
+<li>变红 = <strong>杀死</strong>（判据看见了）</li>
+<li>仍绿 = <strong>存活</strong>（← 真实盲区，逐条列出）</li>
+</ul>
+<h3>结果</h3>
+<div class="tw"><table><thead><tr><th>实现</th><th>可用变异</th><th>杀死</th><th>存活</th><th><strong>变异得分</strong></th></tr></thead><tbody><tr><td><strong>JS 表驱动</strong></td><td>35</td><td>19</td><td>16</td><td><strong>54.3%</strong></td></tr><tr><td><strong>CL 宏</strong></td><td>50</td><td>41</td><td>9</td><td><strong>82.0%</strong></td></tr></tbody></table></div>
+<p><strong>同一套 20 条判据，对两份实现的有效性差 28 个百分点。</strong></p>
+<h3>存活变异长在哪——这才是重点</h3>
+<h4>CL 的 9 条存活，6 条在 JSON 层</h4>
+<pre><code>L31  转义 \ 的分支           L109  跳过空白
+L39  指针前进 4              L140  写 false 字面量
+L60  判断数字有没有小数点      L176  字符串直通</code></pre>
+<p><strong>原因</strong>：20 条判据喂的都是<strong>整数、ASCII、单层结构</strong>。手写 JSON 层里<br>"小数点 / 转义 / 布尔字面量 / 嵌套"这些分支<strong>从来没被碰到</strong>。</p>
+<blockquote>这和之前 REPL 抓到的 <code>2.5d0</code>（浮点输出非法）是<strong>同一个洞</strong>——<br>那次靠人眼，这次靠变异，结论一致：<strong>JSON 层的分支覆盖率接近零。</strong></blockquote>
+<h4>JS 的 16 条存活，集中在业务字段</h4>
+<pre><code>L267  normalizePatch 里 name/teacher/location 的处理被删  ← 整类字段静默丢弃
+L39   swap 里 periodFrom 不交换
+L99   edit 里 periodTo 不做下界夹紧
+L113  swap 多匹配时不做拒绝</code></pre>
+<p><strong>这正是今天上午那个 <code>periodFrom</code> bug 的同一族</strong>：<br><code>edit</code> 的字段级语义，20 条判据几乎不覆盖（#19 只补了"三项都改"这一种赋值）。</p>
+<h3>两个必须记的坑（否则这个数会被误读）</h3>
+<p><strong>① 无效变异率是工具假象，不是语言属性</strong></p>
+<pre><code>JS：60 个抽样里 25 个语法无效（42%）
+CL：50 个抽样里 0 个语法无效</code></pre>
+<p>原因：我的变异规则在 JS 上容易打断语法（<code>===</code>→<code>!==</code> 碰上表达式、删行删在表达式中间），<br>而 Lisp 是括号结构，删一行通常仍能被读入。<strong>这是变异器的粗糙，不是"CL 更抗改"。</strong></p>
+<p><strong>② 两个得分不能直接比"代码质量"</strong></p>
+<p>它们比的是<strong>"同一批判据对两份实现的有效性"</strong>。<br>CL 得分高，是因为它的存活变异集中在<strong>判据不喂的输入类型</strong>（JSON 层），<br>而不是因为它的业务逻辑被判据覆盖得更全。</p>
+<h3>这个工具能干什么</h3>
+<pre><code>✓ 给出「判据的真实盲区清单」，逐行列出，不用猜
+✓ 当回归门禁：变异得分低于阈值就 red（比"测试全绿"强得多）
+✓ 对比两版判据：加 #19 前后，得分有没有真的上升</code></pre>
+<p><strong>下一件该做的事</strong>：把 CL 那 6 条 JSON 层的存活变异，变成 6 条新判据<br>（浮点、转义、布尔、嵌套、空对象、负数）——那才是把"看见的洞"补上。</p>
+<h3>上刀：补 6 条判据 → 立刻抓到 2 个真 bug → 重跑变异</h3>
+<h4>第一步：补判据（#21–#26），专打 JSON 数据通道</h4>
+<div class="tw"><table><thead><tr><th>#</th><th>测什么</th></tr></thead><tbody><tr><td>21</td><td>浮点入参（<code>day: 2.5</code>）→ 输出必须是合法 JSON 且夹成整数</td></tr><tr><td>22</td><td>名字含 <code>"</code> 与 <code>\</code> → 必须原样往返</td></tr><tr><td>23</td><td>中文 + emoji → 必须原样往返</td></tr><tr><td>24</td><td><code>weeks</code> 为 list 型嵌套数组 → 原样往返</td></tr><tr><td>25</td><td><code>weeks</code> 为 <code>{}</code> → 不能崩</td></tr><tr><td>26</td><td>负数入参 → 夹到合法下界</td></tr></tbody></table></div>
+<h4>第二步：<strong>立刻抓到两个真 bug（CL 实现）</strong></h4>
+<pre><code>输入 name = "数据结构🐋"
+CL 输出： "name":"\u6570\u636E\u7ED3\u6784\u1F40B"   ← 非法 JSON（\u 只能到 FFFF）
+JS 输出： "name":"数据结构🐋"                        ← 原样
+
+输入 weeks = {}
+CL 输出： "weeks":null                               ← 空对象被写成 null
+JS 输出： "weeks":{}                                 ← 原样</code></pre>
+<p><strong>两个 bug 在 20 条判据下面藏了整整一晚。</strong> 而变异测试早就指向了 JSON 层——<br><strong>预测的位置和实际抓到的问题完全重合。</strong></p>
+<p>即时比分：CL <strong>24/26</strong>，JS <strong>26/26</strong>。</p>
+<h4>第三步：重跑变异——<strong>第一版的 100% 是假的</strong></h4>
+<p>加完判据后第一次跑，CL 得到 <strong>100.0%</strong>（50/50 全杀）。</p>
+<p><strong>这是假的</strong>：CL 基线本来就有 2 条红（#23/#25），所以<strong>任何变异都"有失败"</strong>，<br>于是每个变异都被记成"杀死"。判据在基线已经红的情况下，<strong>失去了判据力</strong>。</p>
+<blockquote>今晚第 <strong>十三</strong> 次同类。前十二次错在判据、指标、规则；这次错在<strong>度量程序本身</strong>。</blockquote>
+<p>已修：<code>mutate.cjs</code> 先探基线，杀死判定改成"<strong>变异引入了基线没有的新失败</strong>"。</p>
+<h4>第四步：修好后的诚实比分</h4>
+<div class="tw"><table><thead><tr><th>实现</th><th>基线</th><th>6 条新判据之前</th><th>之后</th><th>存活</th></tr></thead><tbody><tr><td>CL</td><td>24/26（2 红）</td><td>82.0%（41/50）</td><td><strong>88.0%（44/50）</strong></td><td>6</td></tr><tr><td>JS</td><td>26/26（全绿）</td><td>54.3%（19/35）</td><td><strong>54.3%</strong></td><td>16</td></tr></tbody></table></div>
+<h4>第五步：剩下的盲区分成两堆，很清楚</h4>
+<p><strong>CL 的 6 条存活</strong>——仍在 JSON 通道里（<code>jws</code> 跳过空白、<code>:false</code> 字面量、<code>stringp</code> 直通、<br><code>*jpos*</code> 指针前进、<code>weeks</code> 的 null 处理、<code>max</code>→<code>min</code>）：</p>
+<blockquote>说明 #21–#26 补的是"输入多样性"，<strong>还没补输出层的内部分支</strong>。</blockquote>
+<p><strong>JS 的 16 条存活</strong>——全部在业务字段层：</p>
+<pre><code>L267  normalizePatch 里 name/teacher/location 被删（整类字段静默丢弃）
+L39   swap 里 periodFrom 不交换
+L99   edit 里 periodTo 不下界夹紧
+L113  swap 多匹配时不拒绝</code></pre>
+<blockquote><strong>6 条新判据对 JS 一条都没杀死</strong>——因为它的问题不在数据通道，在字段语义。</blockquote>
+<h3>结论：变异测试真正给的是一张"下一步写什么判据"的清单</h3>
+<pre><code>① 它把"判据有多强"变成可比的数（54.3% vs 88.0%）
+② 它把"盲区"变成逐行可读的清单，不用猜
+③ 它自己也会假阳——必须要求基线全绿，或按"新增失败"判定</code></pre>
+<h4>第六步：修掉 CL 的两个真 bug（基线回绿）</h4>
+<div class="tw"><table><thead><tr><th>bug</th><th>根因</th><th>修法</th></tr></thead><tbody><tr><td>emoji 写成 <code>\u1F40B</code></td><td><code>json-escape</code> 只做 <code>\u~4,'0x</code>，增补平面溢出 4 位</td><td>按 UTF-16 拆成代理对 <code>\uD83D\uDC0B</code></td></tr><tr><td><code>weeks:{}</code> → <code>null</code></td><td><code>{}</code> 解析成 <code>NIL</code>，与"缺失"不可区分；写出处 <code>(or (course-weeks c) :null)</code> 把空对象吞掉</td><td>读入 <code>{}</code> 返回哨兵 <code>:empty-object</code>，写出成 <code>{}</code></td></tr></tbody></table></div>
+<p>修完 <strong>CL 26/26</strong>。</p>
+<blockquote>途中我自己踩了一次：那个哨兵替换<strong>同时命中了空数组的分支</strong>，把 <code>list:[]</code> 写成 <code>{}</code>。<br>一个周期内发现并修回——<strong>这就是"判据立刻报警"的价值</strong>。</blockquote>
+<h4>第七步：补 JS 的 4 条字段级判据（#27–#30）</h4>
+<div class="tw"><table><thead><tr><th>#</th><th>打哪个存活变异</th></tr></thead><tbody><tr><td>27</td><td><code>edit</code> 必须能改 name / teacher / location（打 L267）</td></tr><tr><td>28</td><td><code>swap</code> 三件套全互换（打 L39）</td></tr><tr><td>29</td><td><code>edit</code> 不得倒挂（原意打 L99）</td></tr><tr><td>30</td><td><code>swap</code> 多匹配必须整批拒绝（打 L113）</td></tr></tbody></table></div>
+<h4>第八步：<strong>#29 是我写错的</strong></h4>
+<p>第一版断言「<code>periodTo</code> 必须等于 2」。两臂<strong>都红</strong>——因为规格只要求"不得倒挂"，<br>两臂都把 <code>periodTo</code> 抬到 6（与规格的 D2 同向），是<strong>合规</strong>的。</p>
+<blockquote>第 <strong>十四</strong> 次同类，但这次的方向很值得记：<br><strong>断言过分具体也会"杀死"变异——但杀死的原因不是"实现了需求"，是"实现了我的偏好"。</strong></blockquote>
+<p>放宽成"只查不倒挂"后，<code>L99</code> 那个变异<strong>重新活了过来</strong>——<br>说明要真正杀死它，<strong>必须先由规格拍板"哪个方向才对"</strong>，而不是由测试去猜。</p>
+<h4>第九步：最终比分（两臂基线都全绿，30 条判据）</h4>
+<div class="tw"><table><thead><tr><th>实现</th><th>基线</th><th>变异得分</th><th>存活</th></tr></thead><tbody><tr><td>CL</td><td><strong>30/30</strong></td><td><strong>82.0%</strong>（41/50）</td><td>9</td></tr><tr><td>JS</td><td><strong>30/30</strong></td><td><strong>62.9%</strong>（22/35）</td><td>13</td></tr></tbody></table></div>
+<p><strong>JS：54.3% → 62.9%</strong>，4 条字段级判据杀掉了 3 个存活变异（L39 / L113 / L267 已从存活清单消失）。</p>
+<blockquote>⚠️ <strong>不可与之前的数直接比</strong>：源码在两次测量之间被改过（修 bug），<br>候选变异集合从 409 变 416、变异抽样也不同。<strong>同一份源码才能比。</strong></blockquote>
+<hr>
+<h4>追加：判据本身的成本-收益曲线（我们今天一直在测代码，从没测过判据）</h4>
+<h3>做法</h3>
+<p>固定 20 个变异抽样（按行号确定性抽取），只改变"跑前 k 条判据"，扫 k。</p>
+<div class="tw"><table><thead><tr><th>k（跑前 k 条）</th><th>CL 得分</th><th>JS 得分</th></tr></thead><tbody><tr><td>3</td><td>65.0%</td><td>14.3%</td></tr><tr><td>5</td><td>65.0%</td><td>14.3%</td></tr><tr><td>10</td><td>65.0%</td><td>21.4%</td></tr><tr><td>15</td><td>70.0%</td><td>35.7%</td></tr><tr><td>19</td><td>70.0%</td><td>35.7%</td></tr><tr><td>22</td><td>70.0%</td><td>35.7%</td></tr><tr><td>26</td><td>70.0%</td><td>35.7%</td></tr><tr><td>30</td><td>75.0%</td><td>42.9%</td></tr><tr><td>36</td><td>75.0%</td><td>42.9%</td></tr></tbody></table></div>
+<h3>三个观察</h3>
+<h4>1. 曲线是<strong>阶梯</strong>，不是平滑上升</h4>
+<p>判据是<strong>一批一批起作用</strong>的，不是一条一条累加。<br>加 4 条判据而得分 0 变化的情况出现了三次（15→19、19→22、22→26）。</p>
+<h4>2. 边际效率掉到约 1/6</h4>
+<div class="tw"><table><thead><tr><th>段</th><th>判据数</th><th>字符成本</th><th>JS 得分</th><th>每 100 字符买到</th></tr></thead><tbody><tr><td>前段（#1–#19 + 骨架）</td><td>19</td><td>7398</td><td>35.7%</td><td><strong>0.48 个百分点</strong></td></tr><tr><td>后段（#21–#36）</td><td>16</td><td>8830</td><td>35.7% → 42.9%</td><td><strong>0.08 个百分点</strong></td></tr></tbody></table></div>
+<p><strong>后 17 条判据的成本花得比前 19 条还多，只买到 7.2 个百分点。</strong></p>
+<h4>3. 但"前段便宜"有一半是假象</h4>
+<p>前段之所以便宜，是因为它覆盖的是<strong>判据最容易想到的东西</strong>（默认值、夹取、拒绝）。<br>后段贵，是因为它覆盖的是<strong>需要先知道"哪里会错"才能写出来的东西</strong><br>（JSON 层的代理对、空对象、字段级语义）——而那正是变异测试的产出。</p>
+<blockquote><strong>所以真正的因果关系是：变异测试让"后段判据"变得可写。</strong><br>没有它，人根本想不出要测 <code>weeks:{}</code> 和 emoji。</blockquote>
+<h3>必须记的口径限制</h3>
+<ul>
+<li><strong>样本只有 20 个变异</strong>，每杀 1 个就是 5 个百分点——<strong>分辨率粗糙，台阶是量化产物</strong></li>
+<li>三个"0 变化"里，可能藏着"杀了 1 个但也被别的东西抵消"——20 样本看不出来</li>
+<li>要更细的曲线需要更大样本，代价是时间（CL 每变异约 0.6 秒）</li>
+</ul>
+<h3>一句</h3>
+<blockquote><strong>判据不是越多越好，是"前几条最便宜、最后几条最贵、中间那几条才是真正难想的"。</strong><br>而"真正难想"的那几条，恰好只能由变异测试指出来。</blockquote>
+<hr>
+<h1>附录 B：十五条测量纪律（PROTOCOL.md）</h1>
+<p><strong>这份文件的每一条，都是被自己的数据打穿之后写下来的。</strong></p>
+<p>不是方法论摘抄，是病历。每条都附了它出生的那一刀。</p>
+<p>如果你只记得一条，记第 1 条。</p>
+<hr>
+<h3>1. 判据先证明能红，才允许它说「通过」</h3>
+<p><strong>来历</strong>：项目早期出过两次"假绿"——<code>tag-untag</code> 在 op 根本没有实现时通过了；<br>curv 臂的 20 个新 op 零覆盖，判据一路全绿而实际有 bug。</p>
+<p><strong>执行</strong>：拿一个空实现（或原样回显）跑判据，<strong>必须全红</strong>。不红就说明判据是假的，<br>后面所有数字都不作数。</p>
+<hr>
+<h3>2. 对照组必须先证明「它在相反条件下会失败」，再引用它</h3>
+<p><strong>来历</strong>：T2-b 实验里，我写的 C3a 对照把探针注入在 <code>(main)</code> 之后，<br><strong>结构性地必然通过</strong>——等于没证。真正让它有意义的是「注入到 main 之前」那组。</p>
+<p><strong>执行</strong>：任何一个"通过了"的对照，先问：<strong>它在什么情况下会失败？</strong><br>答不出来，这个对照不成立。</p>
+<hr>
+<h3>3. 预注册的每条规则，先跑一遍边界值</h3>
+<p><strong>来历</strong>：<code>skillpack-repl</code> 的 H3 写成「成立：收益 &lt; 31%；否证：收益 ≥ 20%」。<br>区间 <code>[20%, 31%)</code> <strong>同时满足两条</strong>。实测 23.38% 正好落进去——规则本身不可判定。</p>
+<p><strong>执行</strong>：写完判定规则，在纸上把几个关键值（0、阈值、区间中点）代进去跑一遍，<br>确认没有值同时满足"成立"和"否证"。</p>
+<hr>
+<h3>4. 一条检查如果「不测也知道会通过」，它就不算检查</h3>
+<p><strong>来历</strong>：两个接手者都把"新行为是否被老判据覆盖"当成回归测试——<br><strong>老判据写在需求出现之前，当然不覆盖</strong>，这是定义上必然为真。</p>
+<p><strong>执行</strong>：每加一条检查，先问"它能失败吗"。答案是否，就不要写。</p>
+<hr>
+<h3>5. 行数不是语言属性，是排版属性</h3>
+<p><strong>来历</strong>：四个隔离 agent 写同一份 30 op 规格：<br>物理行 <strong>差 4.05 倍</strong>，非空白字符 <strong>只差 7.58%</strong>。<br>某一位把每条记录压成一行，行数从 13.9 掉到 2.1，而语言没变。</p>
+<p><strong>执行</strong>：</p>
+<pre><code>主指标 = 非空白非注释字符
+参考   = 代码行 / 物理行（同语言内部才可用）
+并且：数字必须带口径（见第 11 条）</code></pre>
+<hr>
+<h3>6. 数据不作废，只标适用范围</h3>
+<p><strong>来历</strong>：发现"熟练度污染"后我一度想把这些数作废。<br>用户的判断更对：<strong>两点的价值远大于一点，删掉一个点就没法画出能力轴。</strong></p>
+<p><strong>执行</strong>：不删数，加一列"成立条件"。换条件得到的新数<strong>并列</strong>，不替换。</p>
+<hr>
+<h3>7. 跨条件外推必须显式声明</h3>
+<p><strong>来历</strong>：一次"同一规格、同一判据"的实验，两臂字符比 1.076×；<br>另一批臂（不同天、不同作者状态）同一对比是 1.90×。<strong>方向相反。</strong></p>
+<p><strong>执行</strong>：跨语言/跨模型族比较，必须同时固定：<strong>同一模型 + 同一天 + 同一份规格 + 同一句指令</strong>。<br>做不到就写"这是外推"。</p>
+<hr>
+<h3>8. 熟练度与隔离不可兼得，一次实验只能买一个</h3>
+<p><strong>来历</strong>：要测"第 N 次写会不会更快"就得<strong>同一个 agent 连做两轮</strong>（于是 H1/H2 被串味）；<br>要隔离就得换人（于是 H3 测到的是作者方差，不是熟练度）。</p>
+<p><strong>执行</strong>：开跑前明确"这一轮买的是哪一个"，另一个写进"本实验不能回答的问题"。</p>
+<hr>
+<h3>9. 技能包是常设条件，不是可选优化</h3>
+<p><strong>来历</strong>：技能包对照实测只省 13.9% 字符，但<strong>具体避免了</strong>：键序错（判据会红）、<br>手写名单漏（#8 会红）、ASCII 兜底 127 行变 6 行。接手者原话：</p>
+<blockquote>「读到那句之前，我的默认写法就是 hash-table。」</blockquote>
+<p><strong>执行</strong>：对照臂开跑前先喂对应技能篇目，报告注明「本臂已读：x / y / z」，否则两组不可比。</p>
+<hr>
+<h3>10. 复现失败比复现成功更值得记录</h3>
+<p><strong>来历</strong>：派一个不知内情的 agent 按复现文档盲跑。数字全对，但它挑出三处硬伤：<br>①「非空白字符」实际是「非空白<strong>非注释</strong>字符」（照字面算会差 473）；<br>② Windows 上 glob 不展开、<code>C:\tmp</code> 不存在；③ 判据编号里没有 #20，而 <code>--only</code> 对不存在的编号<br><strong>静默返回 0 passed / 0 failed（exit 0）</strong>。</p>
+<p><strong>执行</strong>：复现文档写完后必须交给一个陌生人跑；<strong>它跑不通的地方，是最有价值的输出。</strong></p>
+<hr>
+<h3>11. 任何数字必须三件套：数值 + 口径 + 单位</h3>
+<p><strong>来历</strong>：同一个实现，一个人量 6128 字符，另一个人量 8934——差 45%，<br>因为一个去注释、一个不去。读者会直接判定"仓库对不上"。</p>
+<p><strong>执行</strong>：报数时写清"这个数是<strong>去掉注释、去掉空白</strong>之后的字符数"。<br>缺一件就算没写。</p>
+<hr>
+<h3>12. 规格里写的不变量，也必须先在「完全没实现该需求」的版本上跑，必须红</h3>
+<p><strong>来历</strong>：<code>relay</code> 实验的 D4 不变量（undo 后 courses 为空、n=0）在<strong>根本没实现 undo</strong><br>的版本上<strong>通过了</strong>——因为未知 op 触发整包拒绝，输出恰好同形。</p>
+<p><strong>执行</strong>：写进规格的每条断言，也走一遍第 1 条。</p>
+<hr>
+<h3>13. 断言只查语义要点，不锁定某一种实现的措辞或未定义行为</h3>
+<p><strong>来历</strong>：连续踩三次——</p>
+<pre><code>✗ 「periodTo 必须等于 2」      规格只说"不得倒挂"，两臂都选抬上去
+✗ 「空周日志要有『没有课』」     那是某一份实现的文案
+✗ 用 match:"" 空串测"匹配全部"  语义未定义，两臂本就不同</code></pre>
+<p><strong>执行</strong>：断言"提到操作 + 数量""不得倒挂""字段被写入"这类语义；<br><strong>要把措辞钉死，先由规格拍板</strong>，再写判据。</p>
+<hr>
+<h3>14. 变异得分必须绑定抽样数与基线绿</h3>
+<p><strong>来历</strong>：加完判据后 CL 跑出 <strong>100%</strong>——因为基线本来就有 2 条红，<br><strong>任何变异都"有失败"</strong>，全被记成"杀死"。改成"按新增失败判定"后是 88%。<br>另外同一份代码 <code>--max 50</code> 得 84.0%，<code>--max 30</code> 得 83.3%。</p>
+<p><strong>执行</strong>：</p>
+<pre><code>地板分 ↔ 抽样数（改抽样 = 改地板 = 重测）
+基线不全绿 → 拒绝计分
+地板只能上调，下调必须写理由
+门禁本身要先证明能红</code></pre>
+<hr>
+<h3>15. 替换 / 生成之后，必须验证它<strong>真的发生了</strong></h3>
+<p><strong>来历</strong>：同一天内三次，动作一模一样——<strong>改工具、以为改好了、其实没改</strong>。</p>
+<pre><code>① 给 mutate.cjs 加 --only 透传：字符串替换没匹配上，我却打印了"已加"
+   → 三次扫描全部无效，白跑 15 分钟；直到发现 k=3/5/10 分数完全一样才察觉
+
+② 给 md2html 加"跨行加粗"收尾：写错变量名（out → 实际是 outPath），替换静默 no-op
+   → 16 处 <strong> 原样留在产物里
+
+③ 改对变量名后：html 是 const，赋值直接崩，文件根本没重新生成
+   而我"验证"时打印的是源码里那行——它在崩溃之前就存在</code></pre>
+<p><strong>执行</strong>：</p>
+<pre><code>① 替换后立刻 grep 目标字符串，确认新内容</strong>在文件里<strong>
+② 生成后立刻检查产物的一个必然特征（例：残留 </strong> 必须为 0、行数必须变）
+③ 不许拿"我打印了那段代码"当验证——那只证明文件里有这行，不证明它被执行</code></pre>
+<p><strong>一句话</strong>：<strong>工具也会假绿。</strong> 它比判据更危险，因为判据的输出你会看，工具的输出你会跳过。</p>
+<hr>
+<h3>这十五条管的是四件事</h3>
+<div class="tw"><table><thead><tr><th>层</th><th>规则</th><th>它防什么</th></tr></thead><tbody><tr><td><strong>量什么</strong></td><td>5, 11</td><td>用错指标（行数/口径不明）</td></tr><tr><td><strong>怎么量</strong></td><td>2, 7, 8, 10</td><td>假对照、跨条件外推、口径不固定、无法复现</td></tr><tr><td><strong>怎么判</strong></td><td>1, 3, 4, 12, 13, 14, 15</td><td>假绿、规则不可判定、断言锁偏好、计分假阳</td></tr><tr><td><strong>怎么用</strong></td><td>6, 9</td><td>删数据、把技能包当可选项</td></tr></tbody></table></div>
+<p><strong>十五条里，有 10 条（1、2、3、4、10、11、12、13、14、15）防的都是同一件事：<br>「我以为我测过了」。</strong></p>
+<hr>
+<h3>一句</h3>
+<blockquote><strong>这些不是学来的，是被打穿十五次打出来的。</strong><br>每一次都留着出处——出处在 <code>experiments/timetable-ab/</code> 与<br><code>reports/timetable-ab-report-*.md</code> 里，可查。</blockquote>
+<footer>由 md2html.cjs 生成 · 所有数字均附带可复现命令与哈希，见 experiments/timetable-ab/</footer>
+</div></body></html>
