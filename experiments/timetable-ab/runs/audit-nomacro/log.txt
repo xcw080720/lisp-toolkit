@@ -1,0 +1,23 @@
+21:13:11 | T0 | impl.lisp=542 lines, no audit field, 5 ops (add/del/edit/move/swap)
+21:13:11 | node ..\..\check-audit.cjs --impl impl.lisp --ops add,del,edit,move,swap | exit=1 | [FAIL] add  — stdout 非 JSON
+21:13:12 | node ..\..\check-scale.cjs --impl impl.lisp --only 1,2,3,4,5,6,7,8,9 | exit=1 | [FAIL] #1 add-default-weeks  — stdout 非 JSON
+21:14:12 | env: $env:SBCL=C:\Users\HUAWEI\Documents\deepseek-harness\default-workspace\tools\sbcl\PFiles\Steel Bank Common Lisp\sbcl.exe | exit=0 | 修正上一行假失败（PATH 无 sbcl）
+21:14:13 | node ..\..\check-scale.cjs --impl impl.lisp --only 1,2,3,4,5,6,7,8,9 | exit=0 | -- 9 passed, 0 failed
+21:14:14 | node ..\..\check-audit.cjs --impl impl.lisp --ops add,del,edit,move,swap | exit=1 | [FAIL] add  — 输出里没有 audit 数组
+21:14:36 | node ..\..\check-audit.cjs --impl impl.lisp --ops add,del,edit,move,swap | exit=1 | [FAIL] order-3  — audit 条数 ≠ 3
+21:14:49 | node ..\..\check-audit.cjs --impl impl.lisp --ops add,del,edit,move,swap | exit=0 | -- 7 passed, 0 failed  (5 ops)
+21:14:50 | node ..\..\check-scale.cjs --impl impl.lisp --only 1,2,3,4,5,6,7,8,9 | exit=0 | -- 9 passed, 0 failed
+21:14:45 | T1 | 写完：impl.lisp 548 -> 563 行（净 +15），5 处改动完成
+21:14:59 | probe mixed | exit=1 | 
+21:14:59 | probe miss | exit=1 | 
+21:15:00 | probe unknown | exit=1 | 
+21:15:00 | probe empty | exit=1 | 
+21:15:05 | note | exit=0 | 上 4 行 probe 无效（裸 Join-Path 参数错误，脚本未执行），作废重跑
+21:15:05 | probe mixed | exit=0 | "audit":[{"op":"add","n":1},{"op":"del","n":0},{"op":"move","n":1},{"op":"swap","n":2},{"op":"edit","n":1}]}
+21:15:05 | probe miss | exit=0 | "audit":[{"op":"del","n":0},{"op":"move","n":0}]}
+21:15:05 | probe unknown | exit=0 | "audit":[{"op":"nope","n":0}]}
+21:15:05 | probe empty | exit=0 | "audit":[]}
+21:15:16 | node ..\..\check-audit.cjs --impl impl.lisp --ops add,del,edit,move,swap | exit=0 | -- 7 passed, 0 failed  (5 ops)
+21:15:16 | node ..\..\check-scale.cjs --impl impl.lisp --only 1,2,3,4,5,6,7,8,9 | exit=0 | -- 9 passed, 0 failed
+21:15:16 | T2 | 首次全绿：check-audit 7/7 passed, check-scale 9/9 passed（impl.lisp 563 行，净 +15，5 处改动）
+21:15:24 | note | exit=0 | T0 行内 542 为误数（应为 548，LF 计数 548）；T1 时间戳取 impl.lisp mtime，位置以文件顺序为准

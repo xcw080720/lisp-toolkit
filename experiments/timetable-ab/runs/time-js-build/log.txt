@@ -1,0 +1,8 @@
+19:14:27 | node -v | exit=0 | 
+19:14:34 | log.txt 重写为 UTF-8 无 BOM（rs=fix-encoding） | exit=0 | 
+19:14:34 | node ..\..\check-scale.cjs --impl impl.js --only 1,2,3,4,5,6,7,8,9 | exit=0 | -- 9 passed, 0 failed
+19:14:41 | node -e "<边界断言: empty-ops / weeks保留 / move全字段 / swap双命中 / 多op混排>" | exit=1 | SyntaxError: Unexpected token '.'
+19:14:41 | （计数）Get-Content impl.js | Measure | exit=0 | impl.js lines=205
+19:14:46 | node %TEMP%\tb-edge-check.cjs | exit=0 | 
+19:14:57 | Get-ChildItem -File（工作目录清点） | exit=0 | 
+19:14:57 | node ..\..\check-scale.cjs --impl impl.js --only 1,2,3,4,5,6,7,8,9（终验） | exit=0 | 

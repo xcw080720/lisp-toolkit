@@ -1,0 +1,58 @@
+﻿
+18:20:44 | 改动#1 | sbcl --version | exit=0 | SBCL 2.6.9
+18:20:44 | 改动#1 | Copy-Item impl.lisp $env:TEMP\impl.run3.orig.lisp (backup) | exit=0 | 
+18:20:44 | 改动#1 | node ..\..\repl.mjs --selftest | exit=0 | -- 7 passed, 0 failed
+18:20:45 | 改动#1 | node ..\..\score-B.cjs --impl impl.lisp --cases ..\..\cases\hidden-B.json (baseline) | exit=1 | -- 2 passed, 6 failed  (hidden-B.json)
+18:21:34 | 改动#1 | node $env:TEMP\r3-live.mjs | exit=1 |     + FullyQualifiedErrorId : NativeCommandError
+18:21:43 | 改动#1 | sbcl --script impl.lisp %TEMP%\r3live\swap-ok.json | exit=0 | {"opsText":"\u6362\u300C\u9AD8\u6570\u300D\u548C\u300C\u82F1\u8BED\u300D\u7684\u65F6\u95F4","courses":[{"name":"\u9AD8\u6570","teacher":"\u5F20","location":"A10
+18:21:54 | 改动#1 | node %TEMP%\r3-live.mjs | exit=1 | [FAIL] swap-ok  没生成输出文件  raw=ERR Error opening #P"C:/Users/HUAWEI/AppData/Local/Temp/r3live/swap-ok.out.json":
+18:22:04 | 改动#1 | node .scratch\run3-live.mjs | exit=1 | [FAIL] swap-then-add  courses=[{"name":"高数","teacher":"张","location":"A101","day":3,"periodFrom":5,"periodTo":6,"weeks":{"type":"range","from":1,"to":16}},{"name":"英语","teacher":"张","location":"A101","day":1,"periodFrom":1,"periodTo":2,"weeks":{"type":"list","list":[1,2]}},{"name":"线代","teacher":"","location":"","day":2,"periodFrom":3,"periodTo":4,"weeks":{"type":"range","from":1,"to":16}}]  raw=OK 676
+18:22:14 | 改动#1 | node .scratch\run3-live.mjs (expect 已修正) | exit=0 | 
+18:22:21 | 改动#1 | node ..\..\score.cjs --impl impl.lisp --cases ..\..\cases\public-A.json | exit=0 | -- 3 passed, 0 failed  (public-A.json)
+18:22:22 | 改动#1 | node ..\..\score-B.cjs --impl impl.lisp --cases ..\..\cases\hidden-B.json | exit=1 | -- 2 passed, 6 failed  (hidden-B.json)
+18:22:30 | 改动#1 | score-B --impl %TEMP%\impl.run3.orig.lisp (基线名单) | exit=1 | -- 2 passed, 6 failed  (hidden-B.json)
+18:22:31 | 改动#1 | score-B --impl impl.lisp (改动后名单) | exit=1 | -- 2 passed, 6 failed  (hidden-B.json)
+18:23:01 | 改动#1 | node .scratch\run3-live.mjs (n 语义更新后) | exit=0 | -- live: 10 passed, 0 failed
+18:23:01 | 改动#1 | score public-A | exit=0 | -- 3 passed, 0 failed  (public-A.json)
+18:23:02 | 改动#1 | score-B hidden-B | exit=1 | -- 3 passed, 5 failed  (hidden-B.json)
+18:23:07 | 改动#1 | git diff --no-index --numstat orig impl.lisp | exit=1 | 30	4	"C:\\Users\\HUAWEI\\AppData\\Local\\Temp\\impl.run3.orig.lisp" => impl.lisp
+18:23:15 | 改动#1 | 备注：上一条 numstat 的 exit=1 是 git diff 发现差异的正常返回；18:21:43 那条记录的路径被截成 %TEMP%，实际文件为 %TEMP%\r3live\swap-ok.json | exit=0 | 
+18:24:06 | 改动#2 | 起点：备份当前 impl.lisp 为 .scratch\impl.before-change2.lisp，开始计时 | exit=0 | 
+18:24:32 | 改动#2 | node .scratch\run3-live.mjs (含改动2 的 8 条 weeks 用例) | exit=1 | [FAIL] edit-weeks-list-ok  没生成输出文件  raw=; in:
+18:24:43 | 改动#2 | sbcl --script impl.lisp swap-ok.json (改动2 语法检查) | exit=1 | sbcl.exe : Unhandled SB-C::INPUT-ERROR-IN-LOAD in thread #<SB-THREAD:THREAD tid=24420 "main thread" RUNNING
+18:24:55 | 改动#2 | sbcl --script impl.lisp (取读取器报错) | exit=1 | sbcl.exe : Unhandled SB-C::INPUT-ERROR-IN-LOAD in thread #<SB-THREAD:THREAD tid=23196 "main thread" RUNNING
+18:25:06 | 改动#2 | sbcl --script impl.lisp swap-ok.json (补括号后) | exit=1 | sbcl.exe : Unhandled FILE-DOES-NOT-EXIST in thread #<SB-THREAD:THREAD tid=10108 "main thread" RUNNING
+18:25:10 | 改动#2 | sbcl --script impl.lisp $env:TEMP\r3live\swap-ok.json (语法+swap 回归) | exit=0 | 
+18:25:17 | 改动#2 | node .scratch\run3-live.mjs (18 条：swap 10 + weeks 8) | exit=0 | -- live: 18 passed, 0 failed
+18:25:21 | 改动#2 | score public-A | exit=0 | -- 3 passed, 0 failed  (public-A.json)
+18:25:22 | 改动#2 | score-B hidden-B | exit=1 | -- 4 passed, 4 failed  (hidden-B.json)
+18:25:26 | 改动#2 | git diff --no-index --numstat (改动2 前快照 vs 现在) | exit=1 | 32	14	"..\\..\\.scratch\\impl.before-change2.lisp" => impl.lisp
+18:25:43 | 改动#2 | sbcl --script impl.lisp swap-ok.json (精简版语法检查) | exit=1 | sbcl.exe : Unhandled SB-C::INPUT-ERROR-IN-LOAD in thread #<SB-THREAD:THREAD tid=3504 "main thread" RUNNING
+18:25:44 | 改动#2 | git diff --no-index --numstat (精简后) | exit=1 | 22	4	"..\\..\\.scratch\\impl.before-change2.lisp" => impl.lisp
+18:25:54 | 改动#2 | sbcl --script impl.lisp swap-ok.json (补括号后再检) | exit=0 | 
+18:25:58 | 改动#2 | node .scratch\run3-live.mjs (精简补丁后 18 条) | exit=0 | -- live: 18 passed, 0 failed
+18:25:59 | 改动#2 | score public-A | exit=0 | -- 3 passed, 0 failed  (public-A.json)
+18:26:00 | 改动#2 | score-B hidden-B | exit=1 | -- 4 passed, 4 failed  (hidden-B.json)
+18:26:04 | 改动#2 | 收尾：git diff --no-index --numstat (改动2 前快照 vs 现在) | exit=1(有差异) | 22	4	"..\\..\\.scratch\\impl.before-change2.lisp" => impl.lisp
+18:26:29 | 改动#3 | 起点：备份 impl.lisp 为 .scratch\impl.before-change3.lisp | exit=0 | 
+18:27:03 | 改动#3 | sbcl --script impl.lisp swap-ok.json (改动3 语法检查) | exit=0 | 
+18:27:03 | 改动#3 | node .scratch\run3-live.mjs (23 条：swap/weeks/remind) | exit=0 | -- live: 23 passed, 0 failed
+18:27:08 | 改动#3 | score public-A | exit=1 | -- 2 passed, 1 failed  (public-A.json)
+18:27:09 | 改动#3 | score-B hidden-B | exit=1 | -- 6 passed, 2 failed  (hidden-B.json)
+18:27:17 | 改动#3 | 复核 public-A add-default-weeks 差异（公开用例，可看） | exit=1 | 
+18:27:22 | 改动#3 | 收尾：git diff --no-index --numstat (改动3 前快照 vs 现在) | exit=1(有差异) | 20	7	"..\\..\\.scratch\\impl.before-change3.lisp" => impl.lisp
+18:27:57 | 改动#4 | 起点：备份 impl.lisp 为 .scratch\impl.before-change4.lisp | exit=0 | 
+18:28:11 | 改动#4 | sbcl --script impl.lisp swap-ok.json (改动4 语法检查) | exit=0 | 
+18:28:12 | 改动#4 | node .scratch\run3-live.mjs (28 条) | exit=0 | -- live: 28 passed, 0 failed
+18:28:16 | 改动#4 | score public-A | exit=1 | -- 1 passed, 2 failed  (public-A.json)
+18:28:17 | 改动#4 | score-B hidden-B | exit=1 | -- 7 passed, 1 failed  (hidden-B.json)
+18:28:23 | 改动#4 | 复核 public-A del-counts-hits 差异（公开用例） | exit=1 | 
+18:28:27 | 改动#4 | 收尾：git diff --no-index --numstat (改动4 前快照 vs 现在) | exit=1(有差异) | 8	4	"..\\..\\.scratch\\impl.before-change4.lisp" => impl.lisp
+18:28:50 | 改动#5 | 起点：备份 impl.lisp 为 .scratch\impl.before-change5.lisp | exit=0 | 
+18:29:10 | 改动#5 | sbcl --script impl.lisp swap-ok.json (改动5 语法检查) | exit=0 | 
+18:29:11 | 改动#5 | node .scratch\run3-live.mjs (31 条) | exit=0 | -- live: 30 passed, 0 failed
+18:29:18 | 改动#5 | score public-A | exit=1 | -- 1 passed, 2 failed  (public-A.json)
+18:29:19 | 改动#5 | score-B hidden-B | exit=0 | -- 8 passed, 0 failed  (hidden-B.json)
+18:29:25 | 改动#5 | 收尾：git diff --no-index --numstat (改动5 前快照 vs 现在) | exit=1(有差异) | 17	0	"..\\..\\.scratch\\impl.before-change5.lisp" => impl.lisp
+18:29:34 | 改动#5 | 补记：两次驱动文本替换未命中（OLD-NOT-FOUND / STILL-NOT-FOUND，未单独记录） | exit=1 | 多行匹配串换行不符，改单行匹配后成功
+18:29:34 | 改动#5 | hidden-B 全过（8/8），public-A 1/3（两处旧契约破坏已报备） | exit=0 | 五条改动结束

@@ -1,0 +1,272 @@
+[
+  {
+    "op": "setDay",
+    "group": "A",
+    "lines": 240,
+    "delta": 3,
+    "cum": 240,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "setPeriodFrom",
+    "group": "A",
+    "lines": 248,
+    "delta": 8,
+    "cum": 248,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "setPeriodTo",
+    "group": "A",
+    "lines": 253,
+    "delta": 5,
+    "cum": 253,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "setTeacher",
+    "group": "A",
+    "lines": 257,
+    "delta": 4,
+    "cum": 257,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "setLocation",
+    "group": "A",
+    "lines": 261,
+    "delta": 4,
+    "cum": 261,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "setNote",
+    "group": "A",
+    "lines": 265,
+    "delta": 4,
+    "cum": 265,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "setWeeks",
+    "group": "A",
+    "lines": 270,
+    "delta": 5,
+    "cum": 270,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "clearNote",
+    "group": "A",
+    "lines": 274,
+    "delta": 4,
+    "cum": 274,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "bumpDay",
+    "group": "A",
+    "lines": 279,
+    "delta": 5,
+    "cum": 279,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "bumpPeriod",
+    "group": "A",
+    "lines": 283,
+    "delta": 4,
+    "cum": 283,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "moveDay",
+    "group": "B",
+    "lines": 293,
+    "delta": 10,
+    "cum": 293,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "swapTeacher",
+    "group": "B",
+    "lines": 303,
+    "delta": 10,
+    "cum": 303,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "copyWeeks",
+    "group": "B",
+    "lines": 310,
+    "delta": 7,
+    "cum": 310,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "mergeCourses",
+    "group": "B",
+    "lines": 325,
+    "delta": 15,
+    "cum": 325,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "splitCourse",
+    "group": "B",
+    "lines": 341,
+    "delta": 16,
+    "cum": 341,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "rotateDay",
+    "group": "B",
+    "lines": 345,
+    "delta": 4,
+    "cum": 345,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "trimWeeks",
+    "group": "B",
+    "lines": 353,
+    "delta": 8,
+    "cum": 353,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "padWeeks",
+    "group": "B",
+    "lines": 361,
+    "delta": 8,
+    "cum": 361,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "renumber",
+    "group": "B",
+    "lines": 377,
+    "delta": 16,
+    "cum": 377,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "sortByName",
+    "group": "B",
+    "lines": 386,
+    "delta": 9,
+    "cum": 386,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "bulkMark",
+    "group": "C",
+    "lines": 390,
+    "delta": 4,
+    "cum": 390,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "bulkClear",
+    "group": "C",
+    "lines": 394,
+    "delta": 4,
+    "cum": 394,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "bulkShift",
+    "group": "C",
+    "lines": 398,
+    "delta": 4,
+    "cum": 398,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "bulkCopy",
+    "group": "C",
+    "lines": 409,
+    "delta": 11,
+    "cum": 409,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "filterDay",
+    "group": "C",
+    "lines": 416,
+    "delta": 7,
+    "cum": 416,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "dropWeek",
+    "group": "C",
+    "lines": 426,
+    "delta": 10,
+    "cum": 426,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "keepWeek",
+    "group": "C",
+    "lines": 430,
+    "delta": 4,
+    "cum": 430,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "statsByDay",
+    "group": "C",
+    "lines": 439,
+    "delta": 9,
+    "cum": 439,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "validate",
+    "group": "C",
+    "lines": 451,
+    "delta": 12,
+    "cum": 451,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "normalize",
+    "group": "C",
+    "lines": 471,
+    "delta": 20,
+    "cum": 471,
+    "ok": true,
+    "msg": ""
+  }
+]

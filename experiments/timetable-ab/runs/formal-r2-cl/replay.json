@@ -1,0 +1,272 @@
+[
+  {
+    "op": "setDay",
+    "group": "A",
+    "lines": 321,
+    "delta": 8,
+    "cum": 321,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "setPeriodFrom",
+    "group": "A",
+    "lines": 332,
+    "delta": 11,
+    "cum": 332,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "setPeriodTo",
+    "group": "A",
+    "lines": 343,
+    "delta": 11,
+    "cum": 343,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "setTeacher",
+    "group": "A",
+    "lines": 353,
+    "delta": 10,
+    "cum": 353,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "setLocation",
+    "group": "A",
+    "lines": 363,
+    "delta": 10,
+    "cum": 363,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "setNote",
+    "group": "A",
+    "lines": 373,
+    "delta": 10,
+    "cum": 373,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "setWeeks",
+    "group": "A",
+    "lines": 386,
+    "delta": 13,
+    "cum": 386,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "clearNote",
+    "group": "A",
+    "lines": 395,
+    "delta": 9,
+    "cum": 395,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "bumpDay",
+    "group": "A",
+    "lines": 405,
+    "delta": 10,
+    "cum": 405,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "bumpPeriod",
+    "group": "A",
+    "lines": 418,
+    "delta": 13,
+    "cum": 418,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "moveDay",
+    "group": "B",
+    "lines": 432,
+    "delta": 14,
+    "cum": 432,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "swapTeacher",
+    "group": "B",
+    "lines": 444,
+    "delta": 12,
+    "cum": 444,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "copyWeeks",
+    "group": "B",
+    "lines": 454,
+    "delta": 10,
+    "cum": 454,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "mergeCourses",
+    "group": "B",
+    "lines": 473,
+    "delta": 19,
+    "cum": 473,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "splitCourse",
+    "group": "B",
+    "lines": 488,
+    "delta": 15,
+    "cum": 488,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "rotateDay",
+    "group": "B",
+    "lines": 497,
+    "delta": 9,
+    "cum": 497,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "trimWeeks",
+    "group": "B",
+    "lines": 513,
+    "delta": 16,
+    "cum": 513,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "padWeeks",
+    "group": "B",
+    "lines": 527,
+    "delta": 14,
+    "cum": 527,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "renumber",
+    "group": "B",
+    "lines": 542,
+    "delta": 15,
+    "cum": 542,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "sortByName",
+    "group": "B",
+    "lines": 550,
+    "delta": 8,
+    "cum": 550,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "bulkMark",
+    "group": "C",
+    "lines": 560,
+    "delta": 10,
+    "cum": 560,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "bulkClear",
+    "group": "C",
+    "lines": 569,
+    "delta": 9,
+    "cum": 569,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "bulkShift",
+    "group": "C",
+    "lines": 580,
+    "delta": 11,
+    "cum": 580,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "bulkCopy",
+    "group": "C",
+    "lines": 594,
+    "delta": 14,
+    "cum": 594,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "filterDay",
+    "group": "C",
+    "lines": 602,
+    "delta": 8,
+    "cum": 602,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "dropWeek",
+    "group": "C",
+    "lines": 613,
+    "delta": 11,
+    "cum": 613,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "keepWeek",
+    "group": "C",
+    "lines": 622,
+    "delta": 9,
+    "cum": 622,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "statsByDay",
+    "group": "C",
+    "lines": 633,
+    "delta": 11,
+    "cum": 633,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "validate",
+    "group": "C",
+    "lines": 647,
+    "delta": 14,
+    "cum": 647,
+    "ok": true,
+    "msg": ""
+  },
+  {
+    "op": "normalize",
+    "group": "C",
+    "lines": 671,
+    "delta": 24,
+    "cum": 671,
+    "ok": true,
+    "msg": ""
+  }
+]

@@ -1,0 +1,8 @@
+# validate.txt — fanout.GenProc 编译期生成，别手改
+# 规则行: <op> | requires <path>[, ...] | clamp <field>:<range>[, ...]
+# 缺字段文案: "<op>: missing required <path>"
+add | requires course.name | clamp course.day:1..7
+del | requires match | clamp -
+edit | requires match, set | clamp -
+move | requires match | clamp -
+swap | requires match, with | clamp -

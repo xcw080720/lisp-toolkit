@@ -1,0 +1,11 @@
+T0 21:17:48  收到任务、开始读规格
+T1 21:18:37  impl.jl 首次落盘（439 行）
+T2 21:18:47  首次 9/9
+21:17:53 | julia --startup-file=no --version | exit=0 | 
+21:18:47 | node ..\..\check-scale.cjs --impl impl.jl --only 1,2,3,4,5,6,7,8,9 | exit=0 | 9 passed, 0 failed
+21:19:03 | julia impl.jl t1.json x3（-f 格式串踩到 JSON 花括号）| exit=1 | Error formatting a string: Input string was not in a correct format.
+21:19:12 | julia --startup-file=no impl.jl t1.json x3（计时）| exit=0 | 0.629s / 0.615s / 0.618s
+21:19:26 | julia --startup-file=no bare.jl x2（裸启动基线）| exit=0 | 0.189s / 0.176s
+21:19:27 | julia --startup-file=no impl.jl t2.json（空 ops）| exit=0 | {"opsText":"","log":[],"n":0}
+21:19:36 | node ..\..\check-scale.cjs --impl impl.jl --only 1,2,3,4,5,6,7,8,9（复跑确认）| exit=0 | 9 passed, 0 failed
+21:19:43 | Remove-Item bare.jl,t1.json,t2.json（清理临时用例）| exit=0 | 

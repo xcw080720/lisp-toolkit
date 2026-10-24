@@ -1,0 +1,18 @@
+19:08:27 | New-Item run dir repl-g2 + 设 $env:SBCL/$env:SBCL_HOME | 渠道=script | exit=ok | 目录就绪，sbcl.exe 存在
+19:08:31 | Write live.mjs（常驻会话守护）+ q.mjs（客户端） | 渠道=script | exit=ok | 两文件创建（补记）
+19:08:35 | node live.mjs .（后台常驻 SBCL 会话） | 渠道=repl | exit=ok | daemon spawn，等待 READY
+19:08:40 | REPL: (progn (list (+ 1 2) (lisp-implementation-version))) | 渠道=repl | exit=ok | (3 "2.6.9") 通道通
+19:09:14 | REPL: 整批 defun 送 JSON reader（pk/skip-ws/jstr/jnum/jval/jobj/jarr） | 渠道=repl | exit=13 | 超时：PowerShell 重引号把 #\" 变成 #\\ + 断引号，会话卡在读入（补记）
+19:09:29 | REPL: q.mjs "(+ 1 1)" 探会话状态 | 渠道=repl | exit=1 | <<timeout>>：确认被未闭合字符串卡住（补记）
+19:09:33 | job_kill pwsh-17ff9f4cc41448ae | 渠道=script | exit=ok | 杀掉卡死会话（补记）
+19:09:40 | Write impl.lisp 初稿（JSON 读写 + 5 op + 输出契约） | 渠道=script | exit=ok | 创建；收尾 (main) 包 handler-case 以便 load（补记）
+19:09:46 | Edit impl.lisp：删掉误留的 (force-utf8-probe) | 渠道=script | exit=ok | 改 1 处（补记）
+19:09:50 | Write q.mjs 加 --f（form 从文件送，避开 PowerShell 引号） | 渠道=script | exit=ok | 改 1 处（补记）
+19:09:54 | Write probes.lisp（会话里连发的 6 个 form） | 渠道=script | exit=ok | 创建（补记）
+19:10:24 | 重启 node live.mjs .（干净会话） | 渠道=repl | exit=ok | daemon respawn
+19:10:27 | node ..\..\check-scale.cjs --impl impl.lisp --only 1,2,3,4,5,6,7,8,9 | 渠道=script | exit=0 | 9 passed, 0 failed（首次即 9/9）
+19:10:49 | REPL: q.mjs --f probes.lisp（load impl + macroexpand-1 push + fboundp setf fd-stream-external-format + jparse 中文/数字 + run-file e1 空ops/e2 swap 双命中；同批写 e1.json/e2.json） | 渠道=repl | exit=ok | %RPLACD 证实 push 到 cdr 改原对象；::SETF-FD-EF 有函数；jparse "中文"/2.5d0/null/true 正常；e1 log=[] n=0；e2 n=0 日志「交换失败」
+19:10:54 | REPL: q.mjs "(* 7 6)"（取回上批 form 的打印值） | 渠道=repl | exit=ok | 42，批量 form 的打印值全部取回
+19:11:04 | REPL: (run-file "nope.json") 触发 FILE-ERROR → 看 restart → :abort → (list :alive (+ 2 2)) | 渠道=repl | exit=ok | restart 0 CREATE/1 CONTINUE/2 USE-VALUE/3 ABORT；同进程恢复后 (:ALIVE 4)
+19:11:18 | node ..\..\check-scale.cjs --impl impl.lisp --only 1,2,3,4,5,6,7,8,9（终验） | 渠道=script | exit=0 | 9 passed, 0 failed
+19:11:49 | job_kill 常驻会话 daemon（收工）+ wc -l impl.lisp/log.txt | 渠道=script | exit=ok | impl.lisp 287 行，log 18 行

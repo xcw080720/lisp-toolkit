@@ -1,0 +1,6 @@
+(format t "EF=~a~%" (stream-external-format *standard-output*))
+(format t "DFEF=~a~%" sb-impl::*default-external-format*)
+(format t "SRC=数据结构🐋~%")
+(format t "JSON={\"name\":\"数据结构🐋\",\"t\":\"张三\"}~%")
+(format t "RAT=~a F1=~a D1=~a~%" (read-from-string "2.5") (read-from-string "2.5e0") (read-from-string "2.5d0"))
+(format t "FMT=~a~%" (format nil "~f" (float 5/2 1d0)))

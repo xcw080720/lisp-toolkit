@@ -1,0 +1,17 @@
+18:39:54 | 改动#0 | git -C WORKSPACE rev-parse --show-toplevel | exit=128 | 
+18:39:57 | 改动#0 | Get-ChildItem experiments\timetable-ab\cases | exit=0 | 
+18:40:01 | 改动#0 | node score-B2.cjs --impl impl.lisp --cases cases/public-A.json (基线) | exit=1 | 
+18:40:07 | 改动#0 | ConvertFrom-Json cases/public-A.json; 打印 expected 键名 | exit= | 
+18:40:12 | 改动#0 | node score-B2.cjs --impl impl.lisp --cases cases/hidden-B.json (基线, 只看总数) | exit=1 | 
+18:40:47 | 改动#0 | 用 tmp shim(expected.log->logCount) 跑 public-A 基线 | exit=1 | 
+18:40:51 | 改动#0 | tmp shim(expected.log->logCount) 跑 public-A 基线(重试, 去 BOM) | exit=0 | 
+18:41:10 | 改动#0 | 校验 impl.lisp 未改动(sha256/lines)+log 编码 | exit=0 | 
+18:41:14 | 改动#0 | 重写 log.txt 为 UTF-8 无 BOM（去掉 Add-Content 的首个 BOM）| exit=0 | 
+18:41:22 | 改动#0 | 量 apply-one/one-op-text 行数并算重构 diff 下界 | exit=0 | 
+18:41:32 | 改动#0 | 收尾：impl.lisp 未改，public-A(shim)=3/3, hidden-B=2/8 | exit=0 | 
+18:44:39 | 改动#0 | 不做宏重构：唯一真收益是把 apply-one/one-op-text 里每个 op 的两具 body 合到一处，需整体搬移约 100 行 -> diff 约 +82/-64=146，远超 60 行上限；不搬行只能加一层表驱动壳，等于多一处 op 名单而非消灭重复。故直接做第 1 条 | diff=+0/-0 | hidden=2/8 | public-A=3/3
+18:44:39 | 改动#1 | 新增 swap op：match/with 各须恰好命中 1 门才互换 day/periodFrom/periodTo，否则整条跳过并记原因；opsText 输出 换「A」和「B」的时间 | diff=+22/-0 | hidden=3/8 | public-A=3/3
+18:46:10 | 改动#2 | edit 的 set.weeks 生效：严格校验（range/odd/even 要 from/to，list 要数组），非法则不写 weeks 且记 周次格式不对，跳过（与该条 op 的正常日志各占一行，顺序：警告在前）| diff=+23/-4 | hidden=4/8 | public-A=3/3
+18:48:02 | 改动#3 | add 支持 course.remindOffsets：只留整数、取前 3 个，超出记 提醒点太多，只留 3 个（在该 op 正常日志前），opsText 追加（带提醒）；空数组不输出该键以免破坏 public-A 旧契约 | diff=+20/-6 | hidden=6/8 | public-A=3/3
+18:48:21 | 改动#4 | 日志加序号（输出处统一编号 1) 2) …，按执行顺序从 1 起，同一 op 多行各占一号）；n 按实际改动条数（del3 记 3、edit1 记 1、add1 记 1，原实现已符合，改动 4 验证后未改）；public-A 2 条按预期失败 | diff=+4/-1 | hidden=7/8 | public-A=1/3
+18:49:03 | 改动#5 | 未知 op 整批拒绝：执行前用 *known-ops* 白名单预扫，命中未知则 opsText 空串、n=0、课表原样返回，日志只一条 拒绝：未知 op <名>（经改动 4 编号后为 1) 拒绝：…）；白名单含改动 1 的 swap | diff=+16/-6 | hidden=8/8 | public-A=1/3

@@ -1,0 +1,34 @@
+cff-version: 1.2.0
+message: "If you use this dataset or the measurement protocol in your work, please cite it as below."
+title: "timetable-ab: a controlled cross-language comparison of abstract-structure cost, with full negative and self-refuting results"
+abstract: >-
+  A pre-registered, reproducible cross-language experiment on the cost of abstract
+  structures (macros vs. table-driven dispatch), run over seven languages on one frozen
+  specification (5 ops), plus fourteen follow-up specifications covering scale, product
+  fan-out, expansion-time validation, inlining, iteration, hand-off, and a 30-op crossover.
+  The dataset includes every run artefact, the thirty-six invariants and their go-red
+  proofs, mutation scores with sample bounds, and a complete record of nineteen occasions
+  on which the measurement apparatus itself was wrong.
+type: dataset
+version: "1.0.0"
+date-released: 2026-10-24
+license: MIT
+repository-code: "https://github.com/xcw080720/lisp-toolkit"
+keywords:
+  - common-lisp
+  - macros
+  - cost-of-abstraction
+  - reproducibility
+  - mutation-testing
+  - benchmark-validity
+
+# TODO(owner): replace the two placeholders below with your real name before minting a DOI.
+# You may keep the alias; Zenodo will show both.
+authors:
+  - family-names: "[姓]"
+    given-names: "[名]"
+    alias: "xcw080720"
+    affiliation: "[学校 / 院系]"
+  - name: "Small Code Sauce (assistant)"
+    type: other
+    contribution: "Implementation, measurement harness, and record of self-refutations"

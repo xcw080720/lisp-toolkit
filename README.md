@@ -3,6 +3,9 @@
 > 如果你只记得一条：**判据先证明能红，才允许它说「通过」。**
 # lisp-toolkit
 
+> **Cite this:** see [`CITATION.cff`](CITATION.cff). A DOI is being minted for the
+> dataset release; until it resolves, cite the repository and tag `data-v1.0.0`.
+
 三个静态检查器 + 一个 REPL 技能包：在把 `.lisp` 交给 SBCL 之前，先把"少括号、格式串、BOM"挡在门外。
 
 **一条命令**：`./check.sh`（Windows：`check.cmd`）。只需要 SBCL。
@@ -355,6 +358,7 @@ README 顶部加了指针——新人进来第一眼看到的就是这份协议�
 | 1 小时 | [`docs/experiment-report.md`](docs/experiment-report.md) | 完整报告：14 个实验、数字总表、十五次失败、未闭合清单 |
 | 想动手 | [`REPRODUCE.md`](REPRODUCE.md) | 三条命令，复算出跟我一样的数 |
 | 想用工具 | [`skills/mutation-testing`](skills/mutation-testing/SKILL.md) · [`tools/`](tools/) | 给你的判据打分：变异测试 + 门禁 |
+| 想看原始数据 | [`experiments/timetable-ab/`](experiments/timetable-ab/README.md) | 7 个语言 × 14 份规格的完整 run 产物，4.5 MB，可复算 |
 
 另有可打印版本：[`docs/one-pager.html`](docs/one-pager.html)（A4 单页）
 与 [`docs/index.html`](docs/index.html)（说人话 / 技术版一键切换）。

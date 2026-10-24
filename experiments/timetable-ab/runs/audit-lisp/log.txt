@@ -1,0 +1,16 @@
+21:12:26 | T0 START（开工，工作目录 audit-lisp，impl.lisp 467 行基线） | exit=0 | 
+21:12:55 | node ..\..\check-audit.cjs --impl impl.lisp --ops "add,del,edit,move,swap,rename,duplicate,trim,clear,shift,tag,untag,sort,swapDay,stats" | exit=1 | [FAIL] add  — stdout 非 JSON
+21:12:55 | node ..\..\check-scale.cjs --impl impl.lisp | exit=1 | [FAIL] #1 add-default-weeks  — stdout 非 JSON
+21:12:58 | sbcl --version | exit= | 
+21:13:38 | set SBCL=tools\sbcl\PFiles\...\sbcl.exe; node ..\..\check-audit.cjs --impl impl.lisp --ops "all15" | exit=1 | [FAIL] add  — 输出里没有 audit 数组
+21:13:40 | set SBCL=tools\sbcl\PFiles\...\sbcl.exe; node ..\..\check-scale.cjs --impl impl.lisp | exit=0 | [ok  ] #1 add-default-weeks
+21:14:20 | T1 WRITE DONE（impl.lisp 落盘，LF=470，净增 3 行，改动 3 处） | exit=0 | 
+21:14:25 | node ..\..\check-audit.cjs --impl impl.lisp --ops "all15" | exit=0 | [ok  ] add
+21:14:30 | node ..\..\check-scale.cjs --impl impl.lisp | exit=0 | [ok  ] #1 add-default-weeks
+21:14:39 | sbcl --script impl.lisp probe-unknown.json | exit=0 | {"opsText":"","courses":[{"name":"A","teacher":"","location":"","day":1,"periodFrom":1,"periodTo":2,"weeks":null,"tag":null}],"log":["1) \u62D2\u7EDD\uFF1A\u672A\u77E5 op nope\uFF08\u53EF\u7528 add / del / edit / move / swap / rename / duplicate / trim / clear / shift / tag / untag / sort / swapDay / stats\uFF09"],"n":0,"audit":[{"op":"nope","n":0}]}
+21:14:39 | sbcl --script impl.lisp probe-skip.json | exit=0 | {"opsText":"[{\"op\":\"del\",\"match\":\"ZZ\"}]","courses":[{"name":"A","teacher":"","location":"","day":1,"periodFrom":1,"periodTo":2,"weeks":null,"tag":null}],"log":["1) del\uFF1A\u6CA1\u627E\u5230\u300CZZ\u300D"],"n":0,"audit":[{"op":"del","n":0}]}
+21:14:39 | sbcl --script impl.lisp probe-mixed.json | exit=0 | {"opsText":"[{\"op\":\"rename\",\"match\":\"A\",\"to\":\"A2\"},{\"op\":\"del\",\"match\":\"ZZ\"},{\"op\":\"add\",\"course\":{\"name\":\"X\",\"day\":2}}]","courses":[{"name":"A2","teacher":"","location":"","day":1,"periodFrom":1,"periodTo":2,"weeks":null,"tag":null},{"name":"X","teacher":"","location":"","day":2,"periodFrom":1,"periodTo":1,"weeks":{"type":"range","from":1,"to":16},"tag":null}],"log":["1) rename\uFF1A\u547D\u4E2D 1 \u95E8\uFF08\u5339\u914D\u300CA\u300D\uFF09","2) del\uFF1A\u6CA1\u627E\u5230\u300CZZ\u300D","3) \u65B0\u589E\u300CX\u300D\u54682 \u7B2C1\u20131 \u8282"],"n":2,"audit":[{"op":"rename","n":1},{"op":"del","n":0},{"op":"add","n":1}]}
+21:14:46 | git diff --no-index --unified=2 runs\scale-lisp\impl.lisp runs\audit-lisp\impl.lisp | exit=1 | hunks=3 +12 -7
+21:14:56 | git diff --no-index --unified=0 (per-op 区段是否被改动者=0) | exit=0 | hunks=7 added=10 removed=7 net=3
+21:15:00 | T2 FIRST GREEN（check-audit 17/17 + check-scale 19/19 同批全绿；T1=21:14:20 → T2=21:15:00，Δ=41s） | exit=0 | 
+21:15:07 | NOTE 首次全绿实际时刻：check-audit 21:14:25（T1+5s）、check-scale 21:14:30（T1+10s）；T2 行按两判据同批确认时刻记 | exit=0 | 

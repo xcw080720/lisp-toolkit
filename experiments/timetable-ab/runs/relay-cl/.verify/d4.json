@@ -1,0 +1,4 @@
+{"courses":[],"ops":[{"op":"undo"},
+                     {"op":"add","course":{"name":"A","teacher":"T","location":"L","day":3,"periodFrom":5,"periodTo":6}},
+                     {"op":"undo"},
+                     {"op":"undo"}]}

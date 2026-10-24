@@ -1,0 +1,8 @@
+﻿18:24:55 | New-Item -ItemType Directory -Force -Path run2n | exit=0 | 
+18:25:07 | node C:\Users\HUAWEI\Documents\deepseek-harness\default-workspace\experiments\timetable-ab\score.cjs --impl impl.js --cases C:\Users\HUAWEI\Documents\deepseek-harness\default-workspace\experiments\timetable-ab\cases\public-A.json | exit=0 | 
+18:25:13 | node impl.js selfcheck-input.json | exit=0 | 
+18:25:17 | node -e <inline: edit day=9/periodFrom=0 夹取验证> | exit=1 | 
+18:25:23 | node impl.js selfcheck-input2.json | exit=0 | 
+18:25:28 | Remove-Item selfcheck-input.json,selfcheck-input2.json | exit= | 
+18:25:37 | node C:\Users\HUAWEI\Documents\deepseek-harness\default-workspace\experiments\timetable-ab\score.cjs --impl impl.js --cases C:\Users\HUAWEI\Documents\deepseek-harness\default-workspace\experiments\timetable-ab\cases\public-A.json   (final) | exit=0 | 
+18:25:37 | # 更正: 上一条 Remove-Item 行 exit 字段为空(0 对 cmdlet 为 null)，实际删除成功 exit=0 | exit=0 | 

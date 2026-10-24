@@ -1,0 +1,17 @@
+{
+  "courses": [
+    { "name": "高数", "teacher": "张", "location": "A101", "day": 1, "periodFrom": 1, "periodTo": 2 },
+    { "name": "高数(补)", "teacher": "", "location": "", "day": 2, "periodFrom": 3, "periodTo": 4 },
+    { "name": "高数实验", "teacher": "", "location": "", "day": 4, "periodFrom": 5, "periodTo": 6 },
+    { "name": "英语", "teacher": "", "location": "", "day": 3, "periodFrom": 1, "periodTo": 2 }
+  ],
+  "ops": [
+    { "op": "del", "match": "高数" },
+    { "op": "edit", "match": "英语", "set": { "day": 9, "periodFrom": 0 } },
+    { "op": "move", "match": "英语", "day": 5 },
+    { "op": "nope" },
+    { "op": "move", "match": "英语", "day": 7, "periodFrom": 9, "periodTo": 10 },
+    { "op": "add", "course": { "name": "体育", "day": 9, "periodFrom": 7, "periodTo": 8, "weeks": { "type": "odd", "from": 1, "to": 15 } } },
+    { "op": "del", "match": "" }
+  ]
+}

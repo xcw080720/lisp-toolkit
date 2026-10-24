@@ -1,0 +1,12 @@
+﻿18:22:32 | node C:\Users\HUAWEI\Documents\deepseek-harness\default-workspace\experiments\timetable-ab\score.cjs --impl impl.lisp --cases C:\Users\HUAWEI\Documents\deepseek-harness\default-workspace\experiments\timetable-ab\cases\public-A.json | exit=1 | 
+18:22:36 | & $env:SBCL --script impl.lisp in1.json | exit=1 | 
+18:22:42 | & $env:SBCL --script impl.lisp in1.json | exit=1 | 
+18:23:03 | & $env:SBCL --script impl.lisp in1.json | exit=1 | Unhandled SB-C::INPUT-ERROR-IN-LOAD in thread #<SB-THREAD:THREAD tid=4828 "main thread" RUNNING
+18:23:07 | & $env:SBCL --script probe.lisp in1.json | exit=1 | Unhandled UNBOUND-VARIABLE in thread #<SB-THREAD:THREAD tid=22452 "main thread" RUNNING
+18:23:12 | & $env:SBCL --script probe2.lisp in1.json | exit=1 | Unhandled UNDEFINED-FUNCTION in thread #<SB-THREAD:THREAD tid=9912 "main thread" RUNNING
+18:23:23 | & $env:SBCL --script impl.lisp in1.json | exit=1 | Unhandled SB-INT:SIMPLE-STREAM-ERROR in thread #<SB-THREAD:THREAD tid=4760 "main thread" RUNNING
+18:23:43 | & $env:SBCL --script impl.lisp in1.json | exit=1 | Unhandled SB-C::INPUT-ERROR-IN-LOAD in thread #<SB-THREAD:THREAD tid=17212 "main thread" RUNNING
+18:23:51 | & $env:SBCL --script impl.lisp in1.json | exit=0 | 
+18:23:55 | node C:\Users\HUAWEI\Documents\deepseek-harness\default-workspace\experiments\timetable-ab\score.cjs --impl impl.lisp --cases C:\Users\HUAWEI\Documents\deepseek-harness\default-workspace\experiments\timetable-ab\cases\public-A.json | exit=0 | 
+18:24:01 | & $env:SBCL --script impl.lisp in2.json (spec 约束 3/4/5 冒烟) | exit=0 | 
+18:24:05 | Remove-Item probe.lisp,probe2.lisp,in1.json,in2.json -ErrorAction SilentlyContinue | exit=0 | 

@@ -1,0 +1,12 @@
+18:41:37 | node ..\..\score.cjs --impl impl.lisp --cases ..\..\cases\public-A.json | exit=1 | 
+18:41:43 | sbcl --script impl.lisp t1.json | exit=1 | + FullyQualifiedErrorId : NativeCommandError
+18:41:56 | sbcl --script impl.lisp t1.json | exit=1 | + FullyQualifiedErrorId : NativeCommandError
+18:42:33 | sbcl --script impl.lisp t1.json | exit=0 | 
+18:42:42 | sbcl --script impl.lisp t1.json | exit=0 | 
+18:42:46 | node ..\..\score.cjs --impl impl.lisp --cases ..\..\cases\public-A.json | exit=0 | 
+18:42:58 | node ..\..\score.cjs --impl impl.lisp --cases mycases.json | exit=1 | 
+18:43:07 | node ..\..\score.cjs --impl impl.lisp --cases mycases.json; node ..\..\score.cjs --impl impl.lisp --cases ..\..\cases\public-A.json | exit=0 | 
+18:43:15 | sbcl --script impl.lisp t2.json ; wc -l impl.lisp ; type log.txt | exit=0 | 
+18:43:22 | node -e "b=require('fs').readFileSync('log.txt');console.log(b[0],b[1],b[2])" ; Remove-Item t1.json,t2.json | exit=0 | 
+18:43:28 | rewrite log.txt as utf8-no-bom | exit=0 | 
+18:43:34 | node ..\..\score.cjs --impl impl.lisp --cases ..\..\cases\public-A.json | exit=0 | 

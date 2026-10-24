@@ -1,0 +1,6 @@
+Q1792753849551_765	;; probes.lisp — 活体会话里连发的一批 form（不是探针脚本，是直接问会话）\n(load "impl.lisp")\n;; 1) 我依赖的 push 语义：push 到 (cdr c) 是否真的改到原对象的 cdr，而不是副本\n(macroexpand-1 '(push (cons "tag" :null) (cdr c)))\n;; 2) 既然要强制 UTF-8 输出，先问会话：更省事的那个 setf 到底存不存在\n(list :setf-fd-ef (fboundp '(setf sb-impl::fd-stream-external-format))\n      :make-fd-stream (fboundp 'sb-sys:make-fd-stream))\n;; 3) 直接在会话里跑 impl 的函数，看它把 JSON 读成什么\n(jget (jparse "{\"a\":\"\\u4e2d\\u6587\",\"b\":[1,2.5,null,true]}") "a")\n(jget (jparse "{\"a\":\"\\u4e2d\\u6587\",\"b\":[1,2.5,null,true]}") "b")\n;; 4) 边界：空 ops\n(run-file "e1.json")\n;; 5) 边界：swap 两侧各要恰好 1 门，这里 match=高数 命中 2 门\n(run-file "e2.json")\n
+Q1792753854608_666	(* 7 6)
+Q1792753863733_388	(run-file "nope.json")
+Q1792753863895_250	(* 6 7)
+Q1792753864060_405	:abort
+Q1792753864238_750	(list :alive (+ 2 2))

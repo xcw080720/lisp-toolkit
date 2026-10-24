@@ -1,0 +1,11 @@
+﻿18:14:39 | node ..\..\score.cjs --impl impl.lisp --cases ..\..\cases\public-A.json | exit=1 | [FAIL] add-default-weeks  (stdout 不是 JSON：)
+18:14:43 | & $env:SBCL --script impl.lisp t0.json | exit=1 | sbcl.exe : Unhandled SB-C::INPUT-ERROR-IN-LOAD in thread #<SB-THREAD:THREAD tid=22072 "main thread" RUNNING
+18:14:51 | & $env:SBCL --eval "(progn (format t \"~%ARGV-SYMS=~s~%\" (loop for s being the external-symbols of :sb-ext when (search \"ARGV\" (symbol-name s)) collect s)) (format t \"IMPL-ARGS=~s~%\" (loop for s being the symbols of :sb-impl when (and (search \"ARGV\" (symbol-name s)) (boundp s)) collect (list s (symbol-value s)))) (format t \"IMPLBOUND=~s~%\" (loop for s being the symbols of :sb-impl when (search \"ARGV\" (symbol-name s)) collect s)) (sb-ext:exit :code 0 :abort nil))" --quit | exit=0 | + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+18:14:59 | & $env:SBCL --script probe.lisp arg_test.json | exit=1 | sbcl.exe : Unhandled SB-C::INPUT-ERROR-IN-LOAD in thread #<SB-THREAD:THREAD tid=6284 "main thread" RUNNING
+18:15:07 | & $env:SBCL --script probe.lisp arg_test.json | exit=1 | ("HANDLER-DESCRIPTORS-ERROR" NIL) ("*DESCRIPTOR-HANDLERS*" NIL)
+18:15:16 | node ..\..\score.cjs --impl impl.lisp --cases ..\..\cases\public-A.json | exit=0 | -- 3 passed, 0 failed  (public-A.json)
+18:15:25 | & $env:SBCL --script impl.lisp selftest.json | exit=0 | 
+18:15:41 | node ..\..\score.cjs --impl impl.lisp --cases ..\..\cases\public-A.json ; selftest2 check | exit=0 | -- 3 passed, 0 failed  (public-A.json)
+18:15:46 | node -e "totalWeeks=20 default weeks check" | exit=0 | 
+18:15:49 | Remove-Item probe.lisp,t0.json,t_tw.json,arg_test.json -ErrorAction SilentlyContinue ; count log lines | exit=0 | 
+18:16:06 | node ..\..\score.cjs --impl impl.lisp --cases ..\..\cases\public-A.json  (final) | exit=0 | -- 3 passed, 0 failed  (public-A.json)

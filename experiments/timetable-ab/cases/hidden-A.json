@@ -1,0 +1,88 @@
+{
+  "cases": [
+    {
+      "name": "edit-day-clamp",
+      "why": "edit day=9 → 夹到 7（spec 约束 3）",
+      "input": {
+        "courses": [{ "name": "高数", "teacher": "", "location": "A101", "day": 1, "periodFrom": 1, "periodTo": 2 }],
+        "ops": [{ "op": "edit", "match": "高数", "set": { "day": 9 } }]
+      },
+      "expected": {
+        "opsText": "把「高数」改成 周日",
+        "courses": [{ "name": "高数", "teacher": "", "location": "A101", "day": 7, "periodFrom": 1, "periodTo": 2 }],
+        "log": ["改了 1 条「高数」"],
+        "n": 1
+      }
+    },
+    {
+      "name": "edit-no-match",
+      "why": "edit 没命中 → 不执行，日志写没找到",
+      "input": {
+        "courses": [{ "name": "高数", "teacher": "", "location": "A101", "day": 1, "periodFrom": 1, "periodTo": 2 }],
+        "ops": [{ "op": "edit", "match": "物理", "set": { "day": 3 } }]
+      },
+      "expected": {
+        "opsText": "",
+        "courses": [{ "name": "高数", "teacher": "", "location": "A101", "day": 1, "periodFrom": 1, "periodTo": 2 }],
+        "log": ["没找到「物理」"],
+        "n": 0
+      }
+    },
+    {
+      "name": "move-missing-field",
+      "why": "move 只给 day → 不执行（spec 约束 4）",
+      "input": {
+        "courses": [{ "name": "高数", "teacher": "", "location": "A101", "day": 1, "periodFrom": 1, "periodTo": 2 }],
+        "ops": [{ "op": "move", "match": "高数", "day": 4 }]
+      },
+      "expected": {
+        "opsText": "",
+        "courses": [{ "name": "高数", "teacher": "", "location": "A101", "day": 1, "periodFrom": 1, "periodTo": 2 }],
+        "log": ["move 缺字段，跳过"],
+        "n": 0
+      }
+    },
+    {
+      "name": "unknown-op",
+      "why": "未知 op 必须出现在 log（spec 约束 5）",
+      "input": {
+        "courses": [{ "name": "高数", "teacher": "", "location": "A101", "day": 1, "periodFrom": 1, "periodTo": 2 }],
+        "ops": [{ "op": "nope" }]
+      },
+      "expected": {
+        "opsText": "",
+        "courses": [{ "name": "高数", "teacher": "", "location": "A101", "day": 1, "periodFrom": 1, "periodTo": 2 }],
+        "log": ["不认识的 op：nope"],
+        "n": 0
+      }
+    },
+    {
+      "name": "del-no-match",
+      "why": "del 命中 0 条 → 日志写没找到，n 不变",
+      "input": {
+        "courses": [{ "name": "高数", "teacher": "", "location": "A101", "day": 1, "periodFrom": 1, "periodTo": 2 }],
+        "ops": [{ "op": "del", "match": "物理" }]
+      },
+      "expected": {
+        "opsText": "",
+        "courses": [{ "name": "高数", "teacher": "", "location": "A101", "day": 1, "periodFrom": 1, "periodTo": 2 }],
+        "log": ["没找到「物理」"],
+        "n": 0
+      }
+    },
+    {
+      "name": "add-clamp-and-default",
+      "why": "add 的 day=0 夹到 1；periodFrom=0 变 1；weeks 默认 range 1..16",
+      "input": {
+        "courses": [],
+        "ops": [{ "op": "add", "course": { "name": "体育", "day": 0, "periodFrom": 0, "periodTo": 0 } }]
+      },
+      "expected": {
+        "opsText": "加「体育」",
+        "courses": [{ "name": "体育", "teacher": "", "location": "", "day": 1, "periodFrom": 1, "periodTo": 1, "weeks": { "type": "range", "from": 1, "to": 16 } }],
+        "log": ["加了「体育」"],
+        "n": 1
+      }
+    }
+  ]
+}

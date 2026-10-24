@@ -1,0 +1,17 @@
+{
+  "generatedBy": "fanout.GenProc",
+  "cases": [
+    {"op": "add", "case": "ok", "args": {"course": {"name": "样·course.name"}}, "expect": {"text": "加「样·course.name」", "errors": []}},
+    {"op": "add", "case": "missing:course.name", "args": {"course": {}}, "expect": {"errors": ["add: missing required course.name"]}},
+    {"op": "del", "case": "ok", "args": {"match": "样·match"}, "expect": {"text": "删掉「样·match」", "errors": []}},
+    {"op": "del", "case": "missing:match", "args": {}, "expect": {"errors": ["del: missing required match"]}},
+    {"op": "edit", "case": "ok", "args": {"match": "样·match", "set": "样·set"}, "expect": {"text": "把「样·match」改成别的", "errors": []}},
+    {"op": "edit", "case": "missing:match", "args": {"set": "样·set"}, "expect": {"errors": ["edit: missing required match"]}},
+    {"op": "edit", "case": "missing:set", "args": {"match": "样·match"}, "expect": {"errors": ["edit: missing required set"]}},
+    {"op": "move", "case": "ok", "args": {"match": "样·match", "day": "样·day", "periodFrom": "样·periodFrom", "periodTo": "样·periodTo"}, "expect": {"text": "挪「样·match」", "errors": []}},
+    {"op": "move", "case": "missing:match", "args": {"day": "样·day", "periodFrom": "样·periodFrom", "periodTo": "样·periodTo"}, "expect": {"errors": ["move: missing required match"]}},
+    {"op": "swap", "case": "ok", "args": {"match": "样·match", "with": "样·with"}, "expect": {"text": "换「样·match」和「样·with」", "errors": []}},
+    {"op": "swap", "case": "missing:match", "args": {"with": "样·with"}, "expect": {"errors": ["swap: missing required match"]}},
+    {"op": "swap", "case": "missing:with", "args": {"match": "样·match"}, "expect": {"errors": ["swap: missing required with"]}}
+  ]
+}

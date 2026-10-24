@@ -1,0 +1,31 @@
+19:23:14 | 改动#0 | node score-B2.cjs --impl impl.js --cases ..\..\cases\hidden-B.json (baseline) | exit=1 | -- 2 passed, 6 failed
+19:23:21 | 改动#1 | tool:edit impl.js 加 swap op | exit=0 |
+19:23:22 | 改动#1 | node score-B2.cjs --impl impl.js --cases ..\..\cases\hidden-B.json | exit=1 | -- 3 passed, 5 failed  (hidden-B.json)
+19:23:22 | 改动#1 | node score.cjs --impl impl.js --cases ..\..\cases\public-A.json | exit=0 | -- 3 passed, 0 failed  (public-A.json)
+19:23:22 | 改动#1 | git diff --no-index --numstat c0.js impl.js | exit=0 | warning: in the working copy of 'C:\Users\HUAWEI\AppData\Local\Temp\timetable-js\c0.js', LF will be replaced by CRLF the next time Git touches it
+19:23:37 | 改动#2 | tool:edit impl.js edit 支持 weeks 校验 + validWeeks | exit=0 |
+19:23:37 | 改动#2 | node score-B2.cjs --impl impl.js --cases ..\..\cases\hidden-B.json | exit=1 | -- 4 passed, 4 failed  (hidden-B.json)
+19:23:37 | 改动#2 | node score.cjs --impl impl.js --cases ..\..\cases\public-A.json | exit=0 | -- 3 passed, 0 failed  (public-A.json)
+19:23:37 | 改动#2 | git diff --no-index --numstat c1.js impl.js | exit=0 | 16	1	"C:\\Users\\HUAWEI\\AppData\\Local\\Temp\\timetable-js\\c1.js" => impl.js
+19:23:37 | 改动#1 | git diff --no-index --numstat c0.js c1.js | exit=0 | 22	0	"C:\\Users\\HUAWEI\\AppData\\Local\\Temp\\timetable-js\\c0.js" => "C:\\Users\\HUAWEI\\AppData\\Local\\Temp\\timetable-js\\c1.js"
+19:23:54 | 改动#3 | tool:edit impl.js add 支持 remindOffsets | exit=0 |
+19:23:54 | 改动#3 | node score-B2.cjs --impl impl.js --cases ..\..\cases\hidden-B.json | exit=1 | -- 4 passed, 4 failed  (hidden-B.json)
+19:23:54 | 改动#3 | node score.cjs --impl impl.js --cases ..\..\cases\public-A.json | exit=1 | -- 2 passed, 1 failed  (public-A.json)
+19:23:54 | 改动#3 | git diff --no-index --numstat c2.js impl.js | exit=0 | 8	1	"C:\\Users\\HUAWEI\\AppData\\Local\\Temp\\timetable-js\\c2.js" => impl.js
+19:24:04 | 改动#3 | tool:edit impl.js add 内固定键序 weeks 在 remindOffsets 前 | exit=0 |
+19:24:05 | 改动#3 | node score-B2.cjs --impl impl.js --cases ..\..\cases\hidden-B.json | exit=1 | -- 6 passed, 2 failed  (hidden-B.json)
+19:24:05 | 改动#3 | node score.cjs --impl impl.js --cases ..\..\cases\public-A.json | exit=1 | -- 2 passed, 1 failed  (public-A.json)
+19:24:05 | 改动#3 | git diff --no-index --numstat c2.js impl.js | exit=0 | 15	2	"C:\\Users\\HUAWEI\\AppData\\Local\\Temp\\timetable-js\\c2.js" => impl.js
+19:24:14 | 改动#4 | tool:edit impl.js 日志加序号 + n 语义注释 | exit=0 |
+19:24:14 | 改动#4 | node score-B2.cjs --impl impl.js --cases ..\..\cases\hidden-B.json | exit=1 | -- 7 passed, 1 failed  (hidden-B.json)
+19:24:14 | 改动#4 | node score.cjs --impl impl.js --cases ..\..\cases\public-A.json | exit=1 | -- 1 passed, 2 failed  (public-A.json)
+19:24:14 | 改动#4 | git diff --no-index --numstat c3.js impl.js | exit=0 | 3	1	"C:\\Users\\HUAWEI\\AppData\\Local\\Temp\\timetable-js\\c3.js" => impl.js
+19:24:23 | 改动#5 | tool:edit impl.js 未知 op 整批拒绝 + pristine 快照 | exit=0 |
+19:24:24 | 改动#5 | node score-B2.cjs --impl impl.js --cases ..\..\cases\hidden-B.json | exit=0 | -- 8 passed, 0 failed  (hidden-B.json)
+19:24:24 | 改动#5 | node score.cjs --impl impl.js --cases ..\..\cases\public-A.json | exit=1 | -- 1 passed, 2 failed  (public-A.json)
+19:24:24 | 改动#5 | git diff --no-index --numstat c4.js impl.js | exit=0 | 8	2	"C:\\Users\\HUAWEI\\AppData\\Local\\Temp\\timetable-js\\c4.js" => impl.js
+19:24:24 | 改动#5 | git diff --no-index --numstat c0.js impl.js (总) | exit=0 | 64	6	"C:\\Users\\HUAWEI\\AppData\\Local\\Temp\\timetable-js\\c0.js" => impl.js
+19:24:44 | 改动#5 | node score-B2.cjs --impl impl.js --cases ..\..\cases\hidden-B.json (终检) | exit=0 | -- 8 passed, 0 failed  (hidden-B.json)
+19:24:44 | 改动#5 | node score.cjs --impl impl.js --cases ..\..\cases\public-A.json (终检) | exit=1 | -- 1 passed, 2 failed  (public-A.json)
+19:24:44 | 改动#5 | git diff --no-index c0.js impl.js (总, 差异即 exit=1) | exit=1 |
+19:24:44 | 改动#5 | git diff --no-index c0..c5 --numstat+@@hunk 统计 (总) | exit=1 | c0->c5 hunks=5

@@ -1,0 +1,3 @@
+{"courses":[{"name":"A","teacher":"T","location":"L","day":1,"periodFrom":1,"periodTo":2},
+            {"name":"B","teacher":"T","location":"L","day":2,"periodFrom":3,"periodTo":4}],
+ "ops":[{"op":"swap","match":"A","with":"B"},{"op":"stats"}]}

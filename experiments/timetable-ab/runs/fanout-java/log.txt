@@ -1,0 +1,46 @@
+fanout-java 臂（注解处理器）运行记录
+=====================================
+
+管道：decls.json（唯一声明源） -> Emit 生成 @Op 注解源 -> javac 两趟（第 1 趟编处理器、
+第 2 趟带 -processor 只编注解源） -> GenProc 用 Filer 在编译期落 5 样产物。
+
+产物出口：**Filer 资源接口**（createResource + CLASS_OUTPUT），不是 Files.write。
+因此 Emit 把 javac 的 -d 指到工作目录根，产物直接落在判据要看的位置。
+
+复现
+----
+    javac -encoding UTF-8 -d . Emit.java        # 只编 Emit（处理器在运行时由 Emit 编）
+    java -cp . Emit                             # 生成 5 样（+1 样实验产物）
+    node ..\..\check-fanout.cjs --dir .         # 判据
+
+记录
+----
+09:41:52 | emit     | 冷启动（build/ 不存在）          | ok | 1120 ms
+09:43:35 | 同步测试 | 改 add.text                     | 手改处数=0 | opsText/schema/tests 同时变
+09:43:37 | 同步测试 | move.params += delta            | 手改处数=0 | schema/client/tests 同时变；validate 不含该字段（非 required，正确）
+09:43:39 | 复原     | decls.json 字节一致              | ok | sha256 相同
+09:44:41 | 判据     | 18 passed / 0 failed
+09:45:12 | 冷启动   | build/ 移走后重跑                | 18 passed / 0 failed
+
+产物（自动生成行数）
+----
+opsText.txt     6 行   确认文案模板，一行一 op，模板原样来自声明 text
+schema.json    37 行   params/required/clamp/text，键序 = 声明顺序
+client.js      45 行   一 op 一函数，形参名 = 声明的 params（with -> with_，见下）
+tests.json     17 行   每 op 一条 ok + 每条 required 一条 missing，共 12 条
+validate.txt    8 行   required / clamp 规则 + 缺字段文案格式
+contrib.d.ts   11 行   第 6 样，增量测量用（判据不看）
+
+判据能红的证据
+------------
+build/red/ 里放了「生成器写死」的对照（emit.cjs 直接 exit 0，产物保持上一次内容）：
+    同步A FAIL（emit=true changed=false）
+    同步B FAIL（emit=true schema=false client=false）
+说明 18 项判据不是恒真，它测的确实是「声明改了产物跟不跟」。
+
+已知的两处真实代价（都在代码里留了注释）
+----
+1. swap 的形参名 with 是 JS 保留字：client.js 里改叫 with_，但对象键仍是 with，
+   保证 schema/校验用原声明名。任何跨语言生成器都会撞上这类命名冲突。
+2. -d 同时是 class 输出目录，所以工作目录根会多出 gen/OpsDecl.class；产物目录和
+   class 目录在 APT 里是同一个开关，这是 Filer 按位置出口带来的副作用。

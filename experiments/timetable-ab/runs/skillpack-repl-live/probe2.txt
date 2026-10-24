@@ -1,0 +1,7 @@
+(fboundp 'get-output-stream-string)
+(fboundp 'get-output-string)
+(handler-case (load "experiments/timetable-ab/runs/skillpack-repl-live/impl.lisp") (error (e) (list :load-failed (type-of e))))
+(jparse "{\"a\":[1,2.5,\"高\",null,true]}")
+(with-output-to-string (s) (let ((*standard-output* s)) (jw (jparse "{\"a\":[1,2.5,\"高\"],\"b\":{}}"))))
+(progn (setf *courses* (jparse "[{\"name\":\"高数\",\"day\":1,\"periodFrom\":1,\"periodTo\":2}]") *log* nil) (list :n (op-edit (jparse "{\"match\":\"高数\",\"set\":{\"day\":9,\"periodFrom\":5}}")) :c *courses*))
+(progn (setf *courses* (jparse "[{\"name\":\"A\",\"day\":1},{\"name\":\"AA\",\"day\":3},{\"name\":\"B\",\"day\":4}]") *log* nil) (list :n (op-swap (jparse "{\"match\":\"A\",\"with\":\"B\"}")) :log *log*))

@@ -1,0 +1,10 @@
+{
+  "totalWeeks": 20,
+  "courses": [],
+  "ops": [
+    { "op": "add", "course": { "name": "图谱", "day": 2, "periodFrom": 1, "periodTo": 2 } },
+    { "op": "add", "course": { "name": "认知", "day": 0, "periodFrom": 0, "periodTo": 0, "weeks": { "type": "all" } } },
+    { "op": "add", "course": { "day": 1, "periodFrom": 1, "periodTo": 1 } },
+    { "op": "edit", "match": "图谱", "set": { "location": "B203", "weeks": { "type": "even", "from": 2, "to": 18 } } }
+  ]
+}

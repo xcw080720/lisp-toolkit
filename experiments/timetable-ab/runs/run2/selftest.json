@@ -1,0 +1,13 @@
+{
+  "courses": [
+    { "name": "高数", "teacher": "张", "location": "A101", "day": 1, "periodFrom": 1, "periodTo": 2 },
+    { "name": "英语", "teacher": "", "location": "B2", "day": 5, "periodFrom": 3, "periodTo": 4, "weeks": { "type": "odd", "from": 1, "to": 16 } }
+  ],
+  "ops": [
+    { "op": "edit", "match": "高数", "set": { "day": 9, "periodFrom": 0 } },
+    { "op": "move", "match": "英语", "day": 2 },
+    { "op": "nope", "x": 1 },
+    { "op": "del", "match": "" },
+    { "op": "move", "match": "英语", "day": 8, "periodFrom": 0, "periodTo": 5 }
+  ]
+}

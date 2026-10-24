@@ -1,0 +1,10 @@
+{"courses":[{"name":"A","teacher":"T","location":"L","day":1,"periodFrom":1,"periodTo":2},
+            {"name":"B","teacher":"T","location":"L","day":2,"periodFrom":3,"periodTo":4},
+            {"name":"C","teacher":"T","location":"L","day":1,"periodFrom":5,"periodTo":6}],
+ "ops":[{"op":"del","match":"A"},
+        {"op":"undo"},
+        {"op":"sort"},
+        {"op":"undo"},
+        {"op":"swapDay","a":1,"b":2},
+        {"op":"undo"},
+        {"op":"stats"}]}

@@ -1,0 +1,1 @@
+{"courses":[{"name":"同名","teacher":"","location":"","day":1,"periodFrom":1,"periodTo":2},{"name":"同名2","teacher":"","location":"","day":2,"periodFrom":1,"periodTo":2},{"name":"X","teacher":"","location":"","day":3,"periodFrom":1,"periodTo":2}],"ops":[{"op":"swap","match":"同名","with":"X"}]}

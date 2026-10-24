@@ -1,0 +1,10 @@
+add	required	course.name
+add	clamp	course.day:1..7
+del	required	match
+del	clamp	(none)
+edit	required	match, set
+edit	clamp	(none)
+move	required	match
+move	clamp	(none)
+swap	required	match, with
+swap	clamp	(none)

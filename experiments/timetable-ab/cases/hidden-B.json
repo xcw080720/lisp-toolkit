@@ -1,0 +1,129 @@
+{
+  "cases": [
+    {
+      "name": "swap-ok",
+      "why": "改动1：两侧各命中 1 门 → 时间互换，n=2",
+      "input": {
+        "courses": [
+          { "name": "高数", "teacher": "", "location": "A101", "day": 1, "periodFrom": 1, "periodTo": 2 },
+          { "name": "英语", "teacher": "", "location": "B202", "day": 4, "periodFrom": 5, "periodTo": 6 }
+        ],
+        "ops": [{ "op": "swap", "match": "高数", "with": "英语" }]
+      },
+      "expected": {
+        "courses": [
+          { "name": "高数", "teacher": "", "location": "A101", "day": 4, "periodFrom": 5, "periodTo": 6 },
+          { "name": "英语", "teacher": "", "location": "B202", "day": 1, "periodFrom": 1, "periodTo": 2 }
+        ],
+        "n": 2,
+        "logCount": 1
+      }
+    },
+    {
+      "name": "swap-ambiguous",
+      "why": "改动1：match 命中 2 门 → 不执行，n=0",
+      "input": {
+        "courses": [
+          { "name": "高数", "teacher": "", "location": "A101", "day": 1, "periodFrom": 1, "periodTo": 2 },
+          { "name": "高数(补)", "teacher": "", "location": "A102", "day": 2, "periodFrom": 3, "periodTo": 4 },
+          { "name": "英语", "teacher": "", "location": "B202", "day": 4, "periodFrom": 5, "periodTo": 6 }
+        ],
+        "ops": [{ "op": "swap", "match": "高数", "with": "英语" }]
+      },
+      "expected": {
+        "courses": [
+          { "name": "高数", "teacher": "", "location": "A101", "day": 1, "periodFrom": 1, "periodTo": 2 },
+          { "name": "高数(补)", "teacher": "", "location": "A102", "day": 2, "periodFrom": 3, "periodTo": 4 },
+          { "name": "英语", "teacher": "", "location": "B202", "day": 4, "periodFrom": 5, "periodTo": 6 }
+        ],
+        "n": 0,
+        "logCount": 1
+      }
+    },
+    {
+      "name": "edit-weeks-ok",
+      "why": "改动2：合法 weeks 生效",
+      "input": {
+        "courses": [{ "name": "高数", "teacher": "", "location": "A101", "day": 1, "periodFrom": 1, "periodTo": 2, "weeks": { "type": "range", "from": 1, "to": 16 } }],
+        "ops": [{ "op": "edit", "match": "高数", "set": { "weeks": { "type": "odd", "from": 1, "to": 15 } } }]
+      },
+      "expected": {
+        "courses": [{ "name": "高数", "teacher": "", "location": "A101", "day": 1, "periodFrom": 1, "periodTo": 2, "weeks": { "type": "odd", "from": 1, "to": 15 } }],
+        "n": 1,
+        "logCount": 1
+      }
+    },
+    {
+      "name": "edit-weeks-bad",
+      "why": "改动2：range 缺 from/to → 不写、记日志",
+      "input": {
+        "courses": [{ "name": "高数", "teacher": "", "location": "A101", "day": 1, "periodFrom": 1, "periodTo": 2, "weeks": { "type": "range", "from": 1, "to": 16 } }],
+        "ops": [{ "op": "edit", "match": "高数", "set": { "weeks": { "type": "range" } } }]
+      },
+      "expected": {
+        "courses": [{ "name": "高数", "teacher": "", "location": "A101", "day": 1, "periodFrom": 1, "periodTo": 2, "weeks": { "type": "range", "from": 1, "to": 16 } }],
+        "n": 1,
+        "logCount": 2
+      }
+    },
+    {
+      "name": "add-remind-ok",
+      "why": "改动3：remindOffsets 保留，opsText 带提醒",
+      "input": {
+        "courses": [],
+        "ops": [{ "op": "add", "course": { "name": "体育", "day": 2, "periodFrom": 3, "periodTo": 4, "remindOffsets": [10, 5] } }]
+      },
+      "expected": {
+        "courses": [{ "name": "体育", "teacher": "", "location": "", "day": 2, "periodFrom": 3, "periodTo": 4, "weeks": { "type": "range", "from": 1, "to": 16 }, "remindOffsets": [10, 5] }],
+        "n": 1,
+        "logCount": 1,
+        "opsTextContains": ["（带提醒）"]
+      }
+    },
+    {
+      "name": "add-remind-truncate",
+      "why": "改动3：超过 3 个 → 取前 3 + 一条日志",
+      "input": {
+        "courses": [],
+        "ops": [{ "op": "add", "course": { "name": "体育", "day": 2, "periodFrom": 3, "periodTo": 4, "remindOffsets": [1, 2, 3, 4, 5] } }]
+      },
+      "expected": {
+        "courses": [{ "name": "体育", "teacher": "", "location": "", "day": 2, "periodFrom": 3, "periodTo": 4, "weeks": { "type": "range", "from": 1, "to": 16 }, "remindOffsets": [1, 2, 3] }],
+        "n": 1,
+        "logCount": 2,
+        "opsTextContains": ["（带提醒）"]
+      }
+    },
+    {
+      "name": "reject-unknown",
+      "why": "改动5：未知 op → 整批拒绝，一条都不执行",
+      "input": {
+        "courses": [{ "name": "高数", "teacher": "", "location": "A101", "day": 1, "periodFrom": 1, "periodTo": 2 }],
+        "ops": [{ "op": "del", "match": "高数" }, { "op": "nope" }]
+      },
+      "expected": {
+        "courses": [{ "name": "高数", "teacher": "", "location": "A101", "day": 1, "periodFrom": 1, "periodTo": 2 }],
+        "n": 0,
+        "logCount": 1,
+        "opsTextEmpty": true
+      }
+    },
+    {
+      "name": "log-numbering",
+      "why": "改动4：日志带 1) 2) 序号",
+      "input": {
+        "courses": [{ "name": "高数", "teacher": "", "location": "A101", "day": 1, "periodFrom": 1, "periodTo": 2 }],
+        "ops": [
+          { "op": "add", "course": { "name": "线代", "day": 3, "periodFrom": 5, "periodTo": 6 } },
+          { "op": "del", "match": "高数" }
+        ]
+      },
+      "expected": {
+        "courses": [{ "name": "线代", "teacher": "", "location": "", "day": 3, "periodFrom": 5, "periodTo": 6, "weeks": { "type": "range", "from": 1, "to": 16 }, "remindOffsets": [] }],
+        "n": 2,
+        "logCount": 2,
+        "logPrefixes": ["1) ", "2) "]
+      }
+    }
+  ]
+}

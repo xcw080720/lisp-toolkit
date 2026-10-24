@@ -1,0 +1,84 @@
+[
+  {
+    "name": "add.sample",
+    "op": "add",
+    "params": [
+      "course"
+    ],
+    "required": [
+      "course.name"
+    ],
+    "args": {
+      "course": "<course>"
+    },
+    "expect": "ok"
+  },
+  {
+    "name": "del.sample",
+    "op": "del",
+    "params": [
+      "match"
+    ],
+    "required": [
+      "match"
+    ],
+    "args": {
+      "match": "<match>"
+    },
+    "expect": "ok"
+  },
+  {
+    "name": "edit.sample",
+    "op": "edit",
+    "params": [
+      "match",
+      "set"
+    ],
+    "required": [
+      "match",
+      "set"
+    ],
+    "args": {
+      "match": "<match>",
+      "set": "<set>"
+    },
+    "expect": "ok"
+  },
+  {
+    "name": "move.sample",
+    "op": "move",
+    "params": [
+      "match",
+      "day",
+      "periodFrom",
+      "periodTo"
+    ],
+    "required": [
+      "match"
+    ],
+    "args": {
+      "match": "<match>",
+      "day": "<day>",
+      "periodFrom": "<periodFrom>",
+      "periodTo": "<periodTo>"
+    },
+    "expect": "ok"
+  },
+  {
+    "name": "swap.sample",
+    "op": "swap",
+    "params": [
+      "match",
+      "with"
+    ],
+    "required": [
+      "match",
+      "with"
+    ],
+    "args": {
+      "match": "<match>",
+      "with": "<with>"
+    },
+    "expect": "ok"
+  }
+]

@@ -1,0 +1,8 @@
+(lisp-implementation-version)
+(list :len (length "高") :codes (map 'list #'char-code "高"))
+(handler-case (stream-external-format *standard-output*) (error (e) (format nil "ERR: ~a" e)))
+(handler-case (progn (write-string "高" *standard-output*) :wrote-ok) (error (e) (format nil "ERR: ~a" e)))
+(handler-case (with-open-file (s "experiments/timetable-ab/tasks/scale.spec.md") (read-line s)) (error (e) (format nil "ERR: ~a" e)))
+(handler-case (with-open-file (s "experiments/timetable-ab/tasks/scale.spec.md" :external-format :utf-8) (read-line s)) (error (e) (format nil "ERR: ~a" e)))
+(multiple-value-list (find-symbol "MAKE-FD-STREAM" "SB-SYS"))
+(format nil "~4,'0x" (char-code #\高))

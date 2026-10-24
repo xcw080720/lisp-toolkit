@@ -1,0 +1,6 @@
+(write-string "ARGV=")
+(write-string (prin1-to-string sb-ext:*posix-argv*))
+(write-string " LEN=")
+(write-string (prin1-to-string (length sb-ext:*posix-argv*)))
+(terpri)
+(finish-output)

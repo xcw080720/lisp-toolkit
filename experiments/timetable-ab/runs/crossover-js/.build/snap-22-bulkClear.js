@@ -1,0 +1,404 @@
+'use strict';
+// impl.js — 交叉点臂 JS：OPS 表驱动 + JSON.parse
+// 契约与 CL 臂逐字相同（判据只认契约，不认写法）：
+//   入: {courses:[...], ops:[...]}   出: {opsText, courses, log, n}
+//   course: name teacher location day periodFrom periodTo weeks tag note
+// 一条 op = 一条 REG 登记（need 必填 / fields 夹紧 / run 执行 / say 文案）；
+// 校验、分发、名册都从这张表长出来。
+const fs = require('fs');
+
+/* ---------- 1. 字段夹紧：一处定义，全 op 共用 ---------- */
+const defaultWeeks = () => ({ type: 'range', from: 1, to: 16 });
+
+const COERCE = {
+  day: (v) => Math.min(7, Math.max(1, Math.trunc(Number(v)) || 1)),
+  period: (v) => Math.max(1, Math.trunc(Number(v)) || 1),
+  int: (v) => Math.trunc(Number(v)) || 0,
+  str: (v) => (v == null ? '' : String(v)),
+  course: (v) => loadCourse(v || {}),
+  weeks: (v) => (v && v.type ? v : defaultWeeks()),
+  tag: (v) => (v == null || v === '' ? null : String(v)),
+};
+
+/* ---------- 2. 小工具 ---------- */
+const hit = (list, m) => list.filter((c) => c.name.includes(COERCE.str(m)));
+const clone = (c) => JSON.parse(JSON.stringify(c));
+const weeksOf = (c) => c.weeks || defaultWeeks();
+const setWeeks = (c, from, to) => { c.weeks = { type: 'range', from, to }; };
+const numOr = (v, d) => { const n = Number(v); return Number.isFinite(n) ? n : d; };
+// 入口只补形状，不夹紧：夹紧是 normalize 的活。否则 validate 永远看不到坏值（假绿来源）。
+function loadCourse(c) {
+  return {
+    name: COERCE.str(c.name),
+    teacher: COERCE.str(c.teacher),
+    location: COERCE.str(c.location),
+    day: numOr(c.day, 1),
+    periodFrom: numOr(c.periodFrom, 1),
+    periodTo: numOr(c.periodTo, 1),
+    weeks: c.weeks || defaultWeeks(),
+    tag: c.tag == null ? null : String(c.tag),
+    note: COERCE.str(c.note),
+  };
+}
+function spliceIn(list, keep) {
+  const n = list.length - keep.length;
+  list.length = 0;
+  list.push(...keep);
+  return n;
+}
+
+/* ---------- 3. 注册表：唯一的声明处 ---------- */
+const REG = {};
+
+/* ---------- 4. 30 个 op：每块一条登记，块首有 @@ 标记 ---------- */
+
+//@@ OP setDay A
+REG.setDay = {
+  need: ['match', 'day'],
+  fields: { day: 'day' },
+  run(state, op, p) {
+    const targets = hit(state, op.match);
+    for (const c of targets) c.day = p.day;
+    return targets.length;
+  },
+  say(n, op) { return n ? `setDay：${n} 门改到周${op.day}` : `setDay：没找到「${op.match}」`; },
+};
+
+//@@ OP setPeriodFrom A
+REG.setPeriodFrom = {
+  need: ['match', 'from'],
+  fields: { from: 'period' },
+  run(state, op, p) {
+    const targets = hit(state, op.match);
+    for (const c of targets) { c.periodFrom = p.from; c.periodTo = Math.max(p.from, c.periodTo); }
+    return targets.length;
+  },
+  say(n, op, p) { return n ? `setPeriodFrom：${n} 门从第${p.from}节起` : `setPeriodFrom：没找到「${op.match}」`; },
+};
+
+//@@ OP setPeriodTo A
+REG.setPeriodTo = {
+  need: ['match', 'to'],
+  fields: { to: 'period' },
+  run(state, op, p) {
+    const targets = hit(state, op.match);
+    for (const c of targets) c.periodTo = Math.max(c.periodFrom, p.to);
+    return targets.length;
+  },
+  say(n, op, p) { return n ? `setPeriodTo：${n} 门到第${p.to}节` : `setPeriodTo：没找到「${op.match}」`; },
+};
+
+//@@ OP setTeacher A
+REG.setTeacher = {
+  need: ['match', 'teacher'],
+  fields: { teacher: 'str' },
+  run(state, op, p) {
+    const targets = hit(state, op.match);
+    for (const c of targets) c.teacher = p.teacher;
+    return targets.length;
+  },
+  say(n, op, p) { return n ? `setTeacher：${n} 门老师改为「${p.teacher}」` : `setTeacher：没找到「${op.match}」`; },
+};
+
+//@@ OP setLocation A
+REG.setLocation = {
+  need: ['match', 'location'],
+  fields: { location: 'str' },
+  run(state, op, p) {
+    const targets = hit(state, op.match);
+    for (const c of targets) c.location = p.location;
+    return targets.length;
+  },
+  say(n, op, p) { return n ? `setLocation：${n} 门地点改为「${p.location}」` : `setLocation：没找到「${op.match}」`; },
+};
+
+//@@ OP setNote A
+REG.setNote = {
+  need: ['match', 'note'],
+  fields: { note: 'str' },
+  run(state, op, p) {
+    const targets = hit(state, op.match);
+    for (const c of targets) c.note = p.note;
+    return targets.length;
+  },
+  say(n, op) { return n ? `setNote：${n} 门加了备注` : `setNote：没找到「${op.match}」`; },
+};
+
+//@@ OP setWeeks A
+REG.setWeeks = {
+  need: ['match', 'weeks'],
+  fields: { weeks: 'weeks' },
+  run(state, op, p) {
+    const targets = hit(state, op.match);
+    for (const c of targets) c.weeks = { type: 'range', from: p.weeks.from, to: p.weeks.to };
+    return targets.length;
+  },
+  say(n) { return n ? `setWeeks：${n} 门周次已设置` : 'setWeeks：没找到匹配的课'; },
+};
+
+//@@ OP clearNote A
+REG.clearNote = {
+  need: ['match'],
+  run(state, op) {
+    const targets = hit(state, op.match);
+    for (const c of targets) c.note = '';
+    return targets.length;
+  },
+  say(n) { return n ? `clearNote：${n} 门备注清空` : 'clearNote：没找到匹配的课'; },
+};
+
+//@@ OP bumpDay A
+REG.bumpDay = {
+  need: ['match', 'delta'],
+  fields: { delta: 'int' },
+  run(state, op, p) {
+    const targets = hit(state, op.match);
+    for (const c of targets) c.day = Math.min(7, Math.max(1, c.day + p.delta));
+    return targets.length;
+  },
+  say(n, op, p) { return n ? `bumpDay：${n} 门周次 +${p.delta}` : `bumpDay：没找到「${op.match}」`; },
+};
+
+//@@ OP bumpPeriod A
+REG.bumpPeriod = {
+  need: ['match', 'delta'],
+  fields: { delta: 'int' },
+  run(state, op, p) {
+    const targets = hit(state, op.match);
+    for (const c of targets) {
+      const from = Math.max(1, c.periodFrom + p.delta);
+      c.periodFrom = from;
+      c.periodTo = Math.max(from, c.periodTo + p.delta);
+    }
+    return targets.length;
+  },
+  say(n, op, p) { return n ? `bumpPeriod：${n} 门节次 ${p.delta >= 0 ? '+' : ''}${p.delta}` : `bumpPeriod：没找到「${op.match}」`; },
+};
+
+//@@ OP moveDay B
+REG.moveDay = {
+  need: ['match', 'day'],
+  fields: { day: 'day' },
+  run(state, op, p) {
+    const targets = hit(state, op.match);
+    for (const c of targets) {
+      const delta = p.day - c.day;
+      c.day = p.day;
+      const from = Math.max(1, c.periodFrom + delta);
+      c.periodFrom = from;
+      c.periodTo = Math.max(from, c.periodTo + delta);
+    }
+    return targets.length;
+  },
+  say(n, op, p) { return n ? `moveDay：${n} 门移到周${p.day} 并顺延节次` : `moveDay：没找到「${op.match}」`; },
+};
+
+//@@ OP swapTeacher B
+REG.swapTeacher = {
+  need: ['match', 'with'],
+  run(state, op) {
+    const a = hit(state, op.match), b = hit(state, op.with);
+    if (a.length !== 1 || b.length !== 1 || a[0] === b[0]) return 0;
+    const t = a[0].teacher;
+    a[0].teacher = b[0].teacher;
+    b[0].teacher = t;
+    return 2;
+  },
+  say(n) { return n ? `swapTeacher：互换 ${n} 门课的老师` : 'swapTeacher：两侧各需恰好 1 门，不执行'; },
+};
+
+//@@ OP copyWeeks B
+REG.copyWeeks = {
+  need: ['match', 'with'],
+  run(state, op) {
+    const a = hit(state, op.match), b = hit(state, op.with);
+    if (a.length !== 1 || b.length !== 1 || a[0] === b[0]) return 0;
+    b[0].weeks = clone(weeksOf(a[0]));
+    return 1;
+  },
+  say(n) { return n ? 'copyWeeks：A 的周次已抄给 B' : 'copyWeeks：两侧各需恰好 1 门，不执行'; },
+};
+
+//@@ OP mergeCourses B
+REG.mergeCourses = {
+  run(state) {
+    const groups = new Map();
+    for (const c of state) {
+      if (!groups.has(c.name)) groups.set(c.name, []);
+      groups.get(c.name).push(c);
+    }
+    const keep = [];
+    let removed = 0;
+    for (const [, g] of groups) {
+      if (g.length > 1) {
+        const head = g[0];
+        const rs = g.map(weeksOf);
+        if (rs.every((w) => w && w.type === 'range')) {
+          setWeeks(head, Math.min(...rs.map((w) => w.from)), Math.max(...rs.map((w) => w.to)));
+        }
+        removed += g.length - 1;
+      }
+      keep.push(g[0]);
+    }
+    spliceIn(state, keep);
+    return removed;
+  },
+  say(n) { return n ? `mergeCourses：同名合并，去掉 ${n} 门` : 'mergeCourses：没有同名课，未合并'; },
+};
+
+//@@ OP splitCourse B
+REG.splitCourse = {
+  need: ['match'],
+  run(state, op) {
+    const hits = hit(state, op.match);
+    if (hits.length !== 1) return 0;
+    const c = hits[0];
+    if (c.periodTo <= c.periodFrom) return 0;
+    const mid = Math.floor((c.periodFrom + c.periodTo) / 2);
+    const x = clone(c);
+    x.periodFrom = mid + 1;
+    x.periodTo = c.periodTo;
+    c.periodTo = mid;
+    state.push(x);
+    return 1;
+  },
+  say(n) { return n ? 'splitCourse：一门拆两门' : 'splitCourse：需要恰好命中 1 门，不执行'; },
+};
+
+//@@ OP rotateDay B
+REG.rotateDay = {
+  run(state) {
+    for (const c of state) c.day = (c.day % 7) + 1;
+    return state.length;
+  },
+  say(n) { return `rotateDay：${n} 门课整周环移 +1 天`; },
+};
+
+//@@ OP trimWeeks B
+REG.trimWeeks = {
+  need: ['match', 'from', 'to'],
+  fields: { from: 'period', to: 'period' },
+  run(state, op, p) {
+    const targets = hit(state, op.match);
+    let n = 0;
+    for (const c of targets) {
+      const w = weeksOf(c);
+      const a = Math.max(w.from, Math.min(p.from, p.to));
+      const b = Math.min(w.to, Math.max(p.from, p.to));
+      if (a > b) continue;
+      setWeeks(c, a, b);
+      n++;
+    }
+    return n;
+  },
+  say(n) { return n ? `trimWeeks：${n} 门周次已收窄` : 'trimWeeks：没找到可收窄的课'; },
+};
+
+//@@ OP padWeeks B
+REG.padWeeks = {
+  need: ['match', 'to'],
+  fields: { to: 'period' },
+  run(state, op, p) {
+    const targets = hit(state, op.match);
+    for (const c of targets) {
+      const w = weeksOf(c);
+      setWeeks(c, w.from, Math.max(w.to, p.to));
+    }
+    return targets.length;
+  },
+  say(n, op, p) { return n ? `padWeeks：${n} 门补到第${p.to}周` : `padWeeks：没找到「${op.match}」`; },
+};
+
+//@@ OP renumber B
+REG.renumber = {
+  run(state) {
+    let changed = 0;
+    for (let day = 1; day <= 7; day++) {
+      const cs = state.filter((c) => c.day === day)
+        .slice()
+        .sort((a, b) => a.periodFrom - b.periodFrom);
+      let cursor = 1;
+      for (const c of cs) {
+        const span = c.periodTo - c.periodFrom;
+        if (c.periodFrom !== cursor) changed++;
+        c.periodFrom = cursor;
+        c.periodTo = cursor + span;
+        cursor = c.periodTo + 1;
+      }
+    }
+    return changed;
+  },
+  say(n) { return `renumber：按天自第 1 节重排，${n} 门节次变动`; },
+};
+
+//@@ OP sortByName B
+REG.sortByName = {
+  run(state) {
+    const before = state.slice();
+    state.sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
+    let moved = 0;
+    for (let i = 0; i < before.length; i++) if (before[i] !== state[i]) moved++;
+    return moved;
+  },
+  say(n) { return `sortByName：按名字排序，${n} 门换位`; },
+};
+
+//@@ OP bulkMark C
+REG.bulkMark = {
+  need: ['match', 'tag'],
+  fields: { tag: 'tag' },
+  run(state, op, p) {
+    const targets = hit(state, op.match);
+    for (const c of targets) c.tag = p.tag;
+    return targets.length;
+  },
+  say(n, op) { return n ? `bulkMark：${n} 门打上「${op.tag}」` : `bulkMark：没找到「${op.match}」`; },
+};
+
+//@@ OP bulkClear C
+REG.bulkClear = {
+  need: ['match'],
+  run(state, op) {
+    const targets = hit(state, op.match);
+    for (const c of targets) c.tag = null;
+    return targets.length;
+  },
+  say(n) { return n ? `bulkClear：${n} 门清标` : 'bulkClear：没找到匹配的课'; },
+};
+
+/* ---------- 5. 执行器：校验 / 分支 / 日志 / 计数全部读表 ---------- */
+function runOp(state, op) {
+  const d = REG[op.op];
+  const p = {};
+  for (const [k, kind] of Object.entries(d.fields || {})) p[k] = COERCE[kind](op[k]);
+  const miss = (d.need || []).filter((k) => op[k] === undefined || op[k] === null);
+  if (miss.length) return { n: 0, text: `${op.op}：参数不全（缺 ${miss.join('、')}），不执行` };
+  const n = d.run(state, op, p) || 0;
+  return { n, text: d.say(n, op, p) };
+}
+
+/* ---------- 6. 入口：契约 ---------- */
+const input = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+const origCourses = Array.isArray(input.courses) ? input.courses : [];
+const ops = Array.isArray(input.ops) ? input.ops : [];
+
+const bad = ops.find((o) => !o || typeof o.op !== 'string' || !Object.prototype.hasOwnProperty.call(REG, o.op));
+
+let out;
+if (bad) {
+  out = { opsText: '', courses: origCourses, log: [`1) 拒绝：未知 op ${bad && bad.op}`], n: 0 };
+} else if (ops.length === 0) {
+  out = { opsText: '', courses: origCourses, log: [], n: 0 };
+} else {
+  const state = JSON.parse(JSON.stringify(origCourses)).map(loadCourse);
+  const log = [];
+  let n = 0;
+  for (const op of ops) {
+    const r = runOp(state, op);
+    n += r.n;
+    log.push(`${log.length + 1}) ${r.text}`);
+  }
+  out = { opsText: JSON.stringify(ops), courses: state, log, n, available: Object.keys(REG) };
+}
+
+process.stdout.write(JSON.stringify(out));

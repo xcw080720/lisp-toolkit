@@ -1,0 +1,270 @@
+;;; impl.lisp — 交叉点实验 · 臂 2（CL 臂，正式轮）
+;;; 单源：一条 op = 一条 (defop ...) 表单；校验 / 可用名册 / 分发 / 文案 / 日志序号由宏长出。
+;;; JSON 读写手写（读：递归下降；写：非 ASCII 一律 \uXXXX，避免 Windows 管道编码坑）。
+
+(defvar *courses* '())          ; 当前课程表（plist 列表，就地改写）
+(defvar *n-changes* 0)          ; 各 op 改动数之和
+(defvar *log-rev* '())          ; 日志（逆序）
+(defvar *ops-text-rev* '())     ; opsText（逆序）
+(defvar *op-table* (make-hash-table :test #'equal))  ; op 名 -> (组 . 执行体)
+(defvar *op-names* '())                              ; 可用名册（由 defop 长出）
+
+;;; ============ 1. 手写 JSON 读
+(defun slurp (path)
+  (with-open-file (s path :external-format :utf-8 :element-type 'character)
+    (let ((out (make-string-output-stream)))
+      (loop for ch = (read-char s nil :eof) until (eq ch :eof) do (write-char ch out))
+      (get-output-stream-string out))))
+
+(defun jparse (str)
+  (let ((i 0) (n (length str)))
+    (labels ((cur () (and (< i n) (char str i)))
+             (ws () (loop while (and (< i n) (member (char str i) '(#\Space #\Tab #\Newline #\Return))) do (incf i)))
+             (pval ()
+               (ws)
+               (let ((c (cur)))
+                 (cond ((null c) (error "json: 意外结束"))
+                       ((char= c #\{) (pobj))
+                       ((char= c #\[) (parr))
+                       ((char= c #\") (pstr))
+                       ((char= c #\t) (incf i 4) :true)
+                       ((char= c #\f) (incf i 5) :false)
+                       ((char= c #\n) (incf i 4) :null)
+                       (t (pnum)))))
+             (pobj ()
+               (incf i)
+               (ws)
+               (if (eql (cur) #\})
+                   (progn (incf i) '())
+                   (let ((acc '()))
+                     (loop
+                       (ws)
+                       (let ((k (pstr)))
+                         (ws) (incf i)
+                         (push (intern (string-upcase k) :keyword) acc)
+                         (push (pval) acc))
+                       (ws)
+                       (let ((c (cur))) (incf i) (when (char= c #\}) (return))))
+                     (nreverse acc))))
+             (parr ()
+               (incf i)
+               (ws)
+               (if (eql (cur) #\])
+                   (progn (incf i) '())
+                   (let ((acc '()))
+                     (loop
+                       (push (pval) acc)
+                       (ws)
+                       (let ((c (cur))) (incf i) (when (char= c #\]) (return))))
+                     (nreverse acc))))
+             (pstr ()
+               (incf i)
+               (let ((out (make-string-output-stream)))
+                 (loop
+                   (let ((c (char str i))) (incf i)
+                     (cond ((char= c #\") (return))
+                           ((char= c #\\)
+                            (let ((e (char str i))) (incf i)
+                              (case e
+                                (#\" (write-char #\" out))
+                                (#\\ (write-char #\\ out))
+                                (#\/ (write-char #\/ out))
+                                (#\b (write-char #\Backspace out))
+                                (#\f (write-char #\Page out))
+                                (#\n (write-char #\Newline out))
+                                (#\r (write-char #\Return out))
+                                (#\t (write-char #\Tab out))
+                                (#\u (let ((code (parse-integer str :start i :end (+ i 4) :radix 16)))
+                                       (incf i 4)
+                                       (write-char (code-char code) out))))))
+                           (t (write-char c out)))))
+                 (get-output-stream-string out)))
+             (pnum ()
+               (let ((start i))
+                 (loop while (and (< i n) (find (char str i) "-+.eE0123456789")) do (incf i))
+                 (let ((tok (subseq str start i)))
+                   (if (find-if (lambda (c) (find c ".eE")) tok)
+                       (read-from-string tok)
+                       (parse-integer tok))))))
+      (pval))))
+
+;;; ============ 2. 手写 JSON 写（非 ASCII -> \uXXXX）
+(defun jstr (x)
+  (with-output-to-string (o)
+    (write-char #\" o)
+    (loop for ch across (as-str x) do
+      (let ((code (char-code ch)))
+        (cond ((char= ch #\") (write-string "\\\"" o))
+              ((char= ch #\\) (write-string "\\\\" o))
+              ((or (< code 32) (> code 126))
+               (if (> code #xFFFF)
+                   (let ((v (- code #x10000)))
+                     (format o "\\u~4,'0x\\u~4,'0x"
+                             (+ #xD800 (ash v -10)) (+ #xDC00 (logand v #x3FF))))
+                   (format o "\\u~4,'0x" code)))
+              (t (write-char ch o)))))
+    (write-char #\" o)))
+
+(defun jweeks (w)
+  (if (consp w)
+      (format nil "{\"type\":~a,\"from\":~d,\"to\":~d}" (jstr (getf w :type)) (getf w :from) (getf w :to))
+      "null"))
+
+(defun jcourse (c)
+  (format nil "{\"name\":~a,\"teacher\":~a,\"location\":~a,\"day\":~d,\"periodFrom\":~d,\"periodTo\":~d,\"weeks\":~a,\"tag\":~a,\"note\":~a}"
+          (jstr (getf c :name)) (jstr (getf c :teacher)) (jstr (getf c :location))
+          (getf c :day) (getf c :periodfrom) (getf c :periodto)
+          (jweeks (getf c :weeks))
+          (let ((g (getf c :tag))) (if (or (null g) (eq g :null)) "null" (jstr g)))
+          (jstr (getf c :note))))
+
+;;; ============ 3. 课程表模型与工具
+(defun as-str (x) (cond ((stringp x) x) ((null x) "") ((eq x :null) "") (t (princ-to-string x))))
+(defun clamp (x lo hi) (max lo (min hi x)))
+(defun mkweeks (f t2) (list :type "range" :from f :to t2))
+(defun weeks-from (w) (if (consp w) (or (getf w :from) 1) 1))
+(defun weeks-to (w) (if (consp w) (or (getf w :to) 16) 16))
+
+(defun norm-course (p)
+  (list :name (as-str (getf p :name))
+        :teacher (as-str (getf p :teacher))
+        :location (as-str (getf p :location))
+        :day (or (getf p :day) 1)
+        :periodfrom (or (getf p :periodfrom) 1)
+        :periodto (or (getf p :periodto) 2)
+        :weeks (let ((w (getf p :weeks))) (if (consp w) (mkweeks (weeks-from w) (weeks-to w)) :null))
+        :tag (let ((g (getf p :tag))) (if (or (null g) (eq g :null)) :null g))
+        :note (as-str (getf p :note))))
+
+(defun param (op key default)
+  (let ((v (getf op (intern (string-upcase key) :keyword) :__miss)))
+    (if (or (eq v :__miss) (eq v :null)) default v)))
+
+(defun param-p (op key)
+  (let ((v (getf op (intern (string-upcase key) :keyword) :__miss)))
+    (not (or (eq v :__miss) (eq v :null)))))
+
+(defun hit (m)
+  (if (or (null m) (string= m ""))
+      *courses*
+      (remove-if-not (lambda (c) (string= (getf c :name) (as-str m))) *courses*)))
+
+(defun put (c key val)                       ; 改了返回 t
+  (unless (equal (getf c key) val) (setf (getf c key) val) t))
+
+(defun change-count (lst fn)                 ; 命中集合里动了几门
+  (let ((k 0)) (dolist (c (copy-list lst) k) (when (funcall fn c) (incf k)))))
+
+(defun shift-periods (c delta)
+  (let ((a (put c :periodfrom (clamp (+ (getf c :periodfrom) delta) 1 12))))
+    (let ((nt (max (getf c :periodfrom) (min 12 (+ (getf c :periodto) delta)))))
+      (or (put c :periodto nt) a))))
+
+(defun op-note (name group cnt)
+  (push (format nil "[~a] ~a 动 ~d 处" group name cnt) *ops-text-rev*))
+
+(defun op-skip (name key)
+  (push (format nil "~a：缺必填字段「~a」，该 op 未执行" name key) *log-rev*)
+  0)
+
+;;; ============ 4. defop 宏（单源：校验 + 名册 + 分发 + 文案）
+(defun pkey (sym)
+  (let ((s (string-downcase (symbol-name sym))))
+    (cond ((string= s "other") "with")
+          ((string= s "to-day") "toDay")
+          (t s))))
+
+(defun split-defop-spec (spec)
+  (let ((kw '()))
+    (loop while (and (consp spec) (keywordp (car spec)))
+          do (let ((k (pop spec)) (v (pop spec))) (setf kw (append kw (list k v)))))
+    (values kw spec)))
+
+(defmacro defop (name group &rest spec)
+  (multiple-value-bind (kw body) (split-defop-spec spec)
+    (let ((requires (getf kw :requires))
+          (match (getf kw :match t)))
+      (let ((opv (gensym "OP")) (cnt (gensym "CNT")) (blk (gensym "BLK")))
+    `(progn
+       (pushnew ,name *op-names* :test #'equal)
+       (setf (gethash ,name *op-table*)
+             (cons ,group
+                   (lambda (,opv)
+                     (block ,blk
+                       (dolist (k ',requires)
+                         (unless (param-p ,opv (pkey k))
+                           (return-from ,blk (op-skip ,name (pkey k)))))
+                       (let (,@(when match `((match (param ,opv "match" ""))))
+                               ,@(loop for k in requires collect `(,k (param ,opv (pkey ',k) nil))))
+                         (declare (ignorable ,@(when match '(match)) ,@requires))
+                         (let ((,cnt (progn ,@body)))
+                           (op-note ,name ,group ,cnt)
+                           ,cnt)))))))))))
+
+;;; ============ 5. 30 条 op
+;;;@@ OP setDay A
+(defop "setDay" "A" :requires (day)
+  (change-count (hit match) (lambda (c) (put c :day (clamp day 1 7)))))
+
+;;;@@ OP setPeriodFrom A
+(defop "setPeriodFrom" "A" :requires (from)
+  (change-count (hit match)
+                (lambda (c)
+                  (let ((a (put c :periodfrom (clamp from 1 12))))
+                    (put c :periodto (max (getf c :periodfrom) (getf c :periodto)))
+                    a))))
+
+;;;@@ OP setPeriodTo A
+(defop "setPeriodTo" "A" :requires (to)
+  (change-count (hit match)
+                (lambda (c) (put c :periodto (max (getf c :periodfrom) (clamp to 1 12))))))
+
+;;;@@ OP setTeacher A
+(defop "setTeacher" "A" :requires (teacher)
+  (change-count (hit match) (lambda (c) (put c :teacher (as-str teacher)))))
+
+;;;@@ OP setLocation A
+(defop "setLocation" "A" :requires (location)
+  (change-count (hit match) (lambda (c) (put c :location (as-str location)))))
+
+;;;@@ OP setNote A
+(defop "setNote" "A" :requires (note)
+  (change-count (hit match) (lambda (c) (put c :note (as-str note)))))
+
+;;;@@ OP setWeeks A
+(defop "setWeeks" "A" :requires (weeks)
+  (change-count (hit match)
+                (lambda (c) (put c :weeks (mkweeks (weeks-from weeks) (weeks-to weeks))))))
+
+;;; ============ 6. 执行与输出
+(defun numbered-log ()
+  (loop for l in (reverse *log-rev*) for i from 1 collect (format nil "~d) ~a" i l)))
+
+(defun render (courses log n)
+  (format nil "{\"opsText\":~a,\"courses\":[~{~a~^,~}],\"log\":[~{~a~^,~}],\"n\":~d}"
+          (jstr (format nil "~{~a~^~%~}" (reverse *ops-text-rev*)))
+          (mapcar #'jcourse courses)
+          (mapcar #'jstr log)
+          n))
+
+(defun main ()
+  (let* ((path (car (last sb-ext:*posix-argv*)))
+         (in (jparse (slurp path)))
+         (raw (getf in :courses))
+         (ops (getf in :ops)))
+    (let ((*courses* (mapcar #'norm-course raw))
+          (*n-changes* 0) (*log-rev* '()) (*ops-text-rev* '()))
+      (let ((bad (find-if (lambda (op) (not (gethash (as-str (param op "op" "")) *op-table*))) ops)))
+        (if bad
+            (progn (setf *log-rev*
+                         (list (format nil "未知 op：~a，整批拒绝（可用：~{~a~^/~}）"
+                                       (as-str (param bad "op" ""))
+                                       (sort (copy-list *op-names*) #'string<))))
+                   (setf *ops-text-rev* '()))
+            (dolist (op ops)
+              (let* ((nm (as-str (param op "op" "")))
+                     (entry (gethash nm *op-table*)))
+                (incf *n-changes* (funcall (cdr entry) op))))))
+      (format t "~a~%" (render *courses* (numbered-log) *n-changes*)))))
+
+(main)

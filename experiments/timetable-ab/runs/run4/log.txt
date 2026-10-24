@@ -1,0 +1,54 @@
+18:33:36 | 改动#1 | Get-Location; Get-ChildItem run4/tasks; read impl.js/A.spec.md/changes.md | exit=0 | 
+18:33:36 | 改动#1 | Get-ChildItem cases; git rev-parse (fatal: not a git repository) | exit=0 | 
+18:33:36 | 改动#1 | Copy-Item impl.js $env:TEMP\impl.run4.orig.js (backup) | exit=0 | 5B7D1A9CD678
+18:33:37 | 改动#1 | node ..\..\score-B2.cjs --impl impl.js --cases ..\..\cases\hidden-B.json (baseline) | exit=1 | -- 1 passed, 7 failed  (hidden-B.json)
+18:34:11 | 改动#1 | Write run4-swap-test.json (temp, 自测输入) | exit=0 | 
+18:34:11 | 改动#1 | node impl.js $env:TEMP\run4-swap-test.json | exit=0 | 
+18:34:15 | 改动#1 | node --check impl.js | exit=0 | 
+18:34:16 | 改动#1 | node ..\..\score-B2.cjs --impl impl.js --cases ..\..\cases\hidden-B.json | exit=1 | -- 2 passed, 6 failed  (hidden-B.json)
+18:34:16 | 改动#1 | Compare-Object orig vs impl.js | Measure diff | exit=0 | added=21 removed=0 total=21
+18:34:20 | 改动#1 | Get-Content log.txt -Encoding utf8 (校验编码) | exit=0 | 
+18:34:50 | 改动#2 | Copy-Item impl.js $env:TEMP\impl.run4.c2.orig.js (改动2 前快照) | exit=0 | 
+18:34:50 | 改动#2 | node --check impl.js (改动2 前) | exit=0 | 
+18:35:07 | 改动#2 | Write run4-weeks-test.json (temp, 自测输入) | exit=0 | 
+18:35:08 | 改动#2 | node --check impl.js | exit=0 | 
+18:35:08 | 改动#2 | node impl.js $env:TEMP\run4-weeks-test.json | exit=0 | 
+18:35:11 | 改动#2 | node ..\..\score-B2.cjs --impl impl.js --cases ..\..\cases\hidden-B.json | exit=1 | -- 3 passed, 5 failed  (hidden-B.json)
+18:35:11 | 改动#2 | Compare-Object 快照 vs impl.js (改动2 diff) | exit=0 | added=16 removed=1 total=17
+18:35:19 | 改动#2 | Get-Content log.txt -Encoding utf8 (改动2 收尾核对) | exit=0 | 
+18:35:57 | 改动#3 | Copy-Item impl.js $env:TEMP\impl.run4.c3.orig.js (改动3 前快照) | exit=0 | 
+18:35:57 | 改动#3 | node --check impl.js (改动3 前) | exit=0 | 
+18:36:09 | 改动#3 | Write run4-remind-test.json (temp, 自测输入) | exit=0 | 
+18:36:09 | 改动#3 | node --check impl.js | exit=0 | 
+18:36:09 | 改动#3 | node impl.js $env:TEMP\run4-remind-test.json | exit=0 | 
+18:36:13 | 改动#3 | node ..\..\score-B2.cjs --impl impl.js --cases ..\..\cases\hidden-B.json | exit=1 | -- 6 passed, 2 failed  (hidden-B.json)
+18:36:13 | 改动#3 | Compare-Object 快照 vs impl.js (改动3 diff) | exit=0 | added=7 removed=1 total=8
+18:36:16 | 改动#3 | Get-Content log.txt -Encoding utf8 (改动3 收尾核对) | exit=0 | 
+18:36:35 | 改动#4 | Copy-Item impl.js $env:TEMP\impl.run4.c4.orig.js (改动4 前快照) | exit=0 | 
+18:36:35 | 改动#4 | node --check impl.js (改动4 前) | exit=0 | 
+18:36:46 | 改动#4 | Write run4-lognum-test.json (temp, 自测输入) | exit=0 | 
+18:36:46 | 改动#4 | node --check impl.js | exit=0 | 
+18:36:46 | 改动#4 | node impl.js $env:TEMP\run4-lognum-test.json | exit=0 | 
+18:36:46 | 改动#4 | node impl.js run4-remind-test.json (改动3 回归) | exit=0 | 
+18:36:46 | 改动#4 | node impl.js run4-swap-test.json (改动1 回归) | exit=0 | 
+18:36:51 | 改动#4 | node ..\..\score-B2.cjs --impl impl.js --cases ..\..\cases\hidden-B.json | exit=1 | -- 7 passed, 1 failed  (hidden-B.json)
+18:36:51 | 改动#4 | Compare-Object 快照 vs impl.js (改动4 diff) | exit=0 | added=2 removed=1 total=3
+18:36:54 | 改动#4 | Get-Content log.txt -Encoding utf8 (改动4 收尾核对) | exit=0 | 
+18:37:15 | 改动#5 | Copy-Item impl.js $env:TEMP\impl.run4.c5.orig.js (改动5 前快照) | exit=0 | 
+18:37:15 | 改动#5 | node --check impl.js (改动5 前) | exit=0 | 
+18:37:15 | 改动#5 | node -e require cases/public-A.json (看结构) | exit=0 | 
+18:37:20 | 改动#5 | node ..\..\score.cjs --impl impl.js --cases ..\..\cases\public-A.json (改动5 前基线) | exit=1 | -- 1 passed, 2 failed  (public-A.json)
+18:37:20 | 改动#5 | node ..\..\score-B2.cjs --impl impl.js --cases ..\..\cases\public-A.json (改动5 前基线) | exit=1 | -- 0 passed, 3 failed  (public-A.json)
+18:37:34 | 改动#5 | Write run4-reject-test.json (temp, 自测输入) | exit=0 | 
+18:37:34 | 改动#5 | node --check impl.js | exit=0 | 
+18:37:34 | 改动#5 | node impl.js run4-reject-test.json (未知 op 整批拒绝) | exit=0 | 
+18:37:35 | 改动#5 | node impl.js run4-swap/remind/lognum 三个自测文件 (回归) | exit=0 | 
+18:37:40 | 改动#5 | node ..\..\score-B2.cjs --impl impl.js --cases ..\..\cases\hidden-B.json | exit=0 | -- 8 passed, 0 failed  (hidden-B.json)
+18:37:40 | 改动#5 | node ..\..\score.cjs --impl impl.js --cases ..\..\cases\public-A.json | exit=1 | -- 1 passed, 2 failed  (public-A.json)
+18:37:41 | 改动#5 | node ..\..\score-B2.cjs --impl impl.js --cases ..\..\cases\public-A.json | exit=1 | -- 0 passed, 3 failed  (public-A.json)
+18:37:41 | 改动#5 | Compare-Object 快照 vs impl.js (改动5 diff + 累计) | exit=0 | added=12 removed=2 total=14
+18:37:49 | 改动#5 | node -e 精确行数统计 (orig / c5快照 / 当前) | exit=0 | 
+18:37:49 | 改动#5 | git diff --no-index --numstat orig vs impl.js | exit=1 | 
+18:37:49 | 改动#5 | git diff --no-index --numstat 快照c5 vs impl.js | exit=1 | 
+18:37:56 | 改动#5 | git diff --no-index --numstat 五次改动逐条统计 | exit=0 | 
+18:38:03 | 改动#5 | Get-Content log.txt -Encoding utf8 (改动5 收尾核对) | exit=0 | totalLines=53 hasBOM=False

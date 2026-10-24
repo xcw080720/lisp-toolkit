@@ -1,0 +1,10 @@
+T0 10:51:23  读完技能包、开始读规格
+T1 10:53:14  impl.lisp 首次落盘（359 行）
+10:53:19 | node ..\..\check-scale.cjs --impl impl.lisp --only 1,2,3,4,5,6,7,8,9 | exit=1 | [FAIL] #1 add-default-weeks  — stdout 非 JSON
+10:53:31 | node ..\..\check-scale.cjs --impl impl.lisp --only 1,2,3,4,5,6,7,8,9 | exit=0 | -- 9 passed, 0 failed
+T2 10:53:36  首次 9/9（第 2 轮：第 1 轮 0/9，defop 宏形参解构错）
+10:53:37 | sbcl --script impl.lisp t2.json (空 ops 契约) | exit=0 | {"opsText":"","courses":[{"name":"a","teacher":"","location":"","day":1,"periodFrom":1,"periodTo":2,"weeks":{"type":"all"},"tag":null}],"log":[],"n":0}
+10:53:40 | node ..\..\metric.cjs impl.lisp | exit=0 | 文件                                            语言      物理行     代码行     字符       
+10:53:53 | (补记，追加位置在 T2 之后仅因日志只追加) sbcl --script impl.lisp t1.json 手测 add | exit=1 | Error while parsing arguments to DEFMACRO DEFOP: too many elements in ("match" "set") to satisfy lambda list (NEED)
+10:53:53 | (补记) sbcl --script impl.lisp t1.json 手测 add（宏修正后） | exit=0 | {"opsText":"1) \u52A0...","n":1}
+10:54:03 | node ..\..\check-scale.cjs --impl impl.lisp --only 19（额外：#19 edit 节次必须真改） | exit=0 | [ok  ] #19 edit-periods-applied

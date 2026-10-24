@@ -1,0 +1,37 @@
+{
+  "add": {
+    "name": "add",
+    "params": ["course"],
+    "required": ["course.name"],
+    "clamp": ["course.day:1..7"],
+    "text": "加「{course.name}」"
+  },
+  "del": {
+    "name": "del",
+    "params": ["match"],
+    "required": ["match"],
+    "clamp": [],
+    "text": "删掉「{match}」"
+  },
+  "edit": {
+    "name": "edit",
+    "params": ["match", "set"],
+    "required": ["match", "set"],
+    "clamp": [],
+    "text": "把「{match}」改成别的"
+  },
+  "move": {
+    "name": "move",
+    "params": ["match", "day", "periodFrom", "periodTo"],
+    "required": ["match"],
+    "clamp": [],
+    "text": "挪「{match}」"
+  },
+  "swap": {
+    "name": "swap",
+    "params": ["match", "with"],
+    "required": ["match", "with"],
+    "clamp": [],
+    "text": "换「{match}」和「{with}」"
+  }
+}

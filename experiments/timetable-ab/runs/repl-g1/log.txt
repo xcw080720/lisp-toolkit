@@ -1,0 +1,8 @@
+19:03:46 | New-Item -ItemType Directory -Force repl-g1 | exit=0 | 
+19:04:16 | sbcl --script probe1.lisp | exit=1 | sbcl.exe : Unhandled SB-INT:SIMPLE-STREAM-ERROR in thread #<SB-THREAD:THREAD tid=15376 "main thread" RUNNING
+19:04:27 | sbcl --script probe1.lisp | exit=0 | 
+19:04:41 | sbcl --script probe2.lisp foo bar | exit=0 | 
+19:04:41 | node -e spawnSync(sbcl --script probe2.lisp x.json) | exit=0 | 
+19:05:34 | node ..\..\check-scale.cjs --impl impl.lisp --only 1,2,3,4,5,6,7,8,9 | exit=0 | [ok  ] #1 add-default-weeks
+19:05:52 | node selftest.cjs | exit=0 | 
+19:06:04 | Remove-Item tmp_in.json,out1.json,err1.txt,err2.txt,out2b.txt | exit=0 | 

@@ -1,0 +1,6 @@
+# opsText.txt — fanout.GenProc 编译期生成，别手改
+add	加「{course.name}」
+del	删掉「{match}」
+edit	把「{match}」改成别的
+move	挪「{match}」
+swap	换「{match}」和「{with}」

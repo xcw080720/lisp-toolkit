@@ -1,0 +1,8 @@
+T0 20:52:33  收到任务、开始读规格
+T1 20:53:21  impl.rs 首次落盘（563 行）
+T2 20:53:25  首次 9/9
+20:52:33 | Get-Date; Test-Path 工作目录 | exit=0 |
+20:53:04 | rustc.exe --version | exit=0 | rustc 1.99.1 (58cf8f9c3 2026-10-13) x86_64-pc-windows-gnu
+20:53:21 | rustc.exe impl.rs -O -o impl.exe | exit=0 |
+20:53:25 | node ..\..\check-scale.cjs --impl impl.exe --only 1,2,3,4,5,6,7,8,9 | exit=0 | 9 passed, 0 failed
+20:53:47 | node ..\..\check-scale.cjs --impl impl.exe --only 1,2,3,4,5,6,7,8,9 （复跑） | exit=0 | 9 passed, 0 failed

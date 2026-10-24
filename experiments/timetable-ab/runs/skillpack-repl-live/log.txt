@@ -1,0 +1,35 @@
+SP-live 臂（技能包 + 活体 REPL）—— 运行日志
+工作目录：C:\Users\HUAWEI\Documents\deepseek-harness\default-workspace
+目标：tasks/scale.spec.md 前 5 个 op（add/del/edit/move/swap），产物 runs/skillpack-repl-live/impl.lisp
+判据：check-scale.cjs --only 1..9（必须 9/9）+ --only 19（必须 1/1）
+
+T0 10:58:19  | 读完四篇技能包（defop / json / cost / macro-value），开始读规格
+T1 11:00:41  | impl.lisp 首次落盘（254 行，UTF-8 无 BOM，node/write 工具落盘，全程未用 Set-Content）
+11:00:5x | 首跑判据 | 0/9 + #19 红 | 原文：[FAIL] #1 add-default-weeks  — stdout 非 JSON ／ stderr：The function COMMON-LISP-USER::GET-OUTPUT-STRING is undefined. + caught WARNING: undefined variable: COMMON-LISP-USER::CA | 修：get-output-string → get-output-stream-string；op-swap 的 let 改 let*（ca/cb 在 init 里不可见）| 轮次结束：9/9 + 1/1 绿
+T2 11:01:43  | 首次 9/9 + #19 通过（复跑确认；首个绿跑在同一分钟内的前一次调用，未取到秒级时戳）
+
+返工轮数（落盘后→全绿，判据红转绿的次数）：1
+
+以下两条是判据全绿之后、靠活体 REPL 自查出来的（判据未红，故不计入返工轮数）：
+11:01:1x | 自查（判据仍绿）| 现象：(jw (jparse "{\"a\":[2.5,1.0,1e7]...}")) → "2.5d0"，非法 JSON；判据全绿因为 19 条用例的输入全是整数 | 修：integerp → ~d，其余 number → ~f | 结束：{2.5,1.0,10000000.0,-3,0.00000015} 全部合法
+11:01:3x | 自查（判据仍绿）| 现象：edit set={day:9,periodFrom:5} → periodTo 从 2 被静默改成 5（改了 set 之外的键）| 修：删掉跨字段 pf≤pt 纠正，edit 只写 set 里出现的白名单键 | 结束：periodTo 保持 2
+
+活体 REPL 调用记录（开发期，运行期不依赖）：
+1) (list :len (length "高") :codes (map 'list #'char-code "高"))      → (:LEN 1 :CODES (39640))
+2) (stream-external-format *standard-output*)                        → (:UTF-8 :REPLACEMENT #\REPLACEMENT_CHARACTER)
+3) (with-open-file (s ".../scale.spec.md") (read-line s))            → "# 规模臂规格：课表 ops 执行器（15 个 op 的路线图）"（默认源编码即 UTF-8）
+4) (fboundp 'get-output-string) → NIL ／ (fboundp 'get-output-stream-string) → #<FUNCTION GET-OUTPUT-STREAM-STRING>
+5) (with-output-to-string (s) (let ((*standard-output* s)) (jw (jparse "{\"a\":[2.5,1.0,1e7,-3,1.5e-7]}")))) → "{\"a\":[2.5,1.0,10000000.0,-3,0.00000015]}"
+6) (op-edit {match:"高数",set:{day:9,periodFrom:5}}) on day1/1-2 → (:N 1 :C ((:OBJ ("name" . "高数") ("day" . 7) ("periodFrom" . 5) ("periodTo" . 2))))
+7) (op-swap {match:"A",with:"B"}) on A/AA/B → (:N 0 :LOG ("swap \"A\"(2) / \"B\"(1) 不是各1门，不执行"))
+8) sbcl --script probe-argv.lisp → *posix-argv* = (sbcl.exe "C:\\tmp\\x.json") ⇒ 取参用 (car (last *posix-argv*))
+
+判据实跑（最终）：
+[ok] #1..#9  -- 9 passed, 0 failed
+[ok] #19 edit-periods-applied  -- 1 passed, 0 failed
+
+体积（metric.cjs，口径=非空白非注释字符）：
+impl.lisp  lisp  物理行 255  代码行 219  字符 5957
+
+边界：只实现前 5 个 op；#10..#18 未实现，未知 op 走整批拒绝，故那些用例按设计为红（未纳入本次要求）。
+上下文隔离：fresh-agent-per-arm；全程未 list/读 experiments/timetable-ab/runs/ 下除本目录以外的任何目录或文件。

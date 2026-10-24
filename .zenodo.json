@@ -1,0 +1,37 @@
+{
+  "title": "timetable-ab: controlled cross-language comparison of abstract-structure cost (raw data, 7 languages, 14 specifications)",
+  "upload_type": "dataset",
+  "description": "<p>A pre-registered, reproducible cross-language experiment on the cost of abstract structures (macros vs. table-driven dispatch). One frozen specification (5 ops) implemented from scratch in seven languages by isolated agents, plus fourteen follow-up specifications: scale, product fan-out, expansion-time validation, body-level inlining, iteration/maintenance, two-agent hand-off, a 30-op crossover, and a skill-pack A/B.</p><p><strong>What is included:</strong> every run artefact (543 files), the 36 invariants and their go-red proofs, mutation scores with their sample-size bounds, the twelve mutation floors, and a 2318-line append-only chronicle that records <em>nineteen</em> occasions on which the measurement apparatus itself was wrong — each with the symptom, the discovery, and the rule it produced.</p><p><strong>What is excluded:</strong> compiled binaries (<code>*.exe</code>), build caches, and machine-local temporary files. No personal data is included.</p><p><strong>Headline results that were <em>not</em> expected:</strong> (1) physical line count differs by 4.05x between two implementations of the same specification while non-blank non-comment characters differ by only 7.6% — line count measures formatting, not language; (2) macro-based dispatch loses on authoring cost at this scale (11460 vs 5933 characters for the same 15 ops); (3) no positive crossover point was observed; (4) a skill-pack intervention showed no detectable effect across a 6-run A/B, because the executing model's error rate was already near zero (ceiling effect).</p><p><strong>Intended use:</strong> replication of the measurement protocol, reuse of the mutation-testing gate, and empirical grounding for work on benchmark validity in LLM code generation.</p>",
+  "creators": [
+    {
+      "name": "[姓], [名]",
+      "affiliation": "[学校 / 院系]",
+      "orcid": ""
+    }
+  ],
+  "contributors": [
+    {
+      "name": "Small Code Sauce (assistant)",
+      "type": "Other"
+    }
+  ],
+  "license": "MIT",
+  "access_right": "open",
+  "keywords": [
+    "common-lisp",
+    "macros",
+    "cost-of-abstraction",
+    "reproducibility",
+    "mutation-testing",
+    "benchmark-validity",
+    "cross-language"
+  ],
+  "related_identifiers": [
+    {
+      "relation": "isSupplementTo",
+      "identifier": "https://github.com/xcw080720/lisp-toolkit",
+      "resource_type": "software"
+    }
+  ],
+  "notes": "Generated 2026-10-24. The chronicle in reports/ is append-only; nothing was deleted when a conclusion was refuted, only annotated with its scope."
+}

@@ -1,0 +1,1 @@
+{"courses":[{"name":"高数","day":1,"periodFrom":1,"periodTo":2},{"name":"高数强化","day":2,"periodFrom":3,"periodTo":4}],"ops":[{"op":"swap","match":"高数","with":"高数强化"}]}

@@ -1,0 +1,9 @@
+T0 09:36:01  收到任务、开始读规格
+T1 09:36:42  impl.java 首次落盘（277 行）
+09:36:44 | node ..\..\check-scale.cjs --impl impl.java --only 1,2,3,4,5,6,7,8,9 | exit=0 | -- 9 passed, 0 failed
+T2 09:36:48  首次 9/9（node check-scale.cjs --only 1..9）
+09:37:15 | javac -encoding UTF-8 -d TEMP impl.java | exit=0 | 
+09:37:16 | java -cp TEMP impl cases\public-A.json | exit=0 | 
+09:37:29 | java -cp TEMP impl %TEMP%\fj-in.json (裸输入 add+swap, 含中文) | exit=0 | 
+09:37:33 | node ..\..\check-scale.cjs --impl impl.java --only 1,2,3,4,5,6,7,8,9 (复跑) | exit=0 | 
+09:37:36 | 结束：9/9 稳定复现，impl.java 277 行 | exit=0 | 

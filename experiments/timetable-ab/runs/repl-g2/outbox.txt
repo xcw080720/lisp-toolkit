@@ -1,0 +1,62 @@
+<<READY>>
+<<Q1792753849551_765>>
+
+; file: C:/Users/HUAWEI/Documents/deepseek-harness/default-workspace/experiments/timetable-ab/runs/repl-g2/impl.lisp
+; in: DEFUN JVAL
+;     (JARR)
+; 
+; caught STYLE-WARNING:
+;   undefined function: COMMON-LISP-USER::JARR
+
+;     (JOBJ)
+; 
+; caught STYLE-WARNING:
+;   undefined function: COMMON-LISP-USER::JOBJ
+; 
+; compilation unit finished
+;   Undefined functions:
+;     JARR JOBJ
+;   caught 2 STYLE-WARNING conditions
+T
+<<end Q1792753849551_765>>
+<<Q1792753854608_666>>
+(LET* ((#:C112 C))
+  (SB-KERNEL:%RPLACD #:C112 (ACONS "tag" :NULL (CDR #:C112))))
+T
+* (:SETF-FD-EF #<FUNCTION (SETF SB-IMPL::FD-STREAM-EXTERNAL-FORMAT)>
+ :MAKE-FD-STREAM #<FUNCTION SB-SYS:MAKE-FD-STREAM>)
+* "中文"
+* (:ARR 1 2.5d0 :NULL :TRUE)
+* "{\"opsText\":\"\",\"courses\":[{\"name\":\"高数\",\"teacher\":\"张\",\"location\":\"A101\",\"day\":1,\"periodFrom\":1,\"periodTo\":2}],\"log\":[],\"n\":0}"
+* "{\"opsText\":\"1) swap 高数\\n\",\"courses\":[{\"name\":\"高数\",\"day\":1,\"periodFrom\":1,\"periodTo\":2},{\"name\":\"高数强化\",\"day\":2,\"periodFrom\":3,\"periodTo\":4}],\"log\":[\"1) 交换失败：两侧须各恰好命中 1 门\"],\"n\":0}"
+* 42
+<<end Q1792753854608_666>>
+<<Q1792753863733_388>>
+
+debugger invoked on a FILE-DOES-NOT-EXIST in thread
+#<THREAD tid=21988 "main thread" RUNNING {1100C78003}>:
+  The file
+  #P"C:/Users/HUAWEI/Documents/deepseek-harness/default-workspace/experiments/timetable-ab/runs/repl-g2/nope.json"
+  does not exist:
+
+Type HELP for debugger help, or (SB-EXT:EXIT) to exit from SBCL.
+
+restarts (invokable by number or by possibly-abbreviated name):
+  0: [CREATE   ] Reopen with :if-does-not-exist :create
+  1: [CONTINUE ] Retry opening.
+  2: [USE-VALUE] Try opening a different file.
+    系统找不到指定的文件。
+  3: [ABORT    ] Exit debugger, returning to top level.
+
+(SB-IMPL::%OPEN-ERROR #P"C:/Users/HUAWEI/Documents/deepseek-harness/default-workspace/experiments/timetable-ab/runs/repl-g2/nope.json" 2 :IGNORE-THIS-ARG :ERROR)
+<<end Q1792753863733_388>>
+<<Q1792753863895_250>>
+
+42
+<<end Q1792753863895_250>>
+<<Q1792753864060_405>>
+
+<<end Q1792753864060_405>>
+<<Q1792753864238_750>>
+(:ALIVE 4)
+<<end Q1792753864238_750>>

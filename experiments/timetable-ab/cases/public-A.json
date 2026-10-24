@@ -1,0 +1,50 @@
+{
+  "cases": [
+    {
+      "name": "add-default-weeks",
+      "why": "add 缺 weeks → 默认 range 1..16（spec 约束 1）",
+      "input": {
+        "courses": [{ "name": "高数", "teacher": "张", "location": "A101", "day": 1, "periodFrom": 1, "periodTo": 2 }],
+        "ops": [{ "op": "add", "course": { "name": "线代", "day": 3, "periodFrom": 5, "periodTo": 6 } }]
+      },
+      "expected": {
+        "opsText": "加「线代」",
+        "courses": [
+          { "name": "高数", "teacher": "张", "location": "A101", "day": 1, "periodFrom": 1, "periodTo": 2 },
+          { "name": "线代", "teacher": "", "location": "", "day": 3, "periodFrom": 5, "periodTo": 6, "weeks": { "type": "range", "from": 1, "to": 16 } }
+        ],
+        "log": ["加了「线代」"],
+        "n": 1
+      }
+    },
+    {
+      "name": "del-counts-hits",
+      "why": "del 命中 2 条 → n=2（spec 约束 2）",
+      "input": {
+        "courses": [
+          { "name": "高数", "teacher": "", "location": "", "day": 1, "periodFrom": 1, "periodTo": 2 },
+          { "name": "高数(补)", "teacher": "", "location": "", "day": 2, "periodFrom": 3, "periodTo": 4 },
+          { "name": "英语", "teacher": "", "location": "", "day": 3, "periodFrom": 1, "periodTo": 2 }
+        ],
+        "ops": [{ "op": "del", "match": "高数" }]
+      },
+      "expected": {
+        "opsText": "删掉「高数」",
+        "courses": [{ "name": "英语", "teacher": "", "location": "", "day": 3, "periodFrom": 1, "periodTo": 2 }],
+        "log": ["删掉 2 条「高数」"],
+        "n": 2
+      }
+    },
+    {
+      "name": "empty-ops",
+      "why": "空 ops → opsText 空、n=0、log 空（spec 约束 6）",
+      "input": { "courses": [{ "name": "英语", "teacher": "", "location": "", "day": 3, "periodFrom": 1, "periodTo": 2 }], "ops": [] },
+      "expected": {
+        "opsText": "",
+        "courses": [{ "name": "英语", "teacher": "", "location": "", "day": 3, "periodFrom": 1, "periodTo": 2 }],
+        "log": [],
+        "n": 0
+      }
+    }
+  ]
+}

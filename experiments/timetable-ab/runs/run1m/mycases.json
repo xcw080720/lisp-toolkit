@@ -1,0 +1,60 @@
+{
+  "cases": [
+    {
+      "name": "edit-clamp-day-keep-zeroperiod",
+      "why": "spec 约束 3：day=9→7；periodFrom=0 保留原值",
+      "input": {
+        "courses": [{ "name": "高数", "teacher": "", "location": "", "day": 1, "periodFrom": 1, "periodTo": 2 }],
+        "ops": [{ "op": "edit", "match": "高数", "set": { "day": 9, "periodFrom": 0 } }]
+      },
+      "expected": {
+        "opsText": "改「高数」",
+        "courses": [{ "name": "高数", "teacher": "", "location": "", "day": 7, "periodFrom": 1, "periodTo": 2 }],
+        "log": ["改了 1 条「高数」"],
+        "n": 1
+      }
+    },
+    {
+      "name": "move-partial-is-invalid",
+      "why": "spec 约束 4：move 只给 day → 不执行，日志说明",
+      "input": {
+        "courses": [{ "name": "高数", "teacher": "", "location": "", "day": 1, "periodFrom": 1, "periodTo": 2 }],
+        "ops": [{ "op": "move", "match": "高数", "day": 5 }]
+      },
+      "expected": {
+        "opsText": "",
+        "courses": [{ "name": "高数", "teacher": "", "location": "", "day": 1, "periodFrom": 1, "periodTo": 2 }],
+        "log": ["跳过「move」：缺少 periodFrom、periodTo"],
+        "n": 0
+      }
+    },
+    {
+      "name": "unknown-op-logged",
+      "why": "spec 约束 5：未知 op 必须进 log",
+      "input": {
+        "courses": [{ "name": "英语", "teacher": "", "location": "", "day": 3, "periodFrom": 1, "periodTo": 2 }],
+        "ops": [{ "op": "nope" }]
+      },
+      "expected": {
+        "opsText": "",
+        "courses": [{ "name": "英语", "teacher": "", "location": "", "day": 3, "periodFrom": 1, "periodTo": 2 }],
+        "log": ["未知操作「nope」，已跳过"],
+        "n": 0
+      }
+    },
+    {
+      "name": "del-zero-hits",
+      "why": "del 命中 0 → 报没找到，n += 0",
+      "input": {
+        "courses": [{ "name": "英语", "teacher": "", "location": "", "day": 3, "periodFrom": 1, "periodTo": 2 }],
+        "ops": [{ "op": "del", "match": "物理" }]
+      },
+      "expected": {
+        "opsText": "删掉「物理」",
+        "courses": [{ "name": "英语", "teacher": "", "location": "", "day": 3, "periodFrom": 1, "periodTo": 2 }],
+        "log": ["没找到「物理」"],
+        "n": 0
+      }
+    }
+  ]
+}

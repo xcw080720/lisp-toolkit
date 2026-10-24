@@ -1,0 +1,11 @@
+T0 20:11:33  收到任务、开始读规格
+T1 20:12:15  impl.js 首次落盘（265 行）
+T2 20:12:28  首次 9/9
+20:11:33 | pwsh: Get-Date + Test-Path 工作目录/规格/检查器; 读取 scale.spec.md | exit=0 | 
+20:12:05 | write impl.js (265 行, 手写 JSON 读写) | exit=0 | 
+20:12:15 | pwsh: 统计 impl.js 行数并写入 T1 | exit=0 | 
+20:12:28 | node ..\..\check-scale.cjs --impl impl.js --only 1,2,3,4,5,6,7,8,9 | exit=0 | 9 passed, 0 failed
+20:12:41 | pwsh: 追加 T2 与命令记录行 | exit=0 | 
+20:12:41 | grep 校验 impl.js 无 JSON.parse/JSON.stringify 调用 | exit=0 | 仅第 1 行注释出现该字符串
+20:12:41 | node ..\..\check-scale.cjs --impl impl.js --only 1,2,3,4,5,6,7,8,9 (复跑) | exit=0 | -- 9 passed, 0 failed
+20:12:41 | pwsh: 统计行数 + 写入本批日志 | exit=0 | impl.js 265 行, 手写 JSON 读写 134 行

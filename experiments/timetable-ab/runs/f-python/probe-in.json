@@ -1,0 +1,1 @@
+﻿{"courses":[{"name":"高数","teacher":"张","location":"A101","day":1,"periodFrom":1,"periodTo":2,"weeks":{"type":"range","from":1,"to":16},"tag":null}],"ops":[{"op":"add","course":{"name":"线代","day":9}},{"op":"del","match":"高数"},{"op":"swap","match":"线代","with":"线代"}]}

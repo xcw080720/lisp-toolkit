@@ -1,0 +1,11 @@
+21:12:53 | T0 开工 | exit=0 | 
+21:13:09 | T1 写完（3 个片段，impl.js 308→314 行） | exit=0 | 
+21:13:36 | T2 首次全绿（check-audit 17 passed / 0 failed） | exit=0 | 
+21:12:53 | Get-ChildItem impl.js; (Get-Content impl.js).Count = 308 行基线 | exit=0 | 
+21:13:09 | 3x edit impl.js（§5 入口：audit 声明 / 循环 push / 出参挂载） | exit=0 | 
+21:13:36 | node ..\..\check-audit.cjs --impl impl.js --ops "add,del,edit,move,swap,rename,duplicate,trim,clear,shift,tag,untag,sort,swapDay,stats" | exit=0 | 
+21:13:38 | node ..\..\check-scale.cjs --impl impl.js | exit=0 | 
+21:14:00 | node ..\..\check-audit.cjs --impl impl.js --ops "add,del,edit,move,swap,rename,duplicate,trim,clear,shift,tag,untag,sort,swapDay,stats" | exit=0 | 
+21:14:01 | node ..\..\check-scale.cjs --impl impl.js | exit=0 | 
+21:14:01 | 行数核对 ReadAllText impl.js（LF 数 = 净增后总行数） | exit=0 | lines=314
+21:14:11 | node impl.js aud-skip.json / aud-unknown.json（跳过+拒绝分支的 audit 形状手验） | exit=0 | 

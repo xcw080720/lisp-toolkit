@@ -1,0 +1,1 @@
+{"add":{"params":["course"],"required":["course.name"],"clamp":["course.day:1..7"]},"del":{"params":["match"],"required":["match"],"clamp":[]},"edit":{"params":["match","set"],"required":["match","set"],"clamp":[]},"move":{"params":["match","day","periodFrom","periodTo"],"required":["match"],"clamp":[]},"swap":{"params":["match","with"],"required":["match","with"],"clamp":[]}}

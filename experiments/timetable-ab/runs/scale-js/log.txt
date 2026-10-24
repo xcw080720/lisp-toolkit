@@ -1,0 +1,11 @@
+18:58:08 | 建-5op | 动了几处=0（新建 171 行） | 本步diff=+171/−0 | 不变量=10/18 | impl行数=171
+18:58:40 | 加#6 rename（checker#10） | 动了几处=1（REG 表内一条声明：need/run/say） | 本步diff=+12/−0 | 不变量=11/18 | impl行数=183
+18:58:51 | 加#7 duplicate（checker#11） | 动了几处=1（REG 内一条声明：need/fields/run/say，day 夹紧复用 COERCE.day） | 本步diff=+13/−0 | 不变量=12/18 | impl行数=196
+18:59:05 | 加#8 trim（checker#12） | 动了几处=1（REG 内一条声明：need/fields/run/say，from/to 走 COERCE.period） | 本步diff=+20/−0 | 不变量=13/18 | impl行数=216
+18:59:18 | 加#9 clear（checker#13） | 动了几处=1（REG 内一条声明：need/fields/run/say，day 走 COERCE.day） | 本步diff=+11/−0 | 不变量=14/18 | impl行数=227
+18:59:25 | 加#10 shift（checker#14） | 动了几处=1（REG 内一条声明：need/fields/run/say，delta 走 COERCE.int） | 本步diff=+17/−0 | 不变量=15/18 | impl行数=244
+18:59:35 | 加#11+#12 tag+untag（首版试错） | 动了几处=2（REG 内两条相邻声明，同一处编辑；tag 复用 COERCE.tag） | 本步diff=+24/−0 | 不变量=14/18 | impl行数=268
+18:59:44 | 加#11+#12 tag+untag（修正后） | 动了几处=2（REG 内两条相邻声明，同一处编辑；tag 复用 COERCE.tag。首版 untag 误解为删课，当场改回置 null） | 本步diff=+26/−0 | 不变量=15/18 | impl行数=270
+18:59:53 | 加#13 sort | 动了几处=1（REG 内一条声明，run/say；无字段故 need/fields 省略） | 本步diff=+10/−0 | 不变量=16/18 | impl行数=280
+19:00:00 | 加#14 swapDay | 动了几处=1（REG 内一条声明：need/fields/run/say，a/b 走 COERCE.day） | 本步diff=+16/−0 | 不变量=17/18 | impl行数=296
+19:00:09 | 加#15 stats | 动了几处=1（REG 内一条声明：run/say，日志正文由 run 经 p._text 传递） | 本步diff=+12/−0 | 不变量=18/18 | impl行数=308
