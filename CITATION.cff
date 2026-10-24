@@ -22,13 +22,10 @@ keywords:
   - mutation-testing
   - benchmark-validity
 
-# TODO(owner): replace the two placeholders below with your real name before minting a DOI.
-# You may keep the alias; Zenodo will show both.
 authors:
-  - family-names: "[姓]"
-    given-names: "[名]"
+  - name: "许宸玮"
+    affiliation: "北华大学 文学院"
     alias: "xcw080720"
-    affiliation: "[学校 / 院系]"
   - name: "Small Code Sauce (assistant)"
     type: other
     contribution: "Implementation, measurement harness, and record of self-refutations"

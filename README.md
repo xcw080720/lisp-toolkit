@@ -3,8 +3,16 @@
 > 如果你只记得一条：**判据先证明能红，才允许它说「通过」。**
 # lisp-toolkit
 
-> **Cite this:** see [`CITATION.cff`](CITATION.cff). A DOI is being minted for the
-> dataset release; until it resolves, cite the repository and tag `data-v1.0.0`.
+> **Cite this:**
+>
+> ```
+> 许宸玮. (2026). timetable-ab: a controlled cross-language comparison of
+> abstract-structure cost (Version 1.0.0) [Data set].
+> https://github.com/xcw080720/lisp-toolkit  (tag: data-v1.0.0)
+> ```
+>
+> A DOI is being minted for `data-v1.0.0`; once it resolves, prefer the DOI form.
+> Machine-readable metadata: [`CITATION.cff`](CITATION.cff) · [`.zenodo.json`](.zenodo.json)
 
 三个静态检查器 + 一个 REPL 技能包：在把 `.lisp` 交给 SBCL 之前，先把"少括号、格式串、BOM"挡在门外。
 
