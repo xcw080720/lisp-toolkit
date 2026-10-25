@@ -10,9 +10,9 @@ abstract: >-
   proofs, mutation scores with sample bounds, and a complete record of nineteen occasions
   on which the measurement apparatus itself was wrong.
 type: dataset
-version: "1.0.0"
+version: "1.0.1"
 doi: "10.5281/zenodo.23618045"
-date-released: 2026-10-24
+date-released: 2026-10-25
 license: MIT
 repository-code: "https://github.com/xcw080720/lisp-toolkit"
 keywords:
