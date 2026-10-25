@@ -203,6 +203,59 @@ node experiments/timetable-ab/gate.cjs                              # → 两个
     <a href="../skills/">七篇技能</a>。
   </p>
 
+  <h2>我又补了两条对照，两条都没能推翻我</h2>
+
+  <p>写到这里我发现：我有两处结论没对照，别人一问就漏。所以我先自己补了。</p>
+
+  <p class="big">① JS 装上 linter 之后，我的「优势」没了</p>
+  <p>我原本以为：Lisp 的编译器会当场指出未定义的函数和变量，JS 不会。于是我种了四种错，各做一份：</p>
+
+  <table>
+    <thead><tr><th>错误</th><th>默认 JS</th><th>JS + eslint</th><th>Lisp 编译器</th></tr></thead>
+    <tbody>
+      <tr><td>变量名写错</td><td>不报</td><td><strong>报</strong></td><td>报</td></tr>
+      <tr><td>函数名写错</td><td>不报</td><td><strong>报</strong></td><td>报</td></tr>
+      <tr><td>属性名写错</td><td>不报</td><td>不报</td><td>未测（种点失败）</td></tr>
+      <tr><td>常量改错（7→6）</td><td>不报</td><td>不报</td><td>不报</td></tr>
+    </tbody>
+  </table>
+
+  <p><strong>我的说法改了：</strong></p>
+  <div class="todo">
+    <p>旧　Lisp 有静态检查，JS 没有</p>
+    <p>新　<strong>Lisp 零配置就有，JS 要装一次 —— 差别是摩擦，不是能力</strong></p>
+  </div>
+  <p>而摩擦对错误率高的执行者<strong>同样致命</strong>：它不会记得先去装。</p>
+
+  <p class="big">② 十个互不知情的医生，十次一轮治好</p>
+  <p>我把同一份缺陷复制成十份（Lisp 五份、JS 五份），派十个互相看不见的 agent 各修一份。</p>
+
+  <div class="figs">
+    <div class="fig">
+      <div class="n">10 / 10</div>
+      <div class="d">全部一轮改对，改的都是同一行，<strong>没有一个人想错过</strong></div>
+    </div>
+    <div class="fig">
+      <div class="n">9s <span class="u">vs</span> 8s</div>
+      <div class="d">定位时间中位：Lisp（1–12 秒）｜JS（6–14 秒）—— <strong>区间重叠</strong></div>
+    </div>
+  </div>
+
+  <p><strong>「哪个语言排障更快」，我原来答「测不出来」。现在答案是：测出来了，没差别。</strong>
+  不是因为样本少，是因为十个人全部零试错 —— 这就叫天花板。</p>
+
+  <p class="big">所以三条结论都被我改窄了</p>
+  <table>
+    <thead><tr><th>项</th><th>原来</th><th>现在</th></tr></thead>
+    <tbody>
+      <tr><td>静态检查</td><td>Lisp 有、别人没有</td><td><strong>Lisp 零配置，JS 要装。摩擦，不是能力</strong></td></tr>
+      <tr><td>排障速度</td><td>测不出来</td><td><strong>测出来了：没差别</strong></td></tr>
+      <tr><td>返工轮数</td><td>常数 1</td><td><strong>方差为 0（10/10 全是 1 轮）</strong></td></tr>
+    </tbody>
+  </table>
+
+  <p class="q"><strong>没有一条被推翻。但每一条都变窄了。</strong><br>
+  窄比宽难 —— 因为窄要挡得住更多反驳。</p>
   <h2>我在找什么</h2>
 
   <p><strong>先说清楚我手里有什么</strong>，因为我找的不是"被收留"。</p>
