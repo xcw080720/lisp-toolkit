@@ -1,0 +1,1 @@
+(compile-file "C:/Users/HUAWEI/Documents/deepseek-harness/default-workspace/experiments/timetable-ab/.tmp/lint/cl-A-freevar.lisp" :output-file "C:/Users/HUAWEI/Documents/deepseek-harness/default-workspace/experiments/timetable-ab/.tmp/lint/cl-A-freevar.fasl")
