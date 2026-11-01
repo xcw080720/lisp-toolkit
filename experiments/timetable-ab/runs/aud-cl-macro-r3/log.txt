@@ -1,0 +1,39 @@
+== aud-cl-macro-r3 第 3 回合判据（只给过上一轮判据输出）==
+# 1 PASS   add 单条 → ok + state 一行
+# 2 PASS   add 两条不冲突
+# 3 PASS   add 重名 → DUP 且状态不变
+# 4 PASS   add 时间重叠 → CONFLICT（端点相接也算）
+# 5 PASS   add 参数不足 → BADARG
+# 6 PASS   add 参数越界（day=8）→ BADARG
+# 7 PASS   del 存在
+# 8 PASS   del 不存在 → NOTFOUND
+# 9 PASS   edit 改教师与地点
+#10 PASS   edit 不存在 → NOTFOUND
+#11 PASS   move 到空时间段
+#12 PASS   move 撞已有课程 → CONFLICT
+#13 PASS   swap 两门课对调时间
+#14 PASS   rename 成功
+#15 PASS   rename 撞名 → DUP
+#16 PASS   duplicate 复制到新名（同名时间）
+#17 PASS   duplicate 撞名 → DUP
+#18 PASS   trim 把该天课程 to 截到指定值
+#19 PASS   trim 对已短的课程无影响
+#20 PASS   clear 删除该天全部
+#21 PASS   shift 全体后移一天
+#22 PASS   shift 越界 → BADARG 且不得部分生效
+#23 PASS   copy 复制到另一天（名字加 _2）
+#24 PASS   merge 并入并删除 b
+#25 PASS   merge 目标不存在 → NOTFOUND
+#26 PASS   sort 后 #state 按名排序
+#27 PASS   filter 统计某天
+#28 PASS   count 空课表
+#29 PASS   count 三门
+#30 PASS   LIMIT：第 21 门 → LIMIT
+#31 PASS   未知命令 → BADARG
+#32 PASS   空命令串 → BADARG
+#33 PASS   to < from → BADARG
+#34 PASS   同一天不冲突但跨天可重叠
+#35 PASS   删后再加同名 → 成功
+#36 PASS   混合序列 12 条命令
+
+36/36 通过（fail=0 crash=0）

@@ -1,0 +1,5 @@
+comparison	numerator	denominator	n_num	n_den	median_ratio	ci_lo	ci_hi	includes_1
+A 语言·inline	v4-js-inline	v5-cl-inline	6	6	1.0079	0.8252	1.1160	true
+B 语言·抽象	v4-js-table	v5-cl-macro	6	6	1.0072	0.8819	1.0953	true
+C 方案·CL	v5-cl-inline	v5-cl-macro	6	6	1.1995	1.0763	1.4364	false
+D 方案·JS	v4-js-inline	v4-js-table	6	6	1.2004	1.0715	1.3568	false

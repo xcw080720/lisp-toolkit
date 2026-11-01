@@ -1,0 +1,7 @@
+arm=v4-js-table r2 model=deepseek-flash max_tokens=32768
+started=2026-11-01T02:57:40.092Z elapsed_ms=114176
+finish_reason=stop fenced=true chars=7081
+usage_prompt=1853 usage_completion=22639 cached=1664
+response_id=25b92d66-71d1-491f-b7ca-944cfd8e7fa4
+full_response_chars=7090
+reasoning_chars=74580

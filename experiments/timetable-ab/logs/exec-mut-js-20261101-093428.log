@@ -1,0 +1,14 @@
+﻿候选变异 297 个，抽样 30 个，实现 runs\scale-js\impl.js
+基线全绿：-- 36 passed, 0 failed
+
+可用变异 17（语法无效 13）
+杀死 12，存活 5
+变异得分 = 70.6%
+GATE_JSON {"impl":"impl.js","baselineGreen":true,"total":17,"killed":12,"survived":5,"score":70.6}
+
+=== 存活变异（判据看不见的错）===
+  L1  [删一行（非空非注释）]  'use strict';
+  L30  [删一行（非空非注释）]  tag: COERCE.tag(c.tag),
+  L99  [删一行（非空非注释）]  c.periodTo = Math.max(p.periodFrom, p.periodTo);
+  L157  [>  → >=]  if (nf > nt) continue;
+  L216  [删一行（非空非注释）]  return targets.length;

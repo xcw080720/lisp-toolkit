@@ -1,0 +1,22 @@
+﻿== DEDUP 模式：81 行 → 65 个独立产物 ==
+
+=== 每条语言的 chars 中位数与 95% bootstrap 区间 ===
+lang             n    median   [2.5%, 97.5%]
+common-lisp     39      9463   [7775, 11460]
+javascript      20    6008.5   [5443, 6309]
+java             2      7215   [NaN, NaN]
+cpp              1     11374   [NaN, NaN]
+julia            1      7316   [NaN, NaN]
+python           1      4750   [NaN, NaN]
+rust             1      9390   [NaN, NaN]
+
+=== CL − JS（中位数差） ===
+观测差 = 3455 chars
+95% CI = [1751, 5518]
+跨零? NO
+相对差 = 57.5%（以 JS 中位数为基）
+
+=== 口径警告（必须写进报告） ===
+results.tsv 中 ops_from_log 有效的行数: 23 / 65
+因此以上区间混合了不同任务规模与不同轮次，它量化的是「数据缺口」，不是「语言效应」。
+要做语言效应，必须先补齐 ops 分层（或按 op 数配对）。

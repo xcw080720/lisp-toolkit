@@ -1,0 +1,13 @@
+﻿arm	run	chars	lines	code_lines	upto36	upto36_pass	upto36_fail	out_tok	finish	max_tokens
+v5-cl-macro	r1	5616	251	221	34/36	34	2	39667	stop	65536
+v5-cl-macro	r2	5533	313	277	0/36	0	0	26655	stop	65536
+v5-cl-macro	r3	5895	285	252	34/36	34	2	33664	stop	65536
+v5-cl-macro	r4	5985	270	239	0/36	0	0	32176	stop	65536
+v5-cl-macro	r5	5762	270	238	36/36	36	0	31322	stop	65536
+v5-cl-macro	r6	6797	310	275	0/36	0	0	35337	stop	65536
+v5-cl-inline	r1	6345	308	296	34/36	34	2	27283	stop	65536
+v5-cl-inline	r2	8301	384	357	36/36	36	0	31513	stop	65536
+v5-cl-inline	r3	6451	323	311	34/36	34	2	26870	stop	65536
+v5-cl-inline	r4	8233	368	355	0/36	0	0	29717	stop	65536
+v5-cl-inline	r5	7077	390	360	0/36	0	0	51220	stop	65536
+v5-cl-inline	r6	6906	325	295	0/36	0	0	28489	stop	65536

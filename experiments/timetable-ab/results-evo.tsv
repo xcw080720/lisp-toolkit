@@ -1,0 +1,5 @@
+batch	ops	macro_chars	macro_delta	inline_chars	inline_delta	macro_per_op	inline_per_op	pair_ratio	note
+b0	1-15	4378	-	6490	-	-	-	0.67	建口径；起点不同源（macro=r3, inline=r1）
+b1	16-20	5164	786	8644	2154	157	431	0.36	op 逻辑薄
+b2	21-25	6161	997	10302	1658	199	332	0.60	op 逻辑厚
+b3	26-30	7631	1470	12269	1967	294	393	0.75	op 逻辑最厚

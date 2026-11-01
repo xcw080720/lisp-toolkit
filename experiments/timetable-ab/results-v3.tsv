@@ -1,0 +1,13 @@
+run	lang	style	repeat	chars_core	first_pass	rework_rounds	silent_failures	t_green_min	note
+v3-cl-macro-r1	common-lisp	macro	1	5565	N	1	0		首回合35/36（#32 空命令串）；r2 修复为36/36；r2 用新会话（原会话结束不可续）
+v3-cl-macro-r2	common-lisp	macro	2	3836	N	1	0		首次34/36（#32 空串、#36 swap 误报冲突）；r2 修复后 36/36（chars 3916→3836）
+v3-cl-macro-r3	common-lisp	macro	3	4378	N	1	0		首次35/36（#32 空串）；r2 修复后 36/36
+v3-cl-inline-r1	common-lisp	inline	1	6490	Y	0	0		首次即 36/36
+v3-cl-inline-r2	common-lisp	inline	2	5850	Y	0	0		首次即 36/36
+v3-cl-inline-r3	common-lisp	inline	3	6819	Y	0	0		首次即 36/36
+v3-js-table-r1	javascript	table	1	4364	N		0		首次35/36（#36 混合序列）
+v3-js-table-r2	javascript	table	2	3487	Y	0	0		首次即 36/36
+v3-js-table-r3	javascript	table	3	3340	Y	0	0		首次即 36/36
+v3-js-inline-r1	javascript	inline	1	5975	Y	0	0		首次即 36/36
+v3-js-inline-r2	javascript	inline	2	5718	Y	0	0		首次即 36/36
+v3-js-inline-r3	javascript	inline	3	6927	Y	0	0		首次即 36/36

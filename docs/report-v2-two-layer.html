@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>符号层成本实验 · 两层报告 v2</title>
+<style>
+:root{--bg:#0d0f13;--fg:#e9ecf1;--mut:#959daa;--line:#222834;--ok:#4ade80;--bad:#f87171;--warn:#fbbf24;--acc:#5b9dff;--acc2:#a78bfa;--pink:#f472b6}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.74 -apple-system,"Segoe UI",system-ui,"Noto Sans SC",sans-serif;-webkit-font-smoothing:antialiased}
+main{max-width:1020px;margin:0 auto;padding:56px 22px 110px}
+h1{font-size:33px;line-height:1.26;margin:0 0 12px;letter-spacing:-.6px;font-weight:700}
+h1 small{display:block;font-size:14.5px;font-weight:400;color:var(--mut);letter-spacing:0;margin-top:12px;line-height:1.9}
+h2{font-size:20px;margin:54px 0 14px;padding-bottom:9px;border-bottom:1px solid var(--line);font-weight:650}
+h2 .n{color:var(--acc);font-variant-numeric:tabular-nums;margin-right:10px;font-weight:400;font-size:15px}
+h3{font-size:16px;margin:26px 0 9px;color:var(--acc2);font-weight:600}
+p{margin:11px 0}
+ul,ol{margin:11px 0;padding-left:23px}li{margin:5px 0}
+.layer{border:1px solid var(--line);border-radius:10px;padding:4px 24px 20px;margin:26px 0;position:relative}
+.layer.a{border-color:#1e3a5f;background:linear-gradient(180deg,#0f1720,#0d1014)}
+.layer.b{border-color:#4a3a1e;background:linear-gradient(180deg,#171208,#0d1014)}
+.badge{display:inline-block;font-size:11.5px;padding:2px 10px;border-radius:20px;margin-bottom:6px;font-weight:600;letter-spacing:.3px}
+.badge.a{background:#132a44;color:#7db4ff;border:1px solid #1e4a72}
+.badge.b{background:#33270f;color:#fbbf24;border:1px solid #5c4415}
+table{width:100%;border-collapse:collapse;margin:15px 0;font-size:13.8px}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:#171c25;font-weight:600;color:#ccd2dc;white-space:nowrap}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+code{background:#171c25;padding:2px 6px;border-radius:4px;font:12.5px/1.5 ui-monospace,Consolas,monospace;color:#c7d2fe;word-break:break-all}
+pre{background:#10141a;border:1px solid var(--line);padding:14px 16px;border-radius:6px;overflow:auto;margin:13px 0}
+pre code{background:none;padding:0;color:#dbe3f0;font-size:12.5px}
+.y{color:var(--ok);font-weight:600}.n{color:var(--bad);font-weight:600}.w{color:var(--warn);font-weight:600}.k{color:var(--acc);font-weight:600}.p{color:var(--pink);font-weight:600}
+.mut{color:var(--mut)}
+.q{font-size:18.5px;line-height:1.7;border-left:3px solid var(--warn);padding:10px 0 10px 20px;margin:26px 0;color:#f4f5f7}
+.big{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:13px;margin:22px 0}
+.card{background:#131821;border:1px solid var(--line);border-radius:8px;padding:15px 17px}
+.card .v{font-size:27px;font-weight:700;line-height:1.12;letter-spacing:-1px}
+.card .l{font-size:12px;color:var(--mut);margin-top:7px;line-height:1.55}
+footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--line);color:var(--mut);font-size:12.5px;line-height:1.95}
+@media print{body{background:#fff;color:#000}main{max-width:none;padding:0}h1,h2,h3{color:#000}.layer,.q,.card{background:#f7f7f7;border-color:#bbb}th{background:#eee}td,th{border-color:#bbb}pre{background:#f7f7f7;border-color:#ccc}code{background:#f0f0f0;color:#000}.y,.n,.w,.k,.p{color:#000;font-weight:700}}
+</style>
+</head>
+<body>
+<main>
+
+<h1>符号层成本实验 · 两层报告
+<small>
+报告第 2 版 ｜ 数据包 v1.5.1 ｜ 2026-10-31（含勘误 E-04）<br>可核层 4 格 + 自检对照 7 格 + 探索层 101 run ｜ 通过率已按 E-04 重算<br>
+本版是一次结构性重写：把"能复核的"和"只能当探索的"分开，不再混在一张表里
+</small>
+</h1>
+
+<div class="lead" style="background:#151a23;border-left:3px solid var(--acc);padding:18px 22px;border-radius:5px;margin:26px 0">
+<b>为什么重写：上一版不是结论错，是证据链断了。</b>
+<div class="big">
+  <div class="card"><div class="v n">1%</div><div class="l">prompt 存档率<br>（101 run 里只有 1 个有）</div></div>
+  <div class="card"><div class="v n">2 条</div><div class="l">超纲判据<br>（#32 空串 / #36 swap）</div></div>
+  <div class="card"><div class="v y">4 / 4</div><div class="l">可核层存档率<br>（prompt + impl + log）</div></div>
+</div>
+旧版里"同一提示、三次独立重复"这个前提<b>无法被外部检查</b>。这一版把它修掉：另起 4 格重跑，逐格落 prompt，规格与判据冻结并记哈希。
+</div>
+
+<div class="layer a">
+<span class="badge a">LAYER A · 可核</span>
+
+<h2><span class="n">A0</span>勘误 E-04（2026-10-31，发版后立即修正）</h2>
+<div style="background:#2a1618;border:1px solid #7a2e2e;padding:16px 20px;border-radius:6px;margin:16px 0">
+<p><b>判据与实现在同一处读漏，判据因此永远不会失败。</b></p>
+<p>判据 #37–#51 的期望写成了驼峰 <code>ok swapTeacher 2</code>，而冻结规格第 39 行明写：<b>「<code>verb</code> 为命令名小写」</b>。8 个独立实现里有 6 个也照功能名表抄了驼峰——<b>双方错在同一处</b>。</p>
+<p>修正后的重算：</p>
+<table style="margin-top:10px">
+<tr><th>项</th><th class="num">修前</th><th class="num">修后</th></tr>
+<tr><td>v3.2 四格（30 op + dry，判据 1–56）</td><td class="num">各 56 / 56</td><td class="num n">各 <b>50 / 56</b></td></tr>
+<tr><td>C 组基线（判据 1–51）</td><td class="num">51 / 51</td><td class="num n"><b>45 / 51</b></td></tr>
+<tr><td>C 组加 <code>--dry</code> 后（判据 1–76）</td><td class="num">76 / 76</td><td class="num n"><b>70 / 76</b></td></tr>
+<tr><td>D1 允许自检六格</td><td class="num">76 / 76 / 70 / …</td><td class="num n"><b>76、76、70、70、70、70</b></td></tr>
+<tr><td>D1 禁自检</td><td class="num">0 / 76</td><td class="num">0 / 76（不变）</td></tr>
+</table>
+<p style="margin-top:12px"><b>不受影响的部分</b>：字符比（0.92 / 0.81 / 1.39 / 1.58）与 C 组维护半径（op 层 0 : 28、改写行 3 : 439、hunk 4 : 34）——字符数与改动位置不取决于输出大小写。</p>
+<p><b>新结果</b>：8 个实现里只有 <b>2 个</b>遵守了这条明文（违例率 75%），而那 6 个违例者的自检都很足（编译 2–6 次、实跑 90–320 条、自建用例 26–149 条）。</p>
+<p class="mut">这是第 6 次判据错误，也是唯一一次<b>跑多少遍都不会暴露</b>的错：前 5 次是期望值算错（跑一遍现有实现就发现），这一次是读漏规格——而实现也读漏了同一行。</p>
+</div>
+
+<h2><span class="n">A1</span>冻结基线</h2>
+<table>
+<tr><th>项</th><th>sha256</th></tr>
+<tr><td>spec <code>tasks/v3.spec.md</code></td><td><code>7b27852da5340f3d35f5c8aeb0b3e3a06abdac6c1cdfdbe06e96a9a19e1960ce</code></td></tr>
+<tr><td>判据 <code>check-v3.cjs</code></td><td><code>e3157bbcfe4ca8e1267f7abcbdefa79538df2d7a8d25bab1dad52b039ab14707</code></td></tr>
+</table>
+<p class="mut">范围：op 1–15，判据 1–36。判据 37–56（增量 / 维护臂）不在本层，对应 spec 未纳入本次冻结。</p>
+
+<h2><span class="n">A2</span>四格（v3.1：op 1–15，判据 1–36，<span class="mut">不含 E-04 影响的 #37–#51</span>）</h2>
+<table>
+<tr><th>格</th><th class="num">chars</th><th>impl sha256</th><th class="num">判据 1–36</th><th>首次通过</th><th class="num">返工轮</th></tr>
+<tr><td>aud-cl-macro</td><td class="num">5052</td><td><code>a4e7c0e2a06e50cf</code></td><td class="num n">5 / 36<br><span class="mut">crash 31</span></td><td class="n">N</td><td class="num">2</td></tr>
+<tr><td>aud-cl-inline</td><td class="num">6095</td><td><code>30787e792a5d80c3</code></td><td class="num y">36 / 36</td><td class="y">Y</td><td class="num">0</td></tr>
+<tr><td>aud-js-table</td><td class="num">3591</td><td><code>03c51f5e11dae00e</code></td><td class="num y">36 / 36</td><td class="y">Y</td><td class="num">0</td></tr>
+<tr><td>aud-js-inline</td><td class="num">5543</td><td><code>3ccdc8f3a193cec5</code></td><td class="num y">36 / 36</td><td class="y">Y</td><td class="num">0</td></tr>
+</table>
+
+<h3>字符口径（同方案对比，n=1）</h3>
+<table>
+<tr><th>方向</th><th>对比</th><th class="num">比值</th></tr>
+<tr><td>语言（inline）</td><td>JS 5543 / CL 6095</td><td class="num">0.91×</td></tr>
+<tr><td>语言（抽象）</td><td>JS 3591 / CL 5052</td><td class="num">0.71×</td></tr>
+<tr><td>方案（CL）</td><td>inline / macro = 6095 / 5052</td><td class="num">1.21×</td></tr>
+<tr><td>方案（JS）</td><td>inline / table = 5543 / 3591</td><td class="num">1.54×</td></tr>
+</table>
+<p><b>方向与探索层一致：语言效应小（0.71–0.91×），方案效应大（1.21–1.54×）。</b></p>
+
+<h2><span class="n">A3</span>唯一一次干净失效：宏臂三轮迭代</h2>
+<p>失败由编译器报出，<b>不依赖任何语义解释</b>。</p>
+<table>
+<tr><th>回合</th><th class="num">chars</th><th class="num">判据 1–36</th><th>失败形态</th><th>修复内容</th></tr>
+<tr><td>r1（冻结）</td><td class="num">5052</td><td class="num n">5 / 36</td><td><code>undefined variable: COMMON-LISP-USER::DAY</code><br>DEFOP 宏展开时变量未绑定</td><td>—</td></tr>
+<tr><td>r2</td><td class="num">5087</td><td class="num w">33 / 36</td><td><code>invalid number of arguments: 3</code><br><code>(COPY-COURSE … :NAME "b")</code></td><td>修未绑定变量<br><b>+35 字符 → 28 条判据恢复</b></td></tr>
+<tr><td>r3</td><td class="num">5254</td><td class="num y">36 / 36</td><td>—</td><td>两处 <code>copy-course</code> 改 <code>make-course</code> 逐槽复制</td></tr>
+</table>
+<h3>三个可写进论文的观察</h3>
+<ol>
+<li><b>一处宏错 → 31 条判据全崩。</b>不是 31 个错，是同一个错被 31 条判据各撞了一次。</li>
+<li><b>一处修复 → 28 条判据恢复，代价 35 字符。</b>修好与修坏走同一条路径。</li>
+<li><b>剩下的错仍同时压着 2 个 op。</b><code>duplicate</code> 与 <code>copy</code> 共用同一个复制调用点。</li>
+</ol>
+<p class="mut">对照：同批 inline 臂首次即 36/36、返工 0 次。这是"收敛换来代码量、同时换来失效集中"的第一个干净样本（n=1）。</p>
+
+<h2><span class="n">A4</span>本层能说 / 不能说</h2>
+<table>
+<tr><th>能说</th><th>不能说</th></tr>
+<tr><td>四格证据链完整，可被第三方复核</td><td><b>不能说概率</b>（每格 n=1，无区间、无显著性）</td></tr>
+<tr><td>字符口径下语言效应小、方案效应大</td><td><b>不能说"宏更容易出错"</b>（1 次 macro 失败、1 次 inline 全绿，n=1 不构成频率）</td></tr>
+<tr><td>宏臂出现单点失效扩散（一处压 31 条，后一处压 2 条）</td><td>不能外推到 30 op 与维护臂（本层只覆盖 op 1–15）</td></tr>
+<tr><td><b>判据与实现可同向读漏，此时自检无效</b>（E-04 实证）</td><td><b>不能说「判据全绿 = 实现对」</b>——它只证明「实现符合判据作者的理解」</td></tr>
+</table>
+
+<h2><span class="n">A5</span>第三方复核（照做即可）</h2>
+<pre><code>cd lisp-toolkit/experiments/timetable-ab
+
+# 1) 校验冻结基线
+sha256sum tasks/v3.spec.md check-v3.cjs
+
+# 2) JS 臂
+node check-v3.cjs --impl runs/aud-js-table/impl.js  --upto 36
+node check-v3.cjs --impl runs/aud-js-inline/impl.js --upto 36
+
+# 3) CL 臂（Windows 需 WSL 里的 SBCL 2.6.4）
+SBCL_WSL=kali-linux node check-v3.cjs --impl runs/aud-cl-macro/impl.lisp  --upto 36
+SBCL_WSL=kali-linux node check-v3.cjs --impl runs/aud-cl-inline/impl.lisp --upto 36
+
+# 4) 三轮迭代
+for r in aud-cl-macro aud-cl-macro-r2 aud-cl-macro-r3; do
+  SBCL_WSL=kali-linux node check-v3.cjs --impl runs/$r/impl.lisp --upto 36
+done</code></pre>
+</div>
+
+<div class="layer b">
+<span class="badge b">LAYER B · 探索（不可核）</span>
+
+<h2><span class="n">B1</span>101 个 run 的证据完整度</h2>
+<table>
+<tr><th>项</th><th>结果</th></tr>
+<tr><td>run 总数</td><td>101</td></tr>
+<tr><td>缺 <code>prompt.txt</code></td><td class="n">100 / 101</td></tr>
+<tr><td>缺 <code>log.txt</code></td><td class="w">64 / 101</td></tr>
+<tr><td>缺 impl</td><td class="y">0</td></tr>
+</table>
+<p class="q">致命项只有一条：<b>prompt 存档率 1%</b>。它使"同一提示、独立重复"这个设计前提无法被外部检查。</p>
+
+<h2><span class="n">B2</span>三组量级（只作探索）</h2>
+<div class="big">
+  <div class="card"><div class="v k">0.62</div><div class="l">写 · 建 30 op<br>macro / inline 字符比</div></div>
+  <div class="card"><div class="v k">0.56</div><div class="l">加 · 每 op 追加<br>字符比</div></div>
+  <div class="card"><div class="v w">0.07</div><div class="l">改 · 一条跨切规则<br><b>改动位置</b>比</div></div>
+</div>
+<p class="mut">来源：<code>results-v3.tsv</code>（12 格）、<code>results-evo.tsv</code>（3 批配对）、<code>results-maint.tsv</code>（2 臂）。<br><b>注</b>：C 组维护半径已于 v1.5.0 升为可核（见 §C），此处卡片保留为历史量级。</p>
+
+<h2><span class="n">B3</span>已被推翻或降级的结论（六条）</h2>
+<table>
+<tr><th>曾有过的结论</th><th>处置</th><th>原因</th></tr>
+<tr><td>「CL 更冗长 1.93×」</td><td class="n">撤回</td><td>三因叠加（生态 / 任务形状 / 方案不对等）+ 伪重复</td></tr>
+<tr><td>「CL 手写 JSON 最省」</td><td class="n">撤回</td><td>行口径成立、字符口径不成立</td></tr>
+<tr><td>「一次通过率由方案决定（0/3 vs 3/3）」</td><td class="n">撤回</td><td>失败集中在 #32/#36，而这两条在当时的 spec 里<b>没写</b>（超纲）</td></tr>
+<tr><td>「抽象更易漏边界」</td><td class="w">降级为不可核</td><td>唯一非灰区干净样本来自可核层（macro 5/36），但 n=1</td></tr>
+<tr><td>「零返工」</td><td class="w">重新解释</td><td>增量/维护 spec 把边界写全了，与建阶段题量不等价</td></tr>
+<tr><td>「交叉点 N*」</td><td class="n">弃用</td><td>两臂起点不同源，累计曲线不可比</td></tr>
+</table>
+
+<h2><span class="n">B4</span>使用限制</h2>
+<ul>
+<li>不得引用本层数字作为「证据」，只能作为「观察」。</li>
+<li>任何基于本层的结论，须在可核层有对应支撑，否则标为「待核」。</li>
+<li>本层不再新增 run；新增一律进可核层，且必须落 <code>prompt.txt</code>。</li>
+</ul>
+</div>
+
+<h2><span class="n">C</span>审计总表：21 条问题（六类）</h2>
+<table>
+<tr><th>类</th><th>条</th><th>内容</th></tr>
+<tr><td rowspan="4"><b>A 规格</b></td><td>1</td><td>#32 空命令串：base spec 未写 → 超纲</td></tr>
+<tr><td>2</td><td>#36 swap：base spec 未写「不查冲突」 → 半超纲</td></tr>
+<tr><td>3</td><td>trim 语义在实验中途改过</td></tr>
+<tr><td>4</td><td>增量/维护 spec 的信息量 &gt; base spec（边界写全）</td></tr>
+<tr><td rowspan="3"><b>B 证据</b></td><td>5</td><td class="n">prompt 缺 100 / 101</td></tr>
+<tr><td>6</td><td class="w">log 缺 64 / 101</td></tr>
+<tr><td>7</td><td>12 格里 11 格无 prompt/log → first_pass 与 rework 不可核</td></tr>
+<tr><td rowspan="3"><b>C 测量</b></td><td>8</td><td>metric 分号误剥：<b>实测 0</b>（已排除）</td></tr>
+<tr><td>9</td><td>metric 不处理 CL 块注释 <code>#| |#</code></td></tr>
+<tr><td>10</td><td>字符不含改动次数、认知负荷、阅读成本</td></tr>
+<tr><td rowspan="4"><b>D 统计</b></td><td>11</td><td>first_pass n=3 无区间；剔除灰区后全 3/3</td></tr>
+<tr><td>12</td><td>增量 3 批 n=1，配对比值无区间</td></tr>
+<tr><td>13</td><td>12 格里做了多组比较，未做多重比较校正</td></tr>
+<tr><td>14</td><td>两臂起点不同源（macro 用修过一轮的 r3）</td></tr>
+<tr><td rowspan="3"><b>E 执行</b></td><td>15</td><td class="w">模型版本未记录</td></tr>
+<tr><td>16</td><td class="w">温度 / 采样参数未记录</td></tr>
+<tr><td>17</td><td>实验中途改过 spec 与判据</td></tr>
+<tr><td rowspan="4"><b>F 结论依赖</b></td><td>18</td><td>依赖判据语义的（claim-32 已撤、T1 失效集中证据归零）</td></tr>
+<tr><td>19</td><td>不依赖判据的（三组字符 / 位置比）</td></tr>
+<tr><td>20</td><td>依赖「同提示」的（全部跨格比较）— 因存档缺失，严格说不可核</td></tr>
+<tr><td>21</td><td class="n">用超范围判据（56 条）判 15-op 实现，首判 36/56 为假象</td></tr>
+</table>
+
+<h2><span class="n">D</span>十二条杠杆 · 现状</h2>
+<table>
+<tr><th>#</th><th>杠杆</th><th>判决</th><th>依据</th></tr>
+<tr><td>①</td><td>同像性（代码即数据）</td><td class="w">口径依赖</td><td>按行 CL 134 行最省；按字符 Java 2195 最省、CL 2547 第三</td></tr>
+<tr><td>②</td><td>活体 image</td><td class="w">量到省字符</td><td>9028 → 5957；但返工轮数方差为 0，没量到省试错</td></tr>
+<tr><td>③</td><td>条件系统（可恢复错误）</td><td class="y">成立</td><td>compile-file 一次点名 3/3；--script 只 1/3；机制是静态检查</td></tr>
+<tr><td>④</td><td>宏是"可执行的理解"</td><td class="n">被打平</td><td>技能包 A/B 主结局 <b>0/6</b>；文档本身也没用</td></tr>
+<tr><td>⑤</td><td>RISC-V / Lisp machine</td><td class="w">未测</td><td>板子只当了算力与见证者</td></tr>
+<tr><td>⑥</td><td>错误传播半径</td><td class="w">未测</td><td>机制同构，数据没有</td></tr>
+<tr><td>⑦</td><td>仪式成本为零</td><td class="y">成立</td><td>fanout 三臂手改 0/0；inline 宏臂 4/4 且声明 0 行</td></tr>
+<tr><td>⑧</td><td>S 表达式<b>读</b>得省</td><td class="w">未测</td><td>曾用"5 op 字符数"判，属指标错配（写≠读）；读的收益只在换执行者时显现</td></tr>
+<tr><td>⑨</td><td>省资源（嵌入式）</td><td class="w">未测</td><td>没有跑过任何 Lisp 程序</td></tr>
+<tr><td>⑩</td><td>Lisp 与汇编</td><td class="w">未测</td><td>—</td></tr>
+<tr><td>⑪</td><td>服务器（王炸）</td><td class="w">未测</td><td>—</td></tr>
+<tr><td>⑫</td><td><b>收敛的收益随操作类型变化</b></td><td class="y">成立（探索层）</td><td>写 0.62 / 加 0.56 / <b>改 0.07</b>；可核层同向（语言 0.71–0.91、方案 1.21–1.54）</td></tr>
+</table>
+<p class="mut">统计：成立 3（③⑦⑫）· 口径依赖 2（①②）· 被打平 1（④）· <b>未测 6</b>（⑤⑥⑧⑨⑩⑪）。</p>
+
+<h2><span class="n">E</span>理论：T1 与 T1b 的当前状态</h2>
+<pre><code>原 T1（隐含）：符号层价值 ∝ P（执行者错误率） × D（决定数）
+
+修正（T1）：
+  净收益 = 收敛带来的节省（30–40% 字符 / 93% 改动位置）
+         − 收敛带来的失效集中风险
+
+T1b：抽象把 N 处检查收敛成 1 处；该处写对则全对，写漏则全漏。
+     收益随 D 增长，风险随「该处被判据覆盖的程度」下降。</code></pre>
+<p><b>状态说明（这一版必须讲清）：</b></p>
+<ul>
+<li><b>收益侧</b>：有数据（三组比值 + 可核层同向）。</li>
+<li><b>风险侧</b>：目前只有 <b>1 个干净样本</b>（macro 一处宏错压 31 条判据）。旧的 #32/#36 证据因超纲而撤回。<b>所以"失效集中"现在是"有一个强例子"，不是"一条已验证的规律"。</b></li>
+</ul>
+
+<h2><span class="n">F</span>版本链</h2>
+<table>
+<tr><th>版本</th><th>DOI / 文档</th><th>动作</th></tr>
+<tr><td>v1.0.0 → v1.1.2</td><td>23618045 … 23768472</td><td>改标题、撤回误报、撤回 JSON 最省</td></tr>
+<tr><td>v1.2.0</td><td>23827573</td><td class="n">撤回「语言更省」</td></tr>
+<tr><td>v1.3.0</td><td>23831798</td><td>补增量与维护口径</td></tr>
+<tr><td>v1.3.1</td><td>23832113</td><td>杠杆⑧改判为未测</td></tr>
+<tr><td><b>本次（待发）</b></td><td>两层报告 + RESULTS-AUDIT</td><td class="n">撤回 claim-32；把 101 run 降为探索层；新增 21 条问题全表</td></tr>
+</table>
+
+<h2><span class="n">G</span>残留问题与下一步</h2>
+<table>
+<tr><th>#</th><th>问题</th><th>下一步</th></tr>
+<tr><td>1</td><td>可核层只覆盖 op 1–15</td><td>把 30 op 与 --dry 的 spec 一并冻结后重跑可核层</td></tr>
+<tr><td>2</td><td>每格 n=1</td><td>每格补到 3 次（成本最低、收益最大）</td></tr>
+<tr><td>3</td><td>模型版本 / 温度未记录</td><td>后续实验记录模型名与参数</td></tr>
+<tr><td>4</td><td>失效集中只有 1 个样本</td><td>专做"改共通规则"的可核实验（macro vs inline 各 3 次）</td></tr>
+</table>
+
+<div class="q">
+省的不是语言，是收敛 —— 这句话仍然成立。<br>
+但这一版要补一句：<b>我们现在能复核的，只有四格与一条迭代链；其余都是观察。</b><br><br>还要补第三句：<b>判据自己也会错，而且会和实现错在一起；这种错，跑一万遍也发现不了，只能靠把规格逐条对读。</b>
+</div>
+
+<footer>
+符号层成本实验 · 两层报告 v2 · 2026-10-31<br>
+可核层：4 格 + 3 轮迭代，prompt/impl/log 齐全，spec 与判据 sha256 已冻结<br>
+探索层：101 run，prompt 存档率 1%，仅作观察<br>
+concept DOI 10.5281/zenodo.23618044 ｜ 数据包 v1.5.1 = 10.5281/zenodo.23835156<br>报告含勘误 E-04（2026-10-31）：判据 #37–#51 的 verb 大小写与实现同向读漏，通过率已重算
+</footer>
+
+</main>
+</body>
+</html>

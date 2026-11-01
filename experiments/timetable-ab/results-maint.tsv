@@ -1,0 +1,2 @@
+rule	macro_sites	macro_delta_chars	inline_sites	inline_delta_chars	site_ratio	char_ratio	note
+dry-flag	2	343	30	566	0.07	0.61	macro 用动态绑定深拷贝；两臂都须改 argv 过滤

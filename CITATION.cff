@@ -1,27 +1,38 @@
 cff-version: 1.2.0
 message: "If you use this dataset or the measurement protocol in your work, please cite it as below."
-title: "timetable-ab: a controlled cross-language comparison of abstract-structure cost, with full negative and self-refuting results"
+title: "Language Advantage Is a Function of the Executor: criteria self-audit and undecidability audit in a seven-language, 81-run study with LLM coders (timetable-ab)"
 abstract: >-
-  A pre-registered, reproducible cross-language experiment on the cost of abstract
-  structures (macros vs. table-driven dispatch), run over seven languages on one frozen
-  specification (5 ops), plus fourteen follow-up specifications covering scale, product
-  fan-out, expansion-time validation, inlining, iteration, hand-off, and a 30-op crossover.
-  The dataset includes every run artefact, the thirty-six invariants and their go-red
-  proofs, mutation scores with sample bounds, and a complete record of nineteen occasions
-  on which the measurement apparatus itself was wrong.
+  Original proposition: when the executor is an AI large language model, does Lisp
+  have a measurable language advantage? Eleven levers were pre-registered and tested
+  over seven languages (Common Lisp, JavaScript, Java, Julia, Rust, Python, C++),
+  81 runs and 36 invariants, each proven able to go red before it was allowed to pass.
+  Results are reported three ways: three claims established, three refuted, and six
+  undecidable. The undecidable class is the point of this release: three conditions
+  are missing (no weak-executor channel, no exclusive machine or clock alignment, a
+  single model family), two further items are incomplete (nine surviving mutants;
+  scale limited to 30 ops). See CONDITIONS.md. The dataset does not read "not
+  detected" as "not present", does not extrapolate beyond the measured scale, and
+  does not delete data.
 type: dataset
-version: "1.0.1"
-doi: "10.5281/zenodo.23618045"
-date-released: 2026-10-25
+version: "1.5.3"
+doi: "10.5281/zenodo.23835156"
+date-released: 2026-10-30
 license: MIT
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.23618044
+    description: "Concept DOI (always resolves to the latest version)"
 repository-code: "https://github.com/xcw080720/lisp-toolkit"
 keywords:
   - common-lisp
-  - macros
-  - cost-of-abstraction
-  - reproducibility
-  - mutation-testing
+  - llm-code-generation
+  - cross-language
   - benchmark-validity
+  - criteria-self-audit
+  - undecidability
+  - negative-results
+  - mutation-testing
+  - reproducibility
 
 authors:
   - name: "许宸玮"
@@ -30,3 +41,5 @@ authors:
   - name: "Small Code Sauce (assistant)"
     type: other
     contribution: "Implementation, measurement harness, and record of self-refutations"
+
+

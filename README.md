@@ -3,17 +3,18 @@
 > 如果你只记得一条：**判据先证明能红，才允许它说「通过」。**
 # lisp-toolkit
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23618045.svg)](https://doi.org/10.5281/zenodo.23618045)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23618044.svg)](https://doi.org/10.5281/zenodo.23835156)
 
 > **Cite this dataset:**
 >
 > ```
-> 许宸玮. (2026). timetable-ab: a controlled cross-language comparison of
-> abstract-structure cost (Version 1.0.0) [Data set]. Zenodo.
-> https://doi.org/10.5281/zenodo.23618045
+> 许宸玮. (2026). Language Advantage Is a Function of the Executor: criteria
+> self-audit and undecidability audit in a seven-language, 81-run study with
+> LLM coders (timetable-ab) (Version 1.1.0) [Data set]. Zenodo.
+> https://doi.org/10.5281/zenodo.23835156
 > ```
 >
-> This version: [`10.5281/zenodo.23618045`](https://doi.org/10.5281/zenodo.23618045)
+> This version: [`10.5281/zenodo.23835156`](https://doi.org/10.5281/zenodo.23835156)
 > · All versions (concept DOI): [`10.5281/zenodo.23618044`](https://doi.org/10.5281/zenodo.23618044)
 >
 > Machine-readable metadata: [`CITATION.cff`](CITATION.cff) · [`.zenodo.json`](.zenodo.json)
@@ -414,3 +415,15 @@ README 顶部加了指针——新人进来第一眼看到的就是这份协议�
 
 > **文档不会消灭返工，它只会把返工从"已知坑"搬到"未覆盖的坑"。**
 > 所以每一条新文档都该配一次这样的验证——而不是假设它有用。
+## 从哪里读起（v1.4.0）
+
+本仓库的实验结论分两层，**不要混读**：
+
+| 想读什么 | 读哪份 | 证据等级 |
+|---|---|---|
+| 可被复核的部分 | [`experiments/timetable-ab/RESULTS-AUDIT.md`](experiments/timetable-ab/RESULTS-AUDIT.md) + [`docs/report-v2-two-layer.html`](docs/report-v2-two-layer.html) | **可核**：4 格，prompt/impl/log 齐全，spec 与判据 sha256 冻结 |
+| 探索性观察（101 run） | [`experiments/timetable-ab/RESULTS-探索层.md`](experiments/timetable-ab/RESULTS-探索层.md) | **不可核**：prompt 存档率 1%，只能当观察 |
+| 逐条结论与状态 | [`CLAIMS.md`](CLAIMS.md) | 每条标注属于哪一层 |
+| 缺什么条件 | [`CONDITIONS.md`](CONDITIONS.md) | C1–C5 |
+
+> 一句话：**可核层能说"你复核一下"，探索层只能说"我观察到"。**

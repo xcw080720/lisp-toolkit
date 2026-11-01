@@ -1,0 +1,10 @@
+== v3 A1 (CL / macro / r1) ==
+2026-10-31 回合1 生成完成：chars=5561 lines=257 codeLines=211 bytes=8722 纯ASCII
+判据首次结果：35/36，唯一失败 #32（空命令串 → BADARG）
+  first_pass = N
+  silent_failures = 0（失败是显式 fail，不是"过了但结果错"）
+下一回合：只把 #32 的期望/实际给子代理，不指路。
+2026-10-31 回合2 完成：chars=5565 → 36/36 全绿
+  rework_rounds = 1
+  first_pass = N
+  silent_failures = 0

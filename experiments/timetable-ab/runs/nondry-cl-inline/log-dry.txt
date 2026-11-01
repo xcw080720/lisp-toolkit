@@ -1,0 +1,79 @@
+== 加 --dry 后判据（1–76）==
+# 1 PASS   add 单条 → ok + state 一行
+# 2 PASS   add 两条不冲突
+# 3 PASS   add 重名 → DUP 且状态不变
+# 4 PASS   add 时间重叠 → CONFLICT（端点相接也算）
+# 5 PASS   add 参数不足 → BADARG
+# 6 PASS   add 参数越界（day=8）→ BADARG
+# 7 PASS   del 存在
+# 8 PASS   del 不存在 → NOTFOUND
+# 9 PASS   edit 改教师与地点
+#10 PASS   edit 不存在 → NOTFOUND
+#11 PASS   move 到空时间段
+#12 PASS   move 撞已有课程 → CONFLICT
+#13 PASS   swap 两门课对调时间
+#14 PASS   rename 成功
+#15 PASS   rename 撞名 → DUP
+#16 PASS   duplicate 复制到新名（同名时间）
+#17 PASS   duplicate 撞名 → DUP
+#18 PASS   trim 把该天课程 to 截到指定值
+#19 PASS   trim 对已短的课程无影响
+#20 PASS   clear 删除该天全部
+#21 PASS   shift 全体后移一天
+#22 PASS   shift 越界 → BADARG 且不得部分生效
+#23 PASS   copy 复制到另一天（名字加 _2）
+#24 PASS   merge 并入并删除 b
+#25 PASS   merge 目标不存在 → NOTFOUND
+#26 PASS   sort 后 #state 按名排序
+#27 PASS   filter 统计某天
+#28 PASS   count 空课表
+#29 PASS   count 三门
+#30 PASS   LIMIT：第 21 门 → LIMIT
+#31 PASS   未知命令 → BADARG
+#32 PASS   空命令串 → BADARG
+#33 PASS   to < from → BADARG
+#34 PASS   同一天不冲突但跨天可重叠
+#35 PASS   删后再加同名 → 成功
+#36 PASS   混合序列 12 条命令
+#37 PASS   swapTeacher 交换教师
+#38 PASS   swapLoc 交换地点
+#39 PASS   copyTo 复制到指定时间（name_3）
+#40 PASS   truncate 该天只保留字典序最小
+#41 PASS   keep 该天只留前 n 门
+#42 PASS   renameTeacher 全表改教师
+#43 PASS   renameLoc 全表改地点
+#44 PASS   dedupe 删完全重复（留字典序最小）
+#45 PASS   compress 该天重排为连续时段
+#46 PASS   compact 每天都 compress
+#47 PASS   mirror 整天空复制到另一天
+#48 PASS   absorb 并入但保留 b
+#49 PASS   swapDays 两天所有课互换
+#50 PASS   promote 移到第一个空时段
+#51 PASS   purge 删该教师全部课程
+#52 PASS   --dry add 不落盘
+#53 PASS   --dry del 不删除
+#54 PASS   --dry clear 报数量但不删
+#55 PASS   --dry 与真实命令混用：状态不受影响
+#56 PASS   --dry 遇错仍报 err
+#57 PASS   dry 遇冲突也要报 CONFLICT
+#58 PASS   n 一致性：dry del 与真 del
+#59 PASS   n 一致性：dry clear 与真 clear
+#60 PASS   dry trim 报 n 且不改状态
+#61 PASS   n 一致性：dry shift
+#62 PASS   n 一致性：dry compress
+#63 PASS   n 一致性：dry dedupe
+#64 PASS   n 一致性：dry purge
+#65 PASS   连续 dry 不累积改状态
+#66 PASS   dry 遇重名报 DUP
+#67 PASS   dry 遇越界报 BADARG
+#68 PASS   原子性：shift 越界不得部分生效
+#69 PASS   原子性：mirror 撞名不得复制任何一门
+#70 PASS   幂等：第二次 dedupe 为 0
+#71 PASS   幂等：第二次 compact 为 0
+#72 PASS   顺序：shift 两次等于 +2
+#73 PASS   名字 13 字符越界
+#74 PASS   跨天同时间段可重叠
+#75 PASS   trim 只截跨过 to 的门（n 结构上≤1）
+#76 PASS   dry 与真执行混合仍正确
+
+76/76 通过（fail=0 crash=0）

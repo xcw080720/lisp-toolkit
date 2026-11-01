@@ -1,0 +1,7 @@
+(format t "SYM-VAR=~s~%" (find-symbol "*POSIX-ARGV*" "SB-EXT"))
+(format t "SYM-FN=~s~%" (find-symbol "POSIX-ARGV" "SB-EXT"))
+(format t "BOUND=~s~%" (ignore-errors (boundp 'sb-ext:*posix-argv*)))
+(format t "FN=~s~%" (ignore-errors (functionp (symbol-function 'sb-ext:posix-argv))))
+(ignore-errors (format t "POSIX-FN-VAL=~s~%" (sb-ext:posix-argv)))
+(ignore-errors (format t "POSIX-VAR-VAL=~s~%" sb-ext:*posix-argv*))
+(ignore-errors (format t "CMD-LINE=~s~%" sb-ext:*posix-argv*))

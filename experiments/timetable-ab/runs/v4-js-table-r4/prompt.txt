@@ -1,0 +1,150 @@
+你要完成一个任务。只输出代码，不要解释。
+
+【语言】JavaScript（Node.js v24）
+【实现风格】table：一张注册表描述所有 op，执行器读表分发
+【规格】见下（附全文）
+
+【硬约束】
+- 只能用一个文件。
+- 不许读写文件、不许 JSON、不许任何序列化。
+- 输入从 argv 读，输出用标准输出，每行一条结果。
+- 不许引入第三方库（只用 COMMON-LISP 包）。
+- 文件必须纯 ASCII：不许中文注释、不许任何非 ASCII 字符。
+- argv 用 process.argv（process.argv[2] 起为命令）。
+- 写完不要自测，不要解释，直接给代码。
+
+【可读的技能包（只许读这四个文件，不许读 runs/ 下任何东西）】
+lisp-toolkit/skills/lisp-v3-brief/SKILL.md
+lisp-toolkit/skills/lisp-defop/SKILL.md
+lisp-toolkit/skills/lisp-macro-value/SKILL.md
+lisp-toolkit/experiments/timetable-ab/tasks/v3.spec.md
+
+【输出格式】
+只输出一个 js 代码块（三个反引号 + js），内容即 impl.js 的完整文件。代码块外不要有任何文字。
+
+【规格全文】
+
+# v3 规格：课表 ops 执行器（纯文本、无 I/O）
+
+> 用于 `experiments/PROTOCOL-v3.md` 的 12 次实验。
+> **不许读文件、不许写文件、不许 JSON、不许第三方库。** 输入全部来自 argv，输出全部进 stdout。
+
+---
+
+## 1. 启动方式
+
+| 语言 | 调用 |
+|---|---|
+| Common Lisp | `sbcl --script impl.lisp "<命令1>" "<命令2>" ...` |
+| JavaScript | `node impl.js "<命令1>" "<命令2>" ...` |
+
+- 每条命令是**一个 argv 项**（含空格，调用方负责加引号）。
+- 命令按给出顺序依次执行，**共享同一份状态**（初态为空课表：0 门课）。
+- `argv[0]` 是脚本名，命令从**第 2 个参数**开始（CL 用 `(sb-ext:posix-argv)` 时注意第一个元素是 `sbcl` 或脚本名，以实测为准，见 §7）。
+
+## 2. 课程记录的字段
+
+| 字段 | 类型 | 约束 |
+|---|---|---|
+| `name` | 单词（无空格） | 1–12 字符，课表内唯一 |
+| `teacher` | 单词 | 1–12 字符，可为 `-` 表示空 |
+| `loc` | 单词 | 同上 |
+| `day` | 整数 | 1–7 |
+| `from` | 整数 | 1–12 |
+| `to` | 整数 | 1–12，且 `to >= from` |
+
+**时间段冲突**：同一 `day` 上，两门课的 `[from,to]` 区间**不得重叠**（端点相接算重叠，即 `1-2` 与 `2-3` 冲突）。
+
+## 3. 输出格式（逐字遵守）
+
+每条命令执行后输出**一行**：
+
+```
+ok <verb> <n>
+```
+- 成功：`verb` 为命令名小写，`n` 为受影响课程数（整数，无前导零）
+- 失败：`err <CODE>`，`CODE` 取下列之一：
+
+| CODE | 何时 |
+|---|---|
+| `DUP` | `add`/`rename` 时名字已存在 |
+| `NOTFOUND` | 目标课程不存在 |
+| `BADARG` | 参数个数或取值越界 |
+| `CONFLICT` | 时间段与已有课程重叠 |
+| `LIMIT` | 课表已有 20 门，无法再增 |
+
+全部命令执行完后，**追加输出**：
+
+```
+#state
+```
+随后按 `name` 的**字典序**（逐字节比较）每门课输出一行：
+
+```
+<name>|<teacher>|<loc>|<day>|<from>-<to>
+```
+
+空课表时 `#state` 之后没有任何行。**行尾不得有空格**，用 `\n` 结尾。
+
+## 4. 十五条命令
+
+| # | 命令 | 参数 | 语义 | 成功时 `n` |
+|---|---|---|---|---|
+| 1 | `add` | name teacher loc day from to | 新增一门课 | 1 |
+| 2 | `del` | name | 删除 | 1 |
+| 3 | `edit` | name teacher loc | 改教师与地点 | 1 |
+| 4 | `move` | name day from to | 改时间（需查冲突） | 1 |
+| 5 | `swap` | a b | 两门课对调时间 | 2 |
+| 6 | `rename` | old new | 改名（需查重名） | 1 |
+| 7 | `duplicate` | name newname | 复制一门课到新名字（时间不变） | 1 |
+| 8 | `trim` | day to | 只截**跨过 to 的课**（from ≤ to < 原 to），把 to 设为新值；from > to 的课不动 | 改动数 |
+| 9 | `clear` | day | 删除该天全部课程 | 受影响数 |
+| 10 | `shift` | day delta | 该天所有课 `day' = day + delta`（1–7 内，越界则 `BADARG`） | 受影响数 |
+| 11 | `copy` | name day | 复制该课到另一天（名字加后缀 `_2`） | 1 |
+| 12 | `merge` | a b | 把 b 的教师/地点并入 a，删掉 b | 2 |
+| 13 | `sort` | （无） | 按名字排序（只影响 `#state` 输出顺序） | 0 |
+| 14 | `filter` | day | 只统计该天的课程数 | 该天课程数 |
+| 15 | `count` | （无） | 统计总课程数 | 总数 |
+
+**参数不足或多出 → `err BADARG`，且状态不变。**
+
+## 5. 五个必测的边界（判据会专门打）
+
+1. `add` 重名 → `err DUP`，状态不变
+2. `add` 时间重叠 → `err CONFLICT`，状态不变
+3. `del` 不存在的名字 → `err NOTFOUND`，状态不变
+4. 课表满 20 门再 `add` → `err LIMIT`
+5. `shift` 越出 1–7 → `err BADARG`，且**不得部分生效**
+
+## 6. 禁止事项（违反即该次生成作废）
+
+- 读写任何文件
+- 任何 JSON / 序列化 / 反序列化
+- 引入第三方库（CL 只许 `:cl` 之外的零依赖，JS 只许内置模块且不得 fs/path）
+- 输出任何调试信息、进度、空行
+- 在 stdout 混入许可证头、注释
+
+## 7. 自检方法
+
+```bash
+# CL
+sbcl --script impl.lisp "add math t1 r1 1 1 2" "add phys t2 r2 1 3 4" "count"
+# JS
+node impl.js "add math t1 r1 1 1 2" "add phys t2 r2 1 3 4" "count"
+```
+
+期望输出（逐行）：
+```
+ok add 1
+ok add 1
+ok count 2
+#state
+math|t1|r1|1|1-2
+phys|t2|r2|1|3-4
+```
+
+## 8. 时间与技术约束
+
+- 单文件，不超 400 行（软约束，不参与评分）
+- 只许 stdout，不许 stderr 打印（编译警告除外）
+- 不得依赖当前工作目录

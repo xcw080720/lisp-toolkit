@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>v3 实验报告：语言、方案与失效的相关结构</title>
+<style>
+:root{--bg:#0f1115;--fg:#e8eaed;--mut:#9aa0a6;--line:#252a33;--ok:#4ade80;--bad:#f87171;--warn:#fbbf24;--acc:#60a5fa}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.7 -apple-system,"Segoe UI",system-ui,"Noto Sans SC",sans-serif}
+main{max-width:940px;margin:0 auto;padding:48px 20px 80px}
+h1{font-size:30px;line-height:1.3;margin:0 0 8px;letter-spacing:-.5px}
+h2{font-size:20px;margin:44px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+h3{font-size:16px;margin:26px 0 8px;color:var(--acc)}
+p{margin:10px 0}
+.meta{color:var(--mut);font-size:13px;margin-bottom:28px}
+.lead{background:#161a21;border-left:3px solid var(--acc);padding:16px 18px;margin:22px 0;border-radius:4px}
+.lead ol{margin:8px 0 0;padding-left:22px}
+.lead li{margin:6px 0}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left}
+th{background:#1a1f27;font-weight:600;color:#cfd4da}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+code{background:#1a1f27;padding:2px 6px;border-radius:4px;font:13px/1.5 ui-monospace,Consolas,monospace}
+pre{background:#12161d;border:1px solid var(--line);padding:14px 16px;border-radius:6px;overflow:auto}
+pre code{background:none;padding:0}
+.y{color:var(--ok);font-weight:600}
+.n{color:var(--bad);font-weight:600}
+.k{color:var(--acc);font-weight:600}
+.mut{color:var(--mut)}
+.q{font-size:19px;line-height:1.65;border-left:3px solid var(--warn);padding:6px 0 6px 16px;margin:26px 0;color:#f3f4f6}
+footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);color:var(--mut);font-size:13px}
+@media print{body{background:#fff;color:#000}main{max-width:none;padding:0}h1,h2,h3{color:#000}.lead,.q{border-color:#999;background:#f6f6f6}th{background:#eee}td,th{border-color:#bbb}pre{background:#f6f6f6;border-color:#ccc}code{background:#f0f0f0}}
+</style>
+</head>
+<body>
+<main>
+<h1>语言、方案与失效的相关结构</h1>
+<div class="meta">
+  v3 实验报告 ｜ 2026-10-31 ｜ 12 次独立生成 ｜ 判据 36 条（两语言自证能绿能红）<br>
+  Common Lisp（SBCL 2.6.4）× JavaScript（Node 24）｜ 仓库：lisp-toolkit
+</div>
+
+<div class="lead">
+<strong>三条结论</strong>
+<ol>
+<li><b>语言几乎不影响代码量。</b>同方案下 JS/CL = <b>0.97×</b>（内联）与 <b>0.81×</b>（抽象）。旧数据的 1.93× 来自「方案不对等 + JSON 生态」，不是语言。</li>
+<li><b>抽象（宏 / 表驱动）省 28–40% 字符</b>，两语言一致（CL 1.39×、JS 1.66×）。</li>
+<li><b>抽象的代价是失效集中。</b>一次通过率 内联 6/6、抽象 2/6，失败集中在同两条边界判据上。→ <b>符号层改变的不是错误率的均值，是错误的相关结构。</b></li>
+</ol>
+</div>
+
+<h2>一、设置</h2>
+<table>
+<tr><th>项</th><th>值</th></tr>
+<tr><td>任务</td><td>课表 ops 执行器，<b>固定 15 个 op</b>（<code>tasks/v3.spec.md</code>）</td></tr>
+<tr><td>输入</td><td>命令行参数，每条命令一个 argv 项</td></tr>
+<tr><td>输出</td><td>stdout 纯文本：每条命令一行 <code>ok &lt;verb&gt; &lt;n&gt;</code> / <code>err &lt;CODE&gt;</code>，末尾 <code>#state</code> + 每课一行</td></tr>
+<tr><td><b>禁止</b></td><td>JSON、序列化、文件 I/O、第三方库</td></tr>
+<tr><td>判据</td><td><code>check-v3.cjs</code>，<b>36 条</b>，完整输出行比对</td></tr>
+<tr><td>设计</td><td>2 语言 × 2 方案 × <b>3 次独立生成</b> = 12 格</td></tr>
+<tr><td>独立性</td><td>每格一个新会话、逐字同提示、不干预、全档留存</td></tr>
+<tr><td>运行时</td><td>CL 走 WSL Kali 内 SBCL 2.6.4（Windows 侧无 SBCL）；JS 走 Node 24</td></tr>
+</table>
+
+<p class="mut">四臂：CL·macro（每 op 一条表单，校验/文案/分发由宏生成）｜ CL·inline（每 op 手写独立分支）｜ JS·table（注册表 + 读表分发）｜ JS·inline。</p>
+
+<h2>二、结果</h2>
+<h3>2.1 总表（chars = 非空白非注释字符）</h3>
+<table>
+<tr><th>组</th><th class="num">r1</th><th class="num">r2</th><th class="num">r3</th><th class="num">均值</th><th class="num">sd</th><th class="num">CV</th><th>first_pass</th></tr>
+<tr><td>CL · macro</td><td class="num">5565 <span class="n">N</span></td><td class="num">3836 <span class="n">N</span></td><td class="num">4378 <span class="n">N</span></td><td class="num"><b>4593</b></td><td class="num">884</td><td class="num"><b>19.3%</b></td><td class="n">0 / 3</td></tr>
+<tr><td>CL · inline</td><td class="num">6490 <span class="y">Y</span></td><td class="num">5850 <span class="y">Y</span></td><td class="num">6819 <span class="y">Y</span></td><td class="num"><b>6386</b></td><td class="num">493</td><td class="num">7.7%</td><td class="y">3 / 3</td></tr>
+<tr><td>JS · table</td><td class="num">4364 <span class="n">N</span></td><td class="num">3487 <span class="y">Y</span></td><td class="num">3340 <span class="y">Y</span></td><td class="num"><b>3730</b></td><td class="num">554</td><td class="num">14.8%</td><td class="y">2 / 3</td></tr>
+<tr><td>JS · inline</td><td class="num">5975 <span class="y">Y</span></td><td class="num">5718 <span class="y">Y</span></td><td class="num">6927 <span class="y">Y</span></td><td class="num"><b>6207</b></td><td class="num">637</td><td class="num">10.3%</td><td class="y">3 / 3</td></tr>
+</table>
+<p class="mut">Y/N = 首次提交是否 36/36。CL macro r2 修复后 3916 → 3836（两数都保留）。</p>
+
+<h3>2.2 效应分解</h3>
+<table>
+<tr><th>方向</th><th>对比</th><th class="num">比值</th></tr>
+<tr><td rowspan="2"><b>语言</b>（同方案）</td><td>JS inline / CL inline</td><td class="num"><b>0.97×</b></td></tr>
+<tr><td>JS table / CL macro</td><td class="num">0.81×</td></tr>
+<tr><td rowspan="2"><b>方案</b>（同语言）</td><td>CL inline / CL macro</td><td class="num"><b>1.39×</b></td></tr>
+<tr><td>JS inline / JS table</td><td class="num"><b>1.66×</b></td></tr>
+</table>
+<p><b>方案效应（28–40%）大于语言效应（0–19%），且方向不一致。</b></p>
+
+<h3>2.3 失效点</h3>
+<table>
+<tr><th>判据</th><th>内容</th><th class="num">命中格数</th><th>性质</th></tr>
+<tr><td><b>#32</b></td><td>空命令串应输出 <code>err BADARG</code>，实际无输出</td><td class="num">3（CL macro 全部）</td><td><b>方案相关</b>：宏把 15 个 op 收敛成一个生成器，空输入不属于任何 op，掉进缝里；table/inline 的 default 分支天然接住</td></tr>
+<tr><td><b>#36</b></td><td>混合序列 L6：<code>swap</code> 期望 <code>ok swap 2</code>，实际 <code>err CONFLICT</code></td><td class="num">2（CL macro r2、JS table r1）</td><td><b>跨语言共有</b>：对调两课时间本不产生冲突，实现多做了一次冲突检查</td></tr>
+</table>
+<p class="q">#32 是漏（该报错没报），#36 是过量（不该报错却报）。判据必须同时约束两者，否则会奖励“过度检查”的实现。</p>
+
+<h2>三、判据自证（决定上面所有数字可不可信）</h2>
+<table>
+<tr><th>检验</th><th>结果</th></tr>
+<tr><td><code>ref-js.js</code> 参考实现</td><td class="y">36 / 36</td></tr>
+<tr><td><code>ref-cl.lisp</code> 参考实现（经 WSL SBCL）</td><td class="y">36 / 36</td></tr>
+<tr><td>变异 M1：删掉 <code>add</code> 的冲突检查</td><td><span class="n">#4 FAIL</span> ✅ 被抓</td></tr>
+<tr><td>变异 M2：<code>trim</code> 回退旧语义</td><td><span class="n">#18 FAIL</span> ✅ 被抓</td></tr>
+</table>
+<p>另：手写期望值过程中自查出 4 处错误（含 #30 排序、trim 语义），已修正——<b>判据自身也要被审</b>。</p>
+
+<h2>四、与预注册假设的对照</h2>
+<table>
+<tr><th>假设</th><th>预测</th><th>实测</th><th>判决</th></tr>
+<tr><td><b>H1</b></td><td>同 op、同方案下 CL chars &gt; JS chars</td><td>inline 0.97×、抽象 0.81×</td><td class="n">被反驳</td></tr>
+<tr><td><b>H2</b></td><td>宏/表驱动的 chars &lt; 内联</td><td>1.39×（CL）、1.66×（JS），方向相反</td><td class="n">被反驳（方向相反）</td></tr>
+<tr><td><b>H3</b></td><td>first_pass 与语言无关、与方案有关</td><td>inline 6/6 vs 抽象 2/6</td><td class="y">成立</td></tr>
+<tr><td><b>H4</b></td><td>弱执行者才产生 silent_failures</td><td>强模型下 = 0</td><td>不可判（转 C1）</td></tr>
+</table>
+<p class="mut">H2 的措辞写反了：参考对象应是“重复部分”，不是“总量”。留档不改。</p>
+
+<h2>五、T1 修正</h2>
+<p>原 T1（隐含）：<code>符号层价值 ∝ P（执行者错误率） × D（决定数）</code> —— 只写了收益侧。v3 补上成本侧：</p>
+<pre><code>inline（15 个独立分支）：错误互相独立     P(全绿) = ∏(1−pᵢ)      实测 6/6
+macro/table（1 个生成器）：错误完全相关   P(全绿) = 1 − p_shared   实测 2/6</code></pre>
+<pre><code>符号层净收益 = 收敛带来的节省（30–40% 字符）
+             − 收敛带来的失效集中风险（从 ∏(1−pᵢ) 退化为 1−p_shared）</code></pre>
+<p class="q">符号层改变的不是错误率的均值，是错误的相关结构——从 15 个独立的错，变成 1 个共享的错。</p>
+<p><b>T1b（新命题）</b>：抽象把 N 处检查收敛成 1 处；该处写对则全对，写漏则全漏。因此收益随 D 增长，风险随「该处被判据覆盖的程度」下降。<b>推论：没有外部判据时，抽象的期望收益可能为负；有判据时为正。</b></p>
+
+<h2>六、与旧数据的关系</h2>
+<table>
+<tr><th>旧结论</th><th>处置</th></tr>
+<tr><td>15 op 全量 CL 11460 vs JS 5933（1.93×）</td><td><span class="n">撤回</span>：三因叠加（生态 2547、任务形状、方案不对等），且含伪重复</td></tr>
+<tr><td>「CL 手写 JSON 最省」</td><td><span class="n">撤回</span>：行口径成立、字符口径不成立（claim-9b）</td></tr>
+<tr><td>81 run / 65 独立产物</td><td>降级为<b>探索性附录</b>：设计演化过程，不是结论来源</td></tr>
+<tr><td>claim-21（CL 83.3% 不可复现）</td><td>原因查明：本机无 SBCL，判据全崩；需在有 SBCL 环境复跑</td></tr>
+</table>
+
+<h2>七、边界（不外推）</h2>
+<ol>
+<li><b>规模</b>：只有 15 op，规模维度完全没测。</li>
+<li><b>模型</b>：单族、强模型一档；<code>P&gt;0</code> 的那一半仍未观测（C1）。</li>
+<li><b>语言</b>：只有 CL 与 JS 两种。</li>
+<li><b>样本</b>：每格 n=3，只够给方向，不够给区间。</li>
+<li><b>判据覆盖</b>：36 条抓到的错已知；没抓到的错未知（C4 未收口）。</li>
+<li><b>任务形状</b>：换成需要 I/O 的任务可能翻盘——旧数据正是反例。</li>
+</ol>
+
+<h2>八、复现</h2>
+<pre><code>cd lisp-toolkit/experiments/timetable-ab
+
+# JS
+node check-v3.cjs --impl runs/v3-js-inline-r1/impl.js
+
+# CL（Windows 走 WSL 里的 SBCL）
+SBCL_WSL=kali-linux node check-v3.cjs --impl runs/v3-cl-macro-r1/impl.lisp
+
+# 单条判据
+node check-v3.cjs --impl &lt;file&gt; --only 32,36</code></pre>
+<p class="mut">数据：<code>results-v3.tsv</code>（12 行，六字段）；每格 <code>runs/&lt;run&gt;/prompt.txt</code>、<code>impl.*</code>、<code>log.txt</code>。</p>
+
+<div class="q">
+省的不是语言，是收敛。收敛把 15 个可能的错，换成 1 个必须对的错。<br>
+所以符号层不是“更好”，它是<b>把风险重新分配到一处</b>——分配得值不值，取决于那一处有没有判据看着。
+</div>
+
+<footer>
+lisp-toolkit ／ v3 实验报告 ／ 2026-10-31 ／ 判据自证：ref-js 36/36、ref-cl 36/36、变异 M1 #4、变异 M2 #18
+</footer>
+</main>
+</body>
+</html>

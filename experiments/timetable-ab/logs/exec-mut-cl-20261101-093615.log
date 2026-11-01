@@ -1,0 +1,14 @@
+﻿候选变异 416 个，抽样 30 个，实现 runs\scale-lisp\impl.lisp
+基线全绿：-- 36 passed, 0 failed
+
+可用变异 30（语法无效 0）
+杀死 25，存活 5
+变异得分 = 83.3%
+GATE_JSON {"impl":"impl.lisp","baselineGreen":true,"total":30,"killed":25,"survived":5,"score":83.3}
+
+=== 存活变异（判据看不见的错）===
+  L127  [(< → (<=]  ((< code 32) (format o "\\u~4,'0x" code))
+  L200  [删一行（非空非注释）]  :location (str (cget al "location"))
+  L282  [max → min]  (setf (course-pfrom c) (max 1 (course-pfrom c)))
+  L427  [and → or]  (when (and msg (string/= msg ""))
+  L444  [删一行（非空非注释）]  (finish-output)

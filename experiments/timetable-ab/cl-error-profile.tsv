@@ -1,0 +1,13 @@
+arm	run	state	pass	fail	crash	class	fail_ids	first_error
+v5-cl-macro	r1	partial	34	2	0	G 可加载但判据不过	16,36	
+v5-cl-macro	r2	crash	0	0	36	C 未定义函数（调用了一个不是函数的符号）		Unhandled UNDEFINED-FUNCTION in thread #<SB-THREAD:THREAD tid=2435 "main thread" RUNNING {1200C48003}>: The function COMMON-LISP-USER::S is 
+v5-cl-macro	r3	partial	34	2	0	G 可加载但判据不过	31,32	
+v5-cl-macro	r4	crash	0	0	36	C 未定义函数（调用了一个不是函数的符号）		Unhandled UNDEFINED-FUNCTION in thread #<SB-THREAD:THREAD tid=2732 "main thread" RUNNING {1200C48003}>: The function SB-EXT:*POSIX-ARGV* is 
+v5-cl-macro	r5	green	36	0	0	—		
+v5-cl-macro	r6	crash	0	0	36	B 读取期语法错误		Unhandled SB-C::INPUT-ERROR-IN-LOAD in thread #<SB-THREAD:THREAD tid=3028 "main thread" RUNNING {1200C48003}>: READ error during LOAD:
+v5-cl-inline	r1	partial	34	2	0	G 可加载但判据不过	31,32	
+v5-cl-inline	r2	green	36	0	0	—		
+v5-cl-inline	r3	partial	34	2	0	G 可加载但判据不过	31,32	
+v5-cl-inline	r4	crash	0	0	36	A 读到文件尾（括号不配平）		Unhandled SB-C::INPUT-ERROR-IN-LOAD in thread #<SB-THREAD:THREAD tid=3623 "main thread" RUNNING {1200C48003}>: READ error during LOAD:
+v5-cl-inline	r5	crash	0	0	36	E 其它运行时错误		ERROR:
+v5-cl-inline	r6	crash	0	0	36	B 读取期语法错误		Unhandled SB-C::INPUT-ERROR-IN-LOAD in thread #<SB-THREAD:THREAD tid=3919 "main thread" RUNNING {1200C48003}>: READ error during LOAD:

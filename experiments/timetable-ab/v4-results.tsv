@@ -1,0 +1,25 @@
+﻿arm	run	chars	lines	code_lines	upto36	upto36_pass	upto36_fail	upto56_pass	out_tok	finish	reasoning
+v4-cl-macro	r1	6982	363	332	0/36	0	0	0	29632	stop	102706
+v4-cl-macro	r2	6555	329	296	36/36	36	0	36	28699	stop	95293
+v4-cl-macro	r3	0	0	0	generation_failed	0	0	0	0		
+v4-cl-macro	r4	6130	322	292	0/36	0	0	0	32146	stop	104539
+v4-cl-macro	r5	6764	338	306	0/36	0	0	0	32510	stop	108903
+v4-cl-macro	r6	0	0	0	generation_failed	0	0	0	0		
+v4-cl-inline	r1	7144	346	317	0/36	0	0	0	27621	stop	93928
+v4-cl-inline	r2	0	0	0	generation_failed	0	0	0	0		
+v4-cl-inline	r3	7116	340	327	1/36	1	35	1	27503	stop	93596
+v4-cl-inline	r4	0	0	0	generation_failed	0	0	0	0		
+v4-cl-inline	r5	0	0	0	generation_failed	0	0	0	0		
+v4-cl-inline	r6	0	0	0	generation_failed	0	0	0	0		
+v4-js-table	r1	5729	292	283	36/36	36	0	36	25695	stop	88225
+v4-js-table	r2	5306	213	209	36/36	36	0	36	22639	stop	74580
+v4-js-table	r3	6012	207	204	36/36	36	0	36	28025	stop	94394
+v4-js-table	r4	6231	305	277	36/36	36	0	36	24812	stop	81338
+v4-js-table	r5	6283	285	272	36/36	36	0	36	26906	stop	89832
+v4-js-table	r6	5140	295	268	36/36	36	0	36	22014	stop	72173
+v4-js-inline	r1	7085	289	272	36/36	36	0	36	25650	stop	84285
+v4-js-inline	r2	7830	464	436	36/36	36	0	36	25792	stop	81070
+v4-js-inline	r3	7009	220	215	36/36	36	0	36	28791	stop	92990
+v4-js-inline	r4	6559	387	366	36/36	36	0	36	30681	stop	102597
+v4-js-inline	r5	6356	236	235	36/36	36	0	36	27008	stop	88688
+v4-js-inline	r6	7199	457	430	36/36	36	0	36	25283	stop	83510

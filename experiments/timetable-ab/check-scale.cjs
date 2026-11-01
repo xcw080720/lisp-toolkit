@@ -12,6 +12,11 @@ if (!impl) { console.log('usage: node check-scale.cjs --impl X [--only 6,7]'); p
 const isLisp = impl.endsWith('.lisp');
 const isJavaFile = /\.java$/i.test(impl);
 const sbcl = process.env.SBCL || 'sbcl';
+// 2026-11-01 补：与 check-v3.cjs / check-v4.cjs 同一套 WSL 分派。
+// 起因：claim-21 记「CL 侧不可再复现」——本机 Windows 无 SBCL，check-scale 直接崩溃，
+// 于是基线全红、mutate.cjs 的杀死判定失去意义（旧记录 0%）。这里只加分派，不动任何判据逻辑。
+const WSL_DISTRO = process.env.SBCL_WSL || '';
+const toWsl = (p) => '/mnt/' + p.replace(/\\/g, '/').replace(/^([A-Za-z]):/, (m, d) => d.toLowerCase());
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'sc-'));
 
 // Java：先编译到临时目录，再跑。类名必须等于文件名（impl.java → class impl）
@@ -43,6 +48,16 @@ const C = (o = {}) => ({ name: 'X', teacher: '', location: '', day: 1, periodFro
 const find = (out, name) => (out.courses || []).find((c) => c.name === name);
 const ok = (cond, msg) => (cond ? true : msg || 'invariant failed');
 
+// Lisp 分派：有 SBCL_WSL 就走 wsl（路径转 /mnt/x/...），否则用本地 sbcl。逻辑与 check-v3.cjs 一致。
+function runLisp(f) {
+  if (WSL_DISTRO) {
+    return spawnSync('wsl', ['-d', WSL_DISTRO, '-u', 'root', '--', sbcl,
+      '--script', toWsl(path.resolve(impl)), toWsl(path.resolve(f))],
+      { encoding: 'utf8', timeout: 180000 });
+  }
+  return spawnSync(sbcl, ['--script', impl, f], { encoding: 'utf8', timeout: 30000 });
+}
+
 function run(input) {
   const f = path.join(tmp, 'in.json');
   fs.writeFileSync(f, JSON.stringify(input));
@@ -63,7 +78,7 @@ function run(input) {
     : (isCpp || isC)
     ? spawnSync(CPP_BIN, [f], { encoding: 'utf8', timeout: 120000 })
     : isLisp
-      ? spawnSync(sbcl, ['--script', impl, f], { encoding: 'utf8', timeout: 30000 })
+      ? runLisp(f)
       : spawnSync(process.execPath, [impl, f], { encoding: 'utf8', timeout: 30000 });
   try { return JSON.parse((r.stdout || '').trim()); } catch { return null; }
 }

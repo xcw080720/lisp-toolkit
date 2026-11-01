@@ -112,3 +112,15 @@ node experiments/timetable-ab/check-scale.cjs --impl experiments/timetable-ab/ru
 ## 如果你复算不出来
 
 把每条命令的**完整输出**贴成 issue。**复现失败是我最想收到的信息。**
+## 环境记录：本机没有 SBCL，用 WSL 里的（2026-10-31 实测）
+
+- Windows 侧 sbcl 不在 PATH；winget install SBCL.SBCL 因网络（0x80072efd）失败。
+- **Kali WSL 里已装**：wsl -d kali-linux -u root -- apt-get install -y sbcl → SBCL 2.6.4.debian（/usr/bin/sbcl）。
+- 调用方式：给脚本设 SBCL_WSL=kali-linux，它会用 wsl -d kali-linux -u root -- sbcl --script /mnt/c/...。
+- check-v3.cjs 已支持该环境变量；check-scale.cjs / gate.cjs 尚未接入（旧数据结论待用同一方式复核）。
+- **重要推论**：此前 gate.cjs 报 scale-lisp 0% / 基线红 的直接原因是**本机没有 CL 编译器，36 条判据全部崩溃**，不是检查器变严、也不是实现被改。claim-21 的"不可复现"应改判为"环境缺失导致，需在有 SBCL 的环境复跑"。
+
+### CL 侧踩到的两个坑（写实现时必看）
+
+1. **文件里不要有非 ASCII（含中文注释）**：sbcl --script 读入时报 INPUT-ERROR-IN-LOAD，且报错信息误导（说符号找不到）。
+2. **不要用 (sb-ext:posix-argv)**：2.6.4 下不可用；用 sb-ext:*posix-argv*，并且**不要靠 member "--script" 定位**（该元素可能被处理掉），改用过滤：去掉以 - 开头和含 .lisp 的项。
