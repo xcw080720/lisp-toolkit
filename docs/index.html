@@ -149,9 +149,10 @@ JS <strong>1.200×</strong> [1.072, 1.362]（两语言同一个数）。<br>
         但我一开始量出来的差距是 <strong>4 倍</strong>——那不是语言的差距，是<b>谁把代码写成了单行</b>。</div>
     </div>
     <div class="fig">
-      <div class="n">1.93×<span class="u">Lisp 反而更长</span></div>
-      <div class="d">同样的十五个功能：Lisp 11460 字符，JavaScript 5933 字符。<br>
-        <strong>我原本以为会相反。</strong></div>
+      <div class="n">1.008×<span class="u">语言几乎不影响</span></div>
+      <div class="d">同一份规格、同一种写法、每边六次独立生成：JavaScript 7047 字符，Common Lisp 6991 字符。<br>
+        <span class="u">95% 区间 [0.825, 1.116]，跨 1.0 —— 不能说哪门语言更长。</span><br>
+        <strong>我原本以为会相反，而且我一度量出 1.93×——那个数已撤回。</strong></div>
     </div>
     <div class="fig">
       <div class="n">0<span class="u">行声明 vs 15 行</span></div>
@@ -206,7 +207,7 @@ JS <strong>1.200×</strong> [1.072, 1.362]（两语言同一个数）。<br>
   </p>
   <pre>git clone https://github.com/xcw080720/lisp-toolkit
 
-node experiments/timetable-ab/metric.cjs runs/scale-lisp/impl.lisp   # → 11460
+node experiments/timetable-ab/metric.cjs runs/scale-lisp/impl.lisp   # → 11460（30 op 臂；15 op 的现值见 B1-加n结果.md）
 node experiments/timetable-ab/gate.cjs                              # → 两个地板分都达标</pre>
   <p>
     里面还有：<a href="./experiment-report.html">完整实验报告</a>（含十五次失败）、
@@ -322,7 +323,7 @@ node experiments/timetable-ab/gate.cjs                              # → 两个
     <thead><tr><th style="width:27%">结论</th><th style="width:36%">数字（口径已标）</th><th>适用边界</th></tr></thead>
     <tbody>
       <tr><td>行数不是语言属性</td><td class="num">物理行差 <b>4.05×</b><br>非空白字符差 <b>7.6%</b></td><td>四个隔离 agent、同一 30 op 规格</td></tr>
-      <tr><td>宏在编写成本上输</td><td class="num">JS 5933 · Java 6970 · CL 11460 字符<br>（同一 15 op，非空白非注释）</td><td>大模型 + 联网 + 同一批人</td></tr>
+      <tr><td>语言不决定代码量</td><td class="num">同方案、n=6/臂：JS 7047 · CL 6991 字符（inline）<br>比值 <b>1.008×</b>，区间 [0.825, 1.116] 跨 1.0<br>抽象方案 <b>1.007×</b>，区间 [0.879, 1.095] 跨 1.0</td><td>单模型单版本、15 op、单轮无反馈</td></tr>
       <tr><td>宏在展开期校验上独占</td><td>关校验：重复声明 <b>19/19 全绿</b><br>开校验：加载即失败并点名</td><td><b>无条件</b>（与模型大小无关）</td></tr>
       <tr><td>宏与表的痛点相同</td><td>两个不同作者写下同一句：<br>「这张表装得下 op，装不下时间轴」</td><td><b>无条件</b>（结构性质）</td></tr>
     </tbody>
@@ -332,7 +333,7 @@ node experiments/timetable-ab/gate.cjs                              # → 两个
   <table>
     <thead><tr><th style="width:26%">维度</th><th style="width:15%">谁赢</th><th>证据</th></tr></thead>
     <tbody>
-      <tr><td>编写成本</td><td>表驱动</td><td>同一 15 op：CL 11460 vs JS 5933 字符（1.93×）</td></tr>
+      <tr><td>编写成本</td><td>表驱动</td><td>语言效应不成立（1.008× / 1.007×，均跨 1.0）；<b>真正省的是抽象</b>：inline/抽象 = 1.200×（省 17%，两语言同一个数）</td></tr>
       <tr><td>产物扇出<br><span style="color:#6b7480;font-size:13px">一条声明长 5 样</span></td><td>打平</td><td>三臂手改都是 <b>0</b>；成本 JS 2058 &lt; CL 5969 &lt; Java APT 18328 字符</td></tr>
       <tr><td>body 级内嵌横切</td><td><b>宏</b></td><td>宏 <b>0 行声明</b>、body 改后手改 0 处；表 15 行且初始声明即错</td></tr>
       <tr><td>展开期校验</td><td><b>宏独占</b></td><td>成对对照 C3a（关）19/19 vs C3b（开）加载即失败</td></tr>

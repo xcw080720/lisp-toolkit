@@ -82,7 +82,7 @@ JS <strong>1.200×</strong> [1.072, 1.362]（两语言同一个数）。<br>
       </tr>
       <tr>
         <td>宏在编写成本上输</td>
-        <td class="num">JS 5933 · Java 6970 · CL 11460 字符<br>（同一 15 op 规格，非空白非注释）</td>
+        <td class="num">同方案、n=6/臂：<b>1.008×</b>（inline）、<b>1.007×</b>（抽象）<br>两个区间都跨 1.0</td>
         <td>大模型 + 联网 + 同一批人</td>
       </tr>
       <tr>
@@ -102,7 +102,7 @@ JS <strong>1.200×</strong> [1.072, 1.362]（两语言同一个数）。<br>
   <table>
     <thead><tr><th style="width:26%">维度</th><th style="width:20%">谁赢</th><th>证据</th></tr></thead>
     <tbody>
-      <tr><td>编写成本</td><td class="lose">表驱动</td><td>同一 15 op：CL 11460 vs JS 5933 字符（1.93×）</td></tr>
+      <tr><td>编写成本</td><td class="lose">表驱动</td><td>语言效应不成立；<b>抽象</b>才是变量：1.200×（省 17%）</td></tr>
       <tr><td>产物扇出<br><span style="color:#5c6672">一条声明长出 5 样产物</span></td><td>打平</td><td>三臂手改都是 <span class="win">0</span>；成本 JS 69 行 &lt; CL 229 &lt; Java APT 754</td></tr>
       <tr><td>body 级内嵌横切<br><span style="color:#5c6672">“这次改了哪些字段”</span></td><td class="win">宏</td><td>宏 <strong>0 行声明</strong>、body 改后手改 0 处<br>表要 15 行声明，且初始声明就是错的（声明 8 个字段，实际改 1 个）</td></tr>
       <tr><td>展开期校验</td><td class="win">宏独占</td><td>测试看不见的错误只有它挡得住（成对对照 C3a/C3b）</td></tr>
