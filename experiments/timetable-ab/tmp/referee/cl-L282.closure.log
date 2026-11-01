@@ -1,6 +1,0 @@
-[ok  ] K1 add-tag-roundtrip
-[ok  ] K2 trim-to-single-slot
-[ok  ] K3 untag-count
-[ok  ] K4 location-roundtrip
-[FAIL] K5 add-keeps-period-from → 节次被改写：得到 1..4
--- 4 passed, 1 failed

@@ -1,6 +1,0 @@
-mutant	actual_diff	scale_cnt	scale_fails	closure_cnt	closure_fails
-cl-L127	L127 「((< code 32) (format o "\\u~4,'0x" code))」→「((<= code 32) (format o "\\u~4,'0x" code))」 [1 处]	36 条: 36 passed/0 failed	—	5 条: 5 passed/0 failed	—
-cl-L200	L200 删「:location (str (cget al "location"))」 [1 处]	36 条: 36 passed/0 failed	—	5 条: 4 passed/1 failed	K4 :: location 不该被丢：得到 []
-cl-L282	L282 「(setf (course-pfrom c) (max 1 (course-pfrom c)))」→「(setf (course-pfrom c) (min 1 (course-pfrom c)))」 [1 处]	36 条: 36 passed/0 failed	—	5 条: 4 passed/1 failed	K5 :: 节次被改写：得到 1..4
-cl-L427	L427 「(when (and msg (string/= msg ""))」→「(when (or msg (string/= msg ""))」 [1 处]	36 条: 36 passed/0 failed	—	5 条: 5 passed/0 failed	—
-cl-L444	L444 删「(finish-output)」 [1 处]	36 条: 36 passed/0 failed	—	5 条: 5 passed/0 failed	—
