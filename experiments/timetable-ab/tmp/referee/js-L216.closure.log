@@ -1,0 +1,6 @@
+[ok  ] K1 add-tag-roundtrip
+[ok  ] K2 trim-to-single-slot
+[FAIL] K3 untag-count → n 应为 2，得到 0
+[ok  ] K4 location-roundtrip
+[ok  ] K5 add-keeps-period-from
+-- 4 passed, 1 failed

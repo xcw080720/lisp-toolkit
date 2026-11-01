@@ -1,0 +1,13 @@
+mutant	expect	key	scale36	closure	closure_failed	label
+js-L1	equivalent		36/36	7/7		'use strict'; 删掉
+js-L30	gap	K1	36/36	6/7	K1	tag: COERCE.tag(c.tag) 删掉
+js-L99	gap	K6	36/36	6/7	K6	c.periodTo = Math.max(...) 删掉
+js-L157	gap	K2	36/36	6/7	K2	if (nf > nt) → >=
+js-L216	gap	K3	36/36	6/7	K3	return targets.length 删掉
+js-L187	gap	K7	36/36	6/7	K7	shift 的 Math.max(1, ...) 钳位去掉
+cl-L127	equivalent		36/36	7/7		(< code 32) → (<= code 32)
+cl-L200	gap	K4	36/36	6/7	K4	:location (str (cget al "location")) 删掉
+cl-L282	gap	K5	36/36	6/7	K5	(max 1 pfrom) → (min 1 pfrom)
+cl-L427	unobservable		36/36	7/7		(and msg (string/= msg "")) → or
+cl-L444	unchecked		36/36	7/7		(finish-output) 删掉
+cl-L380	gap	K7	36/36	6/7	K7	shift 的 (max 1 ...) 钳位去掉

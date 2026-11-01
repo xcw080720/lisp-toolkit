@@ -1,0 +1,6 @@
+mutant	actual_diff	scale_cnt	scale_fails	closure_cnt	closure_fails
+js-L1	L1 删「'use strict';」 [1 处]	36 条: 36 passed/0 failed	—	5 条: 5 passed/0 failed	—
+js-L30	L30 删「tag: COERCE.tag(c.tag),」 [1 处]	36 条: 36 passed/0 failed	—	5 条: 4 passed/1 failed	K1 :: tag 未保留：得到 undefined
+js-L99	L99 删「c.periodTo = Math.max(p.periodFrom, p.periodTo);」 [1 处]	36 条: 36 passed/0 failed	—	5 条: 5 passed/0 failed	—
+js-L157	L157 「if (nf > nt) continue;」→「if (nf >= nt) continue;」 [1 处]	36 条: 36 passed/0 failed	—	5 条: 4 passed/1 failed	K2 :: 应收窄到 5..5，得到 3..5
+js-L216	L216 删「return targets.length;」 [1 处]	36 条: 36 passed/0 failed	—	5 条: 4 passed/1 failed	K3 :: n 应为 2，得到 0

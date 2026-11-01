@@ -1,0 +1,11 @@
+﻿
+（--closure-only：跳过变异测试，只跑配置自洽、判据集指纹、补丁判据与存证校验）
+实现                            基线      得分        地板        结论
+配置自洽(impls/floors/文件)         前置      一致        0 项不符     PASS  (impls = floors，文件在场)
+判据集指纹(2 个判据)                  sha256  2 项一致     2 项一致     PASS  (现判据即地板记录的判据)
+K1-K7 scale-lisp/impl.lisp    绿       7/7       7/7       PASS  (K1–K7 全绿)
+K1-K7 scale-js/impl.js        绿       7/7       7/7       PASS  (K1–K7 全绿)
+closure-matrix.tsv            存证      e761e067  e761e067  PASS  (sha256 与存证一致)
+
+[gate] 耗时 9.6 s
+[gate] 全部通过：覆盖范围自洽且实现在场，判据集指纹与地板记录一致，变异达到地板分，补丁判据 K1–K7 全绿，证据表存证一致。
