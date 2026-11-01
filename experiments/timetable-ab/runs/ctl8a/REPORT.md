@@ -45,7 +45,7 @@ impl.lisp    lisp   物理行 289   代码行 245   字符 6621
 （`sbcl --script impl.lisp in1.json`，括号未修复时）
 
 ```
-; file: C:/Users/HUAWEI/Documents/deepseek-harness/default-workspace/experiments/timetable-ab/runs/ctl8a/impl.lisp
+; file: <HOME>/Documents/deepseek-harness/default-workspace/experiments/timetable-ab/runs/ctl8a/impl.lisp
 ; in: DEFUN JSTR
 ;     (GET-OUTPUT-STREAM-STRING OUT)
 ; 
@@ -64,21 +64,21 @@ Unhandled SB-C::INPUT-ERROR-IN-LOAD in thread #<SB-THREAD:THREAD tid=2968 "main 
 
       Line: 48, Column: 7, File-Position: 1981
 
-      Stream: #<SB-SYS:FD-STREAM for "file C:\\Users\\HUAWEI\\Documents\\deepseek-harness\\default-workspace\\experiments\\timetable-ab\\runs\\ctl8a\\impl.lisp" {110003BC73}>
+      Stream: #<SB-SYS:FD-STREAM for "file <HOME>\\Documents\\deepseek-harness\\default-workspace\\experiments\\timetable-ab\\runs\\ctl8a\\impl.lisp" {110003BC73}>
 
 Backtrace for: #<SB-THREAD:THREAD tid=2968 "main thread" RUNNING {1100C78003}>
 0: (SB-DEBUG::DEBUGGER-DISABLED-HOOK #<SB-C::INPUT-ERROR-IN-LOAD {1101026A53}> #<unused argument> :QUIT T)
 1: (SB-DEBUG::RUN-HOOK *INVOKE-DEBUGGER-HOOK* #<SB-C::INPUT-ERROR-IN-LOAD {1101026A53}>)
 2: (INVOKE-DEBUGGER #<SB-C::INPUT-ERROR-IN-LOAD {1101026A53}>)
 3: (ERROR #<SB-C::INPUT-ERROR-IN-LOAD {1101026A53}>)
-4: (SB-C:COMPILER-ERROR SB-C::INPUT-ERROR-IN-LOAD :CONDITION #<SB-INT:SIMPLE-READER-ERROR "unmatched close parenthesis" {1101026A13}> :STREAM #<SB-SYS:FD-STREAM for "file C:\\Users\\HUAWEI\\Documents\\deepseek-harness\\default-workspace\\experiments\\timetable-ab\\runs\\ctl8a\\impl.lisp" {110003BC73}>)
+4: (SB-C:COMPILER-ERROR SB-C::INPUT-ERROR-IN-LOAD :CONDITION #<SB-INT:SIMPLE-READER-ERROR "unmatched close parenthesis" {1101026A13}> :STREAM #<SB-SYS:FD-STREAM for "file <HOME>\\Documents\\deepseek-harness\\default-workspace\\experiments\\timetable-ab\\runs\\ctl8a\\impl.lisp" {110003BC73}>)
 5: (SB-C::%DO-FORMS-FROM-INFO #<FUNCTION (LAMBDA (SB-KERNEL:FORM &KEY :CURRENT-INDEX &ALLOW-OTHER-KEYS) :IN SB-INT:LOAD-AS-SOURCE) {5FEEFB}> #<SB-C::SOURCE-INFO {1100C6DBA3}> SB-C::INPUT-ERROR-IN-LOAD)
-6: (SB-INT:LOAD-AS-SOURCE #<SB-SYS:FD-STREAM for "file C:\\Users\\HUAWEI\\Documents\\deepseek-harness\\default-workspace\\experiments\\timetable-ab\\runs\\ctl8a\\impl.lisp" {110003BC73}> :VERBOSE NIL :PRINT NIL :CONTEXT "loading")
-7: ((LABELS SB-FASL::LOAD-STREAM-1 :IN LOAD) #<SB-SYS:FD-STREAM for "file C:\\Users\\HUAWEI\\Documents\\deepseek-harness\\default-workspace\\experiments\\timetable-ab\\runs\\ctl8a\\impl.lisp" {110003BC73}> NIL)
-8: (SB-FASL::CALL-WITH-LOAD-BINDINGS #<FUNCTION (LABELS SB-FASL::LOAD-STREAM-1 :IN LOAD) {5FF3AB}> #<SB-SYS:FD-STREAM for "file C:\\Users\\HUAWEI\\Documents\\deepseek-harness\\default-workspace\\experiments\\timetable-ab\\runs\\ctl8a\\impl.lisp" {110003BC73}> NIL #<SB-SYS:FD-STREAM for "file C:\\Users\\HUAWEI\\Documents\\deepseek-harness\\default-workspace\\experiments\\timetable-ab\\runs\\ctl8a\\impl.lisp" {110003BC73}>)
-9: ((LABELS SB-FASL::LOAD-STREAM :IN LOAD) #<SB-SYS:FD-STREAM for "file C:\\Users\\HUAWEI\\Documents\\deepseek-harness\\default-workspace\\experiments\\timetable-ab\\runs\\ctl8a\\impl.lisp" {110003BC73}> NIL)
-10: (LOAD #<SB-SYS:FD-STREAM for "file C:\\Users\\HUAWEI\\Documents\\deepseek-harness\\default-workspace\\experiments\\timetable-ab\\runs\\ctl8a\\impl.lisp" {110003BC73}> :VERBOSE NIL :PRINT NIL :IF-DOES-NOT-EXIST :ERROR :EXTERNAL-FORMAT :DEFAULT)
-11: ((FLET SB-IMPL::LOAD-SCRIPT :IN SB-IMPL::PROCESS-SCRIPT) #<SB-SYS:FD-STREAM for "file C:\\Users\\HUAWEI\\Documents\\deepseek-harness\\default-workspace\\experiments\\timetable-ab\\runs\\ctl8a\\impl.lisp" {110003BC73}>)
+6: (SB-INT:LOAD-AS-SOURCE #<SB-SYS:FD-STREAM for "file <HOME>\\Documents\\deepseek-harness\\default-workspace\\experiments\\timetable-ab\\runs\\ctl8a\\impl.lisp" {110003BC73}> :VERBOSE NIL :PRINT NIL :CONTEXT "loading")
+7: ((LABELS SB-FASL::LOAD-STREAM-1 :IN LOAD) #<SB-SYS:FD-STREAM for "file <HOME>\\Documents\\deepseek-harness\\default-workspace\\experiments\\timetable-ab\\runs\\ctl8a\\impl.lisp" {110003BC73}> NIL)
+8: (SB-FASL::CALL-WITH-LOAD-BINDINGS #<FUNCTION (LABELS SB-FASL::LOAD-STREAM-1 :IN LOAD) {5FF3AB}> #<SB-SYS:FD-STREAM for "file <HOME>\\Documents\\deepseek-harness\\default-workspace\\experiments\\timetable-ab\\runs\\ctl8a\\impl.lisp" {110003BC73}> NIL #<SB-SYS:FD-STREAM for "file <HOME>\\Documents\\deepseek-harness\\default-workspace\\experiments\\timetable-ab\\runs\\ctl8a\\impl.lisp" {110003BC73}>)
+9: ((LABELS SB-FASL::LOAD-STREAM :IN LOAD) #<SB-SYS:FD-STREAM for "file <HOME>\\Documents\\deepseek-harness\\default-workspace\\experiments\\timetable-ab\\runs\\ctl8a\\impl.lisp" {110003BC73}> NIL)
+10: (LOAD #<SB-SYS:FD-STREAM for "file <HOME>\\Documents\\deepseek-harness\\default-workspace\\experiments\\timetable-ab\\runs\\ctl8a\\impl.lisp" {110003BC73}> :VERBOSE NIL :PRINT NIL :IF-DOES-NOT-EXIST :ERROR :EXTERNAL-FORMAT :DEFAULT)
+11: ((FLET SB-IMPL::LOAD-SCRIPT :IN SB-IMPL::PROCESS-SCRIPT) #<SB-SYS:FD-STREAM for "file <HOME>\\Documents\\deepseek-harness\\default-workspace\\experiments\\timetable-ab\\runs\\ctl8a\\impl.lisp" {110003BC73}>)
 12: ((FLET SB-UNIX::BODY :IN SB-IMPL::PROCESS-SCRIPT))
 13: ((FLET "WITHOUT-INTERRUPTS-BODY-" :IN SB-IMPL::PROCESS-SCRIPT))
 14: (SB-IMPL::PROCESS-SCRIPT "impl.lisp")

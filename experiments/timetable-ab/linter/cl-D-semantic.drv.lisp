@@ -1,1 +1,1 @@
-(compile-file "C:/Users/HUAWEI/Documents/deepseek-harness/default-workspace/experiments/timetable-ab/.tmp/lint/cl-D-semantic.lisp" :output-file "C:/Users/HUAWEI/Documents/deepseek-harness/default-workspace/experiments/timetable-ab/.tmp/lint/cl-D-semantic.fasl")
+(compile-file "<HOME>/Documents/deepseek-harness/default-workspace/experiments/timetable-ab/.tmp/lint/cl-D-semantic.lisp" :output-file "<HOME>/Documents/deepseek-harness/default-workspace/experiments/timetable-ab/.tmp/lint/cl-D-semantic.fasl")

@@ -1,7 +1,7 @@
 <<READY>>
 <<Q1792753849551_765>>
 
-; file: C:/Users/HUAWEI/Documents/deepseek-harness/default-workspace/experiments/timetable-ab/runs/repl-g2/impl.lisp
+; file: <WORKSPACE>/experiments/timetable-ab/runs/repl-g2/impl.lisp
 ; in: DEFUN JVAL
 ;     (JARR)
 ; 
@@ -36,7 +36,7 @@ T
 debugger invoked on a FILE-DOES-NOT-EXIST in thread
 #<THREAD tid=21988 "main thread" RUNNING {1100C78003}>:
   The file
-  #P"C:/Users/HUAWEI/Documents/deepseek-harness/default-workspace/experiments/timetable-ab/runs/repl-g2/nope.json"
+  #P"<WORKSPACE>/experiments/timetable-ab/runs/repl-g2/nope.json"
   does not exist:
 
 Type HELP for debugger help, or (SB-EXT:EXIT) to exit from SBCL.
@@ -48,7 +48,7 @@ restarts (invokable by number or by possibly-abbreviated name):
     系统找不到指定的文件。
   3: [ABORT    ] Exit debugger, returning to top level.
 
-(SB-IMPL::%OPEN-ERROR #P"C:/Users/HUAWEI/Documents/deepseek-harness/default-workspace/experiments/timetable-ab/runs/repl-g2/nope.json" 2 :IGNORE-THIS-ARG :ERROR)
+(SB-IMPL::%OPEN-ERROR #P"<WORKSPACE>/experiments/timetable-ab/runs/repl-g2/nope.json" 2 :IGNORE-THIS-ARG :ERROR)
 <<end Q1792753863733_388>>
 <<Q1792753863895_250>>
 

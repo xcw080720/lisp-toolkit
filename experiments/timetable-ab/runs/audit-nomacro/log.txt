@@ -1,7 +1,7 @@
 21:13:11 | T0 | impl.lisp=542 lines, no audit field, 5 ops (add/del/edit/move/swap)
 21:13:11 | node ..\..\check-audit.cjs --impl impl.lisp --ops add,del,edit,move,swap | exit=1 | [FAIL] add  — stdout 非 JSON
 21:13:12 | node ..\..\check-scale.cjs --impl impl.lisp --only 1,2,3,4,5,6,7,8,9 | exit=1 | [FAIL] #1 add-default-weeks  — stdout 非 JSON
-21:14:12 | env: $env:SBCL=C:\Users\HUAWEI\Documents\deepseek-harness\default-workspace\tools\sbcl\PFiles\Steel Bank Common Lisp\sbcl.exe | exit=0 | 修正上一行假失败（PATH 无 sbcl）
+21:14:12 | env: $env:SBCL=<WORKSPACE>\tools\sbcl\PFiles\Steel Bank Common Lisp\sbcl.exe | exit=0 | 修正上一行假失败（PATH 无 sbcl）
 21:14:13 | node ..\..\check-scale.cjs --impl impl.lisp --only 1,2,3,4,5,6,7,8,9 | exit=0 | -- 9 passed, 0 failed
 21:14:14 | node ..\..\check-audit.cjs --impl impl.lisp --ops add,del,edit,move,swap | exit=1 | [FAIL] add  — 输出里没有 audit 数组
 21:14:36 | node ..\..\check-audit.cjs --impl impl.lisp --ops add,del,edit,move,swap | exit=1 | [FAIL] order-3  — audit 条数 ≠ 3

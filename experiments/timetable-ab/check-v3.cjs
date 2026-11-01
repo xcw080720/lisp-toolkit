@@ -1,4 +1,4 @@
-﻿// check-v3.cjs — v3 协议的不变量检查器（纯文本契约，无 I/O）
+// check-v3.cjs — v3 协议的不变量检查器（纯文本契约，无 I/O）
 // 用法: node check-v3.cjs --impl <impl.lisp|impl.js> --upto 36 [--only 3,7] [--json]
 //
 // ★ 本文件里装着**两个契约**（2026-11-01 查清并标注）：
@@ -12,6 +12,8 @@
 //   6/6 个 JS inline 格、v3 的历史产物、参考实现，全都是一样的结果。
 //
 //   用法约束：必须显式给 --upto（或 --only）声明分母，否则直接报错退出。
+//   v1.6.1（2026-11-01）：#31/#32 已写进 tasks/v3.spec.md §4.1，全 36 条均为合规判据；
+//   此前的 --exclude-out-of-spec 开关已删除（保留它等于允许重新剔掉合规判据）。
 //   历史口径：v3 报告与 CLAIMS.md 里的「36 条」一律指 `--upto 36`。
 'use strict';
 const fs = require('fs'), os = require('os'), path = require('path');
@@ -22,11 +24,9 @@ const arg = (k, d) => { const i = argv.indexOf(k); return i >= 0 ? argv[i + 1] :
 const impl = arg('--impl');
 const only = arg('--only');
 const asJson = argv.includes('--json');
-// 2026-11-01：spec 未定义的行为不该当缺陷。#31（未知命令）/ #32（空命令串）要求 BADARG，
-// 但 tasks/v3.spec.md 的错误码表只定义 DUP/NOTFOUND/BADARG(参数/越界)/CONFLICT/LIMIT，
-// 没写未知动词与空串。与本项目撤回 #32/#36 的同一条纪律一致。
-// 用 --exclude-out-of-spec 得"spec 合规口径"；默认仍按 36 条全算（历史可比）。
-const OUT_OF_SPEC = new Set((argv.includes('--exclude-out-of-spec') ? '31,32' : '').split(',').filter(Boolean).map(Number));
+// v1.6.1（2026-11-01）：#31（未知命令）/ #32（空命令串）已写进 tasks/v3.spec.md §4.1，
+// 因此它们**是**合规判据，36 条一条不剔。旧开关 --exclude-out-of-spec 已删除：
+// 留着它等于允许把合规判据重新剔出去，那正是这一版要关掉的缺口。
 if (!impl) { console.log('usage: node check-v3.cjs --impl X --upto 36 [--only 3,7] [--json]'); process.exit(2); }
 if (!only && !arg('--upto')) {
   console.log('[拒绝执行] 必须显式声明分母：本文件含两个契约（1–36 = v3 15-op；37–56 = 30-op 变体）。');
@@ -201,15 +201,10 @@ add(56, '--dry 遇错仍报 err', ['--dry del ghost'],
 // —— 执行 ——
 const upto = arg('--upto') ? +arg('--upto') : 0;
 const want = only ? new Set(only.split(',').map((s) => +s.trim())) : (upto ? new Set(T.filter((x) => x.id <= upto).map((x) => x.id)) : null);
-let pass = 0, fail = 0, crash = 0, skipped = 0;
+let pass = 0, fail = 0, crash = 0;
 const failures = [];
 for (const t of T) {
   if (want && !want.has(t.id)) continue;
-  if (OUT_OF_SPEC.has(t.id)) {   // spec 未写明的行为：不计分，只标出来
-    skipped++;
-    if (!asJson) console.log(`#${String(t.id).padStart(2)} [超纲·不计分]  ${t.desc}`);
-    continue;
-  }
   const r = runImpl(t.cmds);
   if (r.crashed) {
     crash++;
@@ -236,10 +231,11 @@ for (const t of T) {
 
 const total = pass + fail + crash;
 if (asJson) {
-  console.log(JSON.stringify({ impl, pass, fail, crash, total, skipped, outOfSpec: [...OUT_OF_SPEC], failures }, null, 2));
+  console.log(JSON.stringify({ impl, pass, fail, crash, total, failures }, null, 2));
 } else {
-  console.log(`\n${pass}/${total} 通过（fail=${fail} crash=${crash}）` + (skipped ? `｜超纲不计分 ${skipped} 条（#${[...OUT_OF_SPEC].join(', #')}）` : ''));
+  console.log(`\n${pass}/${total} 通过（fail=${fail} crash=${crash}）`);
 }
 process.exit(fail + crash === 0 ? 0 : 1);
+
 
 

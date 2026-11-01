@@ -2,7 +2,7 @@
 
 结论先说：**4 段抄/改写自 workspace 已有代码，其余全部自己写。**
 
-唯一被抄的文件：`C:\Users\HUAWEI\Documents\deepseek-harness\default-workspace\bench\op-lisp.lisp`
+唯一被抄的文件：`<WORKSPACE>\bench\op-lisp.lisp`
 （下文行号指该文件当前内容）
 
 ---

@@ -1,0 +1,35 @@
+# FREEZE — v1.6.1 修订（2026-11-01）
+
+本文件记录**修订之后**的实测哈希，供复核。它不替换历史冻结文件，只补充说明。
+
+spec：tasks/v3.spec.md   sha256 = f2f5fb2ef3d309b5c8d164aee50a1dd5e190a4f7cdc2ff121cbd43d3ddd1ba20
+判据：check-v3.cjs       sha256 = 7e11d726b6d6b5e79ed83835c0f28470e00d5b23fabd54c91b7587f772d1bce5
+
+## 为什么与此前的 FREEZE 不同（三处改动，逐条可核）
+
+1. **规格补充（转正）**：	asks/v3.spec.md 新增 §4.1，把「未知命令 → BADARG」「空命令串 → BADARG」写成明文，
+   并在 §3 的 BADARG 一行注明来源。此前判据 #31/#32 要求这两种行为，但规格没写，因而被当作超纲判据剔除；
+   现在它们是合规判据，**36 条一条不剔**。
+   → 后果：CL 的 first_pass 从「剔除口径 5/12」回到 **2/12**。v1.6.0 报的 5/12 作废（它是规格缺口的产物）。
+
+2. **判据文件加了两道边界**：check-v3.cjs 头部标注本文件装两个契约（1–36 = 15 op；37–56 = 30 op 变体），
+   并强制显式分母（无 `--upto` 直接拒绝执行）。判据内容与期望值**未改**。
+
+3. **删除历史开关**：`--exclude-out-of-spec` 已移除——转正之后再保留它，等于允许重新剔掉合规判据。
+
+## 与此前冻结文件的关系
+
+| 文件 | 记录的是 | 现在还能不能用 |
+|---|---|---|
+| `FREEZE-v3.1.txt` / `FREEZE-reproducible-layer-v3.1.txt` / `docs/FREEZE-可核层-v3.1.txt` | v3.1 当时的 spec 与判据 | **只有历史意义**：哈希已不符，见上面第 1、2 条 |
+| `FREEZE-reproducible-layer-v3.2.txt` | v3.2 当时的判据 | 同上（判据文件变过） |
+| **本文件** | 2026-11-01 修订后 | **当前有效** |
+
+复核命令：
+
+```powershell
+cd lisp-toolkit\experiments\timetable-ab
+Get-FileHash tasks\v3.spec.md -Algorithm SHA256
+Get-FileHash check-v3.cjs     -Algorithm SHA256
+node check-v3.cjs --impl runs\v5-cl-macro-r3\impl.lisp --upto 36   # 应 34/36（#31/#32 现在算真失败）
+```

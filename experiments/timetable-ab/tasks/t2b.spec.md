@@ -53,7 +53,7 @@
 ## 判据
 
 ```powershell
-$env:SBCL='C:\Users\HUAWEI\Documents\deepseek-harness\default-workspace\tools\sbcl\PFiles\Steel Bank Common Lisp\sbcl.exe'
+$env:SBCL='<WORKSPACE>\tools\sbcl\PFiles\Steel Bank Common Lisp\sbcl.exe'
 $env:SBCL_HOME=Split-Path $env:SBCL
 node ..\..\check-t2b.cjs --dir .
 ```

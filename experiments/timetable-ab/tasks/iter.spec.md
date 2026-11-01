@@ -69,7 +69,7 @@ D<n> | 轮数=<改了几次才绿> | 改动处=<n>（逐处列出）| 新增字�
 ## 环境
 
 ```powershell
-$env:SBCL='C:\Users\HUAWEI\Documents\deepseek-harness\default-workspace\tools\sbcl\PFiles\Steel Bank Common Lisp\sbcl.exe'
+$env:SBCL='<WORKSPACE>\tools\sbcl\PFiles\Steel Bank Common Lisp\sbcl.exe'
 $env:SBCL_HOME=Split-Path $env:SBCL
 ```
 体积用 `node ..\..\metric.cjs impl.*`。本机禁止 .ps1。

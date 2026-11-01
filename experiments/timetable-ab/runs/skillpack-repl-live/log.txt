@@ -1,5 +1,5 @@
 SP-live 臂（技能包 + 活体 REPL）—— 运行日志
-工作目录：C:\Users\HUAWEI\Documents\deepseek-harness\default-workspace
+工作目录：<WORKSPACE>
 目标：tasks/scale.spec.md 前 5 个 op（add/del/edit/move/swap），产物 runs/skillpack-repl-live/impl.lisp
 判据：check-scale.cjs --only 1..9（必须 9/9）+ --only 19（必须 1/1）
 

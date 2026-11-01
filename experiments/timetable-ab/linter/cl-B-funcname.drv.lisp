@@ -1,1 +1,1 @@
-(compile-file "C:/Users/HUAWEI/Documents/deepseek-harness/default-workspace/experiments/timetable-ab/.tmp/lint/cl-B-funcname.lisp" :output-file "C:/Users/HUAWEI/Documents/deepseek-harness/default-workspace/experiments/timetable-ab/.tmp/lint/cl-B-funcname.fasl")
+(compile-file "<HOME>/Documents/deepseek-harness/default-workspace/experiments/timetable-ab/.tmp/lint/cl-B-funcname.lisp" :output-file "<HOME>/Documents/deepseek-harness/default-workspace/experiments/timetable-ab/.tmp/lint/cl-B-funcname.fasl")
