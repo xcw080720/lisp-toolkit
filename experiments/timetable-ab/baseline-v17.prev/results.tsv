@@ -1,0 +1,11 @@
+impl	pass	total	fail	crash	floor	exit	secs	red_ids
+full-cl-macro/impl.lisp	78	84	6	0	78	1	37.0	#37 #38 #39 #42 #43 #49
+full-cl-inline/impl.lisp	78	84	6	0	78	1	25.7	#37 #38 #39 #42 #43 #49
+full-js-table/impl.js	78	84	6	0	78	1	8.2	#37 #38 #39 #42 #43 #49
+full-js-inline/impl.js	78	84	6	0	78	1	8.1	#37 #38 #39 #42 #43 #49
+d1-check-macro-1/impl.lisp	84	84	0	0	84	0	37.7	
+d1-check-macro-2/impl.lisp	78	84	6	0	78	1	27.3	#37 #38 #39 #42 #43 #49
+d1-check-macro-3/impl.lisp	84	84	0	0	84	0	27.6	
+d1-check-macro-4/impl.lisp	78	84	6	0	78	1	25.9	#37 #38 #39 #42 #43 #49
+d1-check-inline-1/impl.lisp	78	84	6	0	78	1	32.5	#37 #38 #39 #42 #43 #49
+d1-check-inline-2/impl.lisp	78	84	6	0	78	1	25.0	#37 #38 #39 #42 #43 #49

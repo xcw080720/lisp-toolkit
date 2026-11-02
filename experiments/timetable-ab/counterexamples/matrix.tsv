@@ -1,0 +1,33 @@
+mutant	desc	pass	total	fail	crash	reds	exit
+add-noclash	add 不查时段冲突	82	84	2	0	#4 #57	1
+add-day8	add 允许 day=8	82	84	2	0	#6 #67	1
+add-tofrom	add 不查 to<from	83	84	1	0	#33	1
+del-notfound	del 不存在返回 ok	82	84	2	0	#8 #56	1
+edit-notfound	edit 不存在返回 ok	83	84	0	1	#10	1
+move-noclash	move 不查冲突	83	84	1	0	#12	1
+swap-half	swap 只换 day 不换时段	83	84	1	0	#13	1
+rename-nodup	rename 不查重名	83	84	1	0	#15	1
+duplicate-nodup	duplicate 不查重名	83	84	1	0	#17	1
+trim-direction	trim 改 from 而不是 to	83	84	1	0	#18	1
+trim-noop	trim 什么都不改	81	84	3	0	#18 #60 #75	1
+clear-noop	clear 不删课程	81	84	3	0	#20 #36 #59	1
+shift-direction	shift 方向反了	82	84	2	0	#21 #72	1
+shift-bounds	shift 不查越界	83	84	1	0	#22	1
+copy-name	copy 生成的副本名不是 name_2	83	84	1	0	#23	1
+merge-keep	merge 不删被并的那门	83	84	1	0	#24	1
+filter-count	filter 报全表数而不是该天数	82	84	2	0	#27 #36	1
+count-fixed	count 恒报 0	80	84	4	0	#29 #36 #55 #65	1
+copyto-noclash	copyTo 不查时段冲突	82	84	2	0	#83 #84	1
+copyto-nodup	copyTo 不查重名	83	84	1	0	#86	1
+truncate-keepall	truncate 不删任何课	83	84	1	0	#40	1
+keep-keepall	keep 不删任何课	83	84	1	0	#41	1
+renameteacher-noop	renameTeacher 不改	83	84	1	0	#42	1
+renameloc-noop	renameLoc 不改	83	84	1	0	#43	1
+empty-cmd-ok	空命令串不报 BADARG	83	84	1	0	#32	1
+dedupe-noop	dedupe 不删重复	82	84	2	0	#44 #70	1
+compress-noop	compress 不重排	82	84	2	0	#45 #62	1
+compact-noop	compact 不重排	82	84	2	0	#46 #71	1
+mirror-wrongday	mirror 复制到源日而不是目标日	83	84	1	0	#47	1
+mirror-nodup	mirror 不查重名	83	84	1	0	#69	1
+absorb-noop	absorb 不改 a 的教师/地点	83	84	1	0	#48	1
+swapdays-noop	swapDays 不换日	83	84	1	0	#49	1

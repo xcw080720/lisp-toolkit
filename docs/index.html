@@ -89,11 +89,23 @@
 </style>
 </head>
 <body>
+<!-- REVOKED-NUMBERS-BANNER -->
+<div style="margin:0 0 20px;padding:14px 18px;border-left:4px solid #c0392b;background:rgba(192,57,43,.07);font-size:14px;line-height:1.7">
+<b>⚠️ 本文含已撤回的数字。</b>这份文档写于 v1.3.0 前后。以下说法<b>已经撤回或改写</b>，请以 <a href="https://doi.org/10.5281/zenodo.23618044">concept DOI</a> 指向的最新版为准：
+<table style="margin:8px 0 0;font-size:13px">
+<tr><th align="left">文中说</th><th align="left">现在的值</th></tr>
+<tr><td>抽象省 <b>28–40%</b></td><td><b>省 17%</b>（1.200×，CL 与 JS 独立测出同一个数）</td></tr>
+<tr><td>语言 <b>0.97×</b> / <b>0.81×</b></td><td><b>1.008×</b> [0.829, 1.116] / <b>1.007×</b> [0.879, 1.095]，<b>两区间都跨 1</b></td></tr>
+<tr><td>CL 比 JS <b>1.93×</b></td><td>该数字由三种误差叠加而成，已撤回</td></tr>
+<tr><td>判据 <b>36</b> / <b>56</b> 条</td><td>现为 <b>88 条</b>（84 内容 + 2 形态 + 2 做法）</td></tr>
+</table>
+<b>正文一字未改</b>——这是历史记录，改了就看不出版本演进了。
+</div>
 <div style="margin:0;padding:14px 18px;background:#fff4d6;border-bottom:2px solid #d9a400;font:15px/1.7 -apple-system,'Segoe UI',sans-serif;color:#3a2f00">
 <strong>更新（v1.6.1，2026-11-01）：本文里两个数字已撤回。</strong><br>
 <code>1.93×</code>（及由此得出的「Lisp 反而更长」）已撤回——三因叠加：JSON 生态、任务形状、方案不对等。<br>
 「抽象省 28–40%」已撤回，现值约 <strong>17%</strong>。<br>
-现在的数（n=6/臂，bootstrap 2 万次，4 个种子稳定）：语言效应 inline <strong>1.008×</strong> [0.825, 1.116]、抽象
+现在的数（n=6/臂，bootstrap 2 万次，4 个种子稳定）：语言效应 inline <strong>1.008×</strong> [0.829, 1.116]、抽象
 <strong>1.007×</strong> [0.879, 1.095]，<strong>两者区间都跨 1.0</strong>；方案效应 CL <strong>1.200×</strong> [1.077, 1.442]、
 JS <strong>1.200×</strong> [1.072, 1.362]（两语言同一个数）。<br>
 详见 <a href="B1-加n结果.md">B1-加n结果.md</a> 与 <a href="备忘录-CL错误分布与两口径.md">备忘录-CL错误分布与两口径.md</a>。
@@ -151,7 +163,7 @@ JS <strong>1.200×</strong> [1.072, 1.362]（两语言同一个数）。<br>
     <div class="fig">
       <div class="n">1.008×<span class="u">语言几乎不影响</span></div>
       <div class="d">同一份规格、同一种写法、每边六次独立生成：JavaScript 7047 字符，Common Lisp 6991 字符。<br>
-        <span class="u">95% 区间 [0.825, 1.116]，跨 1.0 —— 不能说哪门语言更长。</span><br>
+        <span class="u">95% 区间 [0.829, 1.116]，跨 1.0 —— 不能说哪门语言更长。</span><br>
         <strong>我原本以为会相反，而且我一度量出 1.93×——那个数已撤回。</strong></div>
     </div>
     <div class="fig">
@@ -323,7 +335,7 @@ node experiments/timetable-ab/gate.cjs                              # → 两个
     <thead><tr><th style="width:27%">结论</th><th style="width:36%">数字（口径已标）</th><th>适用边界</th></tr></thead>
     <tbody>
       <tr><td>行数不是语言属性</td><td class="num">物理行差 <b>4.05×</b><br>非空白字符差 <b>7.6%</b></td><td>四个隔离 agent、同一 30 op 规格</td></tr>
-      <tr><td>语言不决定代码量</td><td class="num">同方案、n=6/臂：JS 7047 · CL 6991 字符（inline）<br>比值 <b>1.008×</b>，区间 [0.825, 1.116] 跨 1.0<br>抽象方案 <b>1.007×</b>，区间 [0.879, 1.095] 跨 1.0</td><td>单模型单版本、15 op、单轮无反馈</td></tr>
+      <tr><td>语言不决定代码量</td><td class="num">同方案、n=6/臂：JS 7047 · CL 6991 字符（inline）<br>比值 <b>1.008×</b>，区间 [0.829, 1.116] 跨 1.0<br>抽象方案 <b>1.007×</b>，区间 [0.879, 1.095] 跨 1.0</td><td>单模型单版本、15 op、单轮无反馈</td></tr>
       <tr><td>宏在展开期校验上独占</td><td>关校验：重复声明 <b>19/19 全绿</b><br>开校验：加载即失败并点名</td><td><b>无条件</b>（与模型大小无关）</td></tr>
       <tr><td>宏与表的痛点相同</td><td>两个不同作者写下同一句：<br>「这张表装得下 op，装不下时间轴」</td><td><b>无条件</b>（结构性质）</td></tr>
     </tbody>

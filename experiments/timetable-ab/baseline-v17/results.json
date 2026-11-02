@@ -1,0 +1,118 @@
+{
+  "generated_at": "2026-11-02T11:08:22.606Z",
+  "node": "v24.21.0",
+  "sbcl_wsl": "kali-linux",
+  "total_secs": "255.0",
+  "rows": [
+    {
+      "rel": "full-cl-macro/impl.lisp",
+      "pass": 78,
+      "total": 84,
+      "fail": 6,
+      "crash": 0,
+      "floor": 78,
+      "secs": "32.2",
+      "exit": 1,
+      "redIds": "#37 #38 #39 #42 #43 #49"
+    },
+    {
+      "rel": "full-cl-inline/impl.lisp",
+      "pass": 78,
+      "total": 84,
+      "fail": 6,
+      "crash": 0,
+      "floor": 78,
+      "secs": "25.7",
+      "exit": 1,
+      "redIds": "#37 #38 #39 #42 #43 #49"
+    },
+    {
+      "rel": "full-js-table/impl.js",
+      "pass": 78,
+      "total": 84,
+      "fail": 6,
+      "crash": 0,
+      "floor": 78,
+      "secs": "7.8",
+      "exit": 1,
+      "redIds": "#37 #38 #39 #42 #43 #49"
+    },
+    {
+      "rel": "full-js-inline/impl.js",
+      "pass": 78,
+      "total": 84,
+      "fail": 6,
+      "crash": 0,
+      "floor": 78,
+      "secs": "7.9",
+      "exit": 1,
+      "redIds": "#37 #38 #39 #42 #43 #49"
+    },
+    {
+      "rel": "d1-check-macro-1/impl.lisp",
+      "pass": 84,
+      "total": 84,
+      "fail": 0,
+      "crash": 0,
+      "floor": 84,
+      "secs": "39.1",
+      "exit": 0,
+      "redIds": ""
+    },
+    {
+      "rel": "d1-check-macro-2/impl.lisp",
+      "pass": 78,
+      "total": 84,
+      "fail": 6,
+      "crash": 0,
+      "floor": 78,
+      "secs": "26.9",
+      "exit": 1,
+      "redIds": "#37 #38 #39 #42 #43 #49"
+    },
+    {
+      "rel": "d1-check-macro-3/impl.lisp",
+      "pass": 84,
+      "total": 84,
+      "fail": 0,
+      "crash": 0,
+      "floor": 84,
+      "secs": "28.6",
+      "exit": 0,
+      "redIds": ""
+    },
+    {
+      "rel": "d1-check-macro-4/impl.lisp",
+      "pass": 78,
+      "total": 84,
+      "fail": 6,
+      "crash": 0,
+      "floor": 78,
+      "secs": "27.0",
+      "exit": 1,
+      "redIds": "#37 #38 #39 #42 #43 #49"
+    },
+    {
+      "rel": "d1-check-inline-1/impl.lisp",
+      "pass": 78,
+      "total": 84,
+      "fail": 6,
+      "crash": 0,
+      "floor": 78,
+      "secs": "34.1",
+      "exit": 1,
+      "redIds": "#37 #38 #39 #42 #43 #49"
+    },
+    {
+      "rel": "d1-check-inline-2/impl.lisp",
+      "pass": 78,
+      "total": 84,
+      "fail": 6,
+      "crash": 0,
+      "floor": 78,
+      "secs": "25.8",
+      "exit": 1,
+      "redIds": "#37 #38 #39 #42 #43 #49"
+    }
+  ]
+}

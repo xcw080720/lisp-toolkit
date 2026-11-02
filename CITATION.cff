@@ -1,27 +1,32 @@
 cff-version: 1.2.0
 message: "If you use this dataset or the measurement protocol in your work, please cite it as below."
-title: "Language Advantage Is a Function of the Executor: criteria self-audit and undecidability audit in a seven-language, 81-run study with LLM coders (timetable-ab)"
+title: "Language Advantage Is a Function of the Executor: criteria self-audit and undecidability audit in cross-language code generation by LLM coders (timetable-ab)"
 abstract: >-
   Original proposition: when the executor is an AI large language model, does Lisp
   have a measurable language advantage? Eleven levers were pre-registered and tested
-  over seven languages (Common Lisp, JavaScript, Java, Julia, Rust, Python, C++),
-  81 runs and 36 invariants, each proven able to go red before it was allowed to pass.
+  across seven languages (Common Lisp, JavaScript, Java, Julia, Rust, Python, C++).
+  What this release defends as re-checkable is deliberately narrower: two languages,
+  a 15-operator specification, 36 invariants, plus 24 cells generated with archived
+  prompts and frozen spec/criteria hashes; a second layer of 13 independent
+  implementations under 80 invariants is kept as a prior account. Runs that did not
+  archive their task descriptions are reported as observations and never as evidence.
   Results are reported three ways: three claims established, three refuted, and six
   undecidable. The undecidable class is the point of this release: three conditions
   are missing (no weak-executor channel, no exclusive machine or clock alignment, a
-  single model family), two further items are incomplete (nine surviving mutants;
-  scale limited to 30 ops). See CONDITIONS.md. The dataset does not read "not
-  detected" as "not present", does not extrapolate beyond the measured scale, and
-  does not delete data.
+  single model family), two further items are incomplete (silent-failure coverage:
+  12 mutants audited, 8 killed, 4 survivors all classified, which is not the same as
+  "no blind spots"; scale limited to 30 ops). See CONDITIONS.md. The dataset does not
+  read "not detected" as "not present", does not extrapolate beyond the measured
+  scale, and does not delete data.
 type: dataset
-version: "1.6.3"
-doi: "10.5281/zenodo.23835156"
-date-released: 2026-11-01
+version: "1.7.6"
+doi: "10.5281/zenodo.23618044"
+date-released: 2026-11-02
 license: MIT
 identifiers:
   - type: doi
     value: 10.5281/zenodo.23618044
-    description: "Concept DOI (always resolves to the latest version)"
+    description: "Concept DOI. Always resolves to the latest version; use this one rather than a version DOI."
 repository-code: "https://github.com/xcw080720/lisp-toolkit"
 keywords:
   - common-lisp
@@ -38,8 +43,14 @@ authors:
   - name: "许宸玮"
     affiliation: "北华大学 文学院"
     alias: "xcw080720"
+
+contributors:
   - name: "Small Code Sauce (assistant)"
     type: other
-    contribution: "Implementation, measurement harness, and record of self-refutations"
-
-
+    contribution: >-
+      Criteria engineering (the three directions of auditing one's own criteria, 88
+      criteria, 8 of them proven able to fail); the blind-replication driver and its
+      strict parser; regression-gate steps 5-8 (criteria fingerprints, frozen-file
+      hashes, release-metadata consistency, counterexample re-run); package
+      construction; and the written record of every self-correction, including the
+      ones that were wrong twice.

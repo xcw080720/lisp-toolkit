@@ -1,20 +1,24 @@
+> ⚠️ **上传顺序声明**：v1.6.0–v1.6.2 的发布时间晚于其内容，顺序是补的。详见 [docs/UPLOAD-ORDER.md](docs/UPLOAD-ORDER.md)。
+
 > **想看这仓库在干什么、要花多少时间** → [docs/knock.md](docs/knock.md)（说人话版，5 分钟读完）
 > **先读 [PROTOCOL.md](PROTOCOL.md)** —— 十四条测量纪律，每条都附它出生的那一刀。
 > 如果你只记得一条：**判据先证明能红，才允许它说「通过」。**
 # lisp-toolkit
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23618044.svg)](https://doi.org/10.5281/zenodo.23835156)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23618044.svg)](https://doi.org/10.5281/zenodo.23618044)
 
 > **Cite this dataset:**
 >
 > ```
 > 许宸玮. (2026). Language Advantage Is a Function of the Executor: criteria
-> self-audit and undecidability audit in a seven-language, 81-run study with
-> LLM coders (timetable-ab) (Version 1.1.0) [Data set]. Zenodo.
-> https://doi.org/10.5281/zenodo.23835156
+> self-audit and undecidability audit in cross-language code generation by LLM
+> coders (timetable-ab) [Data set]. Zenodo.
+> https://doi.org/10.5281/zenodo.23618044
 > ```
 >
-> This version: [`10.5281/zenodo.23835156`](https://doi.org/10.5281/zenodo.23835156)
+> 引用一律用 concept DOI。版本 DOI 每发一版就换一个，写进模板里迟早会对不上（v1.7.5 就发生过一次：版本号改了、DOI 没改）。
+>
+> Latest version: [`10.5281/zenodo.23872219`](https://doi.org/10.5281/zenodo.23872219)（concept DOI [`23618044`](https://doi.org/10.5281/zenodo.23618044) 永远指向最新版）
 > · All versions (concept DOI): [`10.5281/zenodo.23618044`](https://doi.org/10.5281/zenodo.23618044)
 >
 > Machine-readable metadata: [`CITATION.cff`](CITATION.cff) · [`.zenodo.json`](.zenodo.json)
@@ -290,6 +294,8 @@ tools/mutate.cjs   给判据打分：单点变异 → 看杀死/存活
 tools/gate.cjs     门禁：低于地板分就 exit 1
 ```
 
+> **两份 gate 的区别（2026-11-02 补注）。** 上面列的是 v2.4.0 时的通用版 `tools/gate.cjs`（2961 B），只守 `scale.spec` 的变异地板。**现在实际跑的门禁是 [`experiments/timetable-ab/gate.cjs`](experiments/timetable-ab/gate.cjs)**（435 行 / 24700 B），多了第五步 v3-full 判据指纹与十格地板、第六步冻结文件禁改、第七步发布元数据一致性、第八步反例抽样复核。照文档跑门禁请跑后者；`tools/gate.cjs` 保留只为与 v2.4.0 的记录对得上。
+
 **一句话**：「测试全绿」只说“我测过的都对”；**变异得分说“我没测到的有多少”。**
 
 ### 实测：它抓到了判据抓不到的 bug
@@ -497,6 +503,148 @@ CL 的 first_pass 不报比率（n 小、分母口径刚变）。细节见 `docs
 | 说法矛盾 | **7 份公共文档把已撤回数字当结论**（`1.93×`、`28–40%`），全部加更正条 |
 
 详情见 `docs/RELEASE-NOTES-v1.6.1.md`。
+
+## v1.6.2（2026-11-01）：头条数字换成现值
+
+`index.html`、`one-pager.html`、`knock.md` 不再以 `1.93×` 开头；读者第一眼看到的是 **`1.008×`**（内联，区间 [0.829, 1.116] 跨 1）与 **`1.200×`**（抽象效应，两门语言独立测出同一个数，即省 17%）。
+
+**已撤回的数字仍被明确标注为已撤回**——没有任何内容被删除。
+
+详情见 `docs/RELEASE-NOTES-v1.6.2.md`。
+
+## v1.6.3（2026-11-01）：区间标注重采样种子
+
+每个置信区间现在都带重采样出处（bootstrap，20000 次，`seed=20261101`）。点估计不随种子变动，区间端点在第三位小数上动（例如内联语言比的下界在 0.825–0.829 之间）。表格写明种子，复现的人知道自己那一抽是哪次。
+
+详情见 `docs/RELEASE-NOTES-v1.6.3.md`。
+
+## v1.6.4（2026-11-01）：上传顺序说明
+
+**纯文档，不包含任何数据或判据改动。**
+
+v1.6.0–v1.6.3 在本地各自做完并提交，但**推送时漏了前三个**。结果 v1.6.3 先发出去，v1.6.0–v1.6.2 后来才补推。Zenodo 的 record id 单调递增，**版本列表如实反映上传顺序**，任何人比对都能看出顺序不对。
+
+这一版把真实顺序、每个包怎么来的、哪部分是真的，一次讲清楚：
+
+- record notes：完整 record id 对照表
+- `docs/UPLOAD-ORDER.md`：六行表，按真实上传顺序
+- 本 README 第一行：一行警告
+
+**每个包的文件状态都是真的**（`git archive` 从具名提交导出，sha256 就是那个压缩包的哈希），**只有发布时间戳是后来补的**。
+
+详情见 `docs/UPLOAD-ORDER.md`。
+
+## v1.7.0（2026-11-01）：判据工程三个方向
+
+**这一版没有推翻任何数字，也没有让任何一格从红变绿。** 它换了主语：从"这套数据说了什么"变成"这套判据凭什么可信"。
+
+| 方向 | 问题 | 手段 | 产出 |
+|---|---|---|---|
+| ① 规格 → 判据 | 规格写了，判据覆盖吗？ | `SPEC-AUDIT.md` 核对表 | ❌ 缺口 2 → **0** |
+| ② 判据 → 实现 | 实现错了，判据会红吗？ | 变异测试 12 只 | 8 杀 4 活，A 类 0 |
+| ③ 判据 → 判据 | 判据自己会红吗？ | 反例验证 8 条 | **8 条全红** |
+
+新增 8 条判据，每条都造过必被抓的反例：
+
+| 判据 | 依据 | 判的是什么 |
+|---|---|---|
+| `#83` `#84` | L162 | `copyTo` 撞已占时段 / 自撞 → CONFLICT |
+| `#85` | L39 | `n ≥ 4`（此前判据期望里 n 只出现过 0–3） |
+| `#86` | L161 | `copyTo` 撞名 → DUP |
+| `H1` | L61 | 行尾**和行首**空白（含 NBSP） |
+| `H2` | L124 | 不依赖当前工作目录 |
+| `S1` `S2` | L94/L95 | 禁文件 IO、禁 JSON（扫源码） |
+
+**判据总数 88 = 84（内容）+ 2（形态）+ 2（做法）。**
+
+详情见 `docs/RELEASE-NOTES-v1.7.0.md` 与 [`docs/CRITERIA-ENGINEERING.md`](docs/CRITERIA-ENGINEERING.md)。
+
+## v1.7.1（2026-11-01）：盲跑复核
+
+v1.7.0 的数字是主代理跑的，只算候选。这一版把**独立子代理盲跑**的记录进包。
+
+20 个 key、54 次判据调用、约 14.5 分钟、严格解析（任何解析失败或计数不自洽都会 throw），末行 `ALL PARSED OK`。**10/10 与候选一致。**
+
+**最强的一组证据**：三个攻击变异体在 84 条内容判据上**一条都不红**——行首空格、`require('fs')`、`JSON.parse` 只有 H1 / S1 / S2 能分辨。
+
+详情见 `docs/RELEASE-NOTES-v1.7.1.md`。
+
+## v1.7.2（2026-11-01）：更正一处归因错误
+
+v1.7.1 说"攻击基线 84/84、十格 78/84，**因为不是同一份代码**"。**那个解释是编的。**
+
+真因只有一行：六个反例在派生时都删了 `String(r.verb).toLowerCase()`，因此各带 6 条驼峰红。
+
+**去污染后：**
+
+| 反例 | 原始 | 去污染后 |
+|---|---|---|
+| 行首空格 / `require('fs')` / `JSON.parse` | 78/84 | **84/84，一条不红** |
+| `copyTo` 不查冲突 | 76/84 | 82/84（仅 #83 #84） |
+| `copyTo` 不查重名 | 77/84 | 83/84（仅 #86） |
+
+**结论因此更强**：去污染后那三组在 84 条内容判据上完全不可见。
+
+**教训**：看到「分数差 N」时，先列出差的那几条具体是哪些判据，再解释原因。那 6 条全是驼峰，任何一格都能一眼看出。
+
+详情见 `docs/RELEASE-NOTES-v1.7.2.md`。
+
+## v1.7.3（2026-11-01）：补三个缺口，改一处自己引出来的错
+
+三个缺口：v1.7.1 与 v1.7.2 的 release notes 文件根本不存在（内容只活在 Zenodo 的 notes 里）；README 的版本历史停在 v1.6.1，中间六版一条没写（514 → 599 行）。
+
+一处数值错误：`0.825` 应是 `0.829`，共 **18 处**。`v1.6.3` 的 notes 早就统一过这个端点，v1.7.0 又退了回去。
+
+另外两处已撤回的数字还写在 `CONDITIONS.md` 的结论表里当成立结论（28–40%、0.97×），八份历史文档加了横幅（正文一字未改），以及一条新规矩 [`docs/DO-NOT-MODIFY.md`](docs/DO-NOT-MODIFY.md)——它来自一次事故：批量加横幅的脚本把冻结的 `tasks/v3-full.spec.md` 也算进了目标，sha256 当场失效，回滚后哈希逐字节恢复。
+
+详情见 [`docs/RELEASE-NOTES-v1.7.3.md`](docs/RELEASE-NOTES-v1.7.3.md)。
+
+## v1.7.4（2026-11-02）：更正节省区间
+
+v1.7.3 把省 17% 的区间写成 CL `7–29%`、JS `7–36%`。**两个上界都错。**
+
+反推要做 `省 = 1 − 1/比值`：CL `[1.0771, 1.4423]` → **7.2%–30.7%**；JS `[1.0725, 1.3619]` → **6.8%–26.6%**。
+
+`v1.6.3` 的 notes 早就写着这两个数，还专门警告过「7–29% 是估的」。v1.7.3 的「修正」实际是换了张表抄，没做反推验算。
+
+详情见 [`docs/RELEASE-NOTES-v1.7.4.md`](docs/RELEASE-NOTES-v1.7.4.md)。
+
+## v1.7.5（2026-11-02）：门禁射程
+
+`gate.cjs` 的四步全部围绕 `scale.spec`，**完全不知道 `check-v4` / `check-hygiene` / `check-static` 存在**。删掉后两个、或把某条判据改成永远通过、或改冻结规格一个字节，门禁照常绿。
+
+补了两步，都做过破坏测试：
+
+| 步 | 守什么 | 破坏测试 |
+|---|---|---|
+| 第五步 | 三个判据文件的 sha256（`v3-baseline.json`）+ 可选十格地板 | 改 `check-static.cjs` → FAIL 指名 |
+| 第六步 | 三个冻结文件的 sha256（`frozen-files.json`，从 `FREEZE*.txt` 反推生成） | 规格加一个空格 → FAIL 指名 |
+
+编年史补 **E-04**（判据工程全程）与补记。
+
+**仍然开着**：反例不在包里，门禁无法验证「判据还活着」。
+
+详情见 [`docs/RELEASE-NOTES-v1.7.5.md`](docs/RELEASE-NOTES-v1.7.5.md)。
+
+## v1.7.6（2026-11-02）：贡献者记录与对外摘要
+
+**贡献者这一栏从第一个提交起就没改过。** `CITATION.cff` 把助手写进 `authors`，用了 CFF 1.2.0 在 `authors` 里不允许的两个字段（`type`、`contribution`），而且**根本没有 `contributors` 段**；`.zenodo.json` 有这一栏，但没有任何贡献描述。
+
+**更要紧的是对外摘要。** `.zenodo.json` 的 `description`——读者第一眼看到的那段，与线上 v1.7.5 逐字相同——**开头还停在 v1.6.3**，v1.7.0 到 v1.7.5 一个字没提。它同时把三个已撤回值当结论写着：`0.825`（应 0.829）、`1.93×`（v1.6.0 撤回）、`nine surviving mutants`（C4 已改为 12 只 8 杀 4 活、A 类 0）。另有 `2318-line chronicle`（与文件实际行数不符）与 `14 frozen specifications`（与盘上的 FREEZE 记录数不符）。
+
+**CITATION 的 DOI 第三次没跟上。** v1.7.5 的 notes 写着两边「both now read 1.7.5」，实际只改了 `version`，`doi` 仍指向 v1.7.4。现在改成 concept DOI，**它不可能再落后于一版**。
+
+加了门禁**第七步**：version 两边相等、DOI 必须是 concept、authors 与 creators 一致、contributors 两边一致、notes 与 description 都必须提到当前版本号。三次破坏测试（改 version / 改 DOI / 摘掉 description 里的版本号）全部 FAIL 并指名原因，恢复后哈希逐字节一致、复跑 PASS。
+
+**这一版还补了一批实测数据，不是说明文字：**
+
+- 十格基线从头复跑，原始 stdout 存进 `experiments/timetable-ab/baseline-v17/`（10 格、255.1 s、8×78/84 + 2×84/84、每格红的都是同六条驼峰判据）
+- 重建了一个 **84/84 的干净基线** `counterexamples/base-clean.js`，并跑出变异体矩阵：每个变异体落盘、附上它到底让哪几条判据变红。**32 个变异体覆盖 45/84**（v1.7.0 时是 8/84）
+- 顺手纠正一个口径：此前记的「Lisp 单格 65–77 秒、全跑约 12 分钟」不实，实测 Lisp 25.0–37.7 s、JS 8.1–8.2 s，全跑 **255.1 s**
+
+**盲跑复核**：矩阵由独立子代理从零重建并复跑——干净基线**逐字节相同**、前 25 个变异体 24 条红集吻合、第二批 7 个 **7/7 吻合**。它也带回四条比数字更有用的边界（覆盖数对变异体口径敏感、`#60`/`#75` 抓的是 n 一致性而非 `trim` 语义、`#36` 是万能网、`#37`/`#38`/`#39` 从未被变异体点亮）。见 [`docs/REPLICATION-v1.7.6.md`](docs/REPLICATION-v1.7.6.md)。
+
+详情见 [`docs/RELEASE-NOTES-v1.7.6.md`](docs/RELEASE-NOTES-v1.7.6.md)。
 
 ## 从哪里读起（v1.4.0）
 

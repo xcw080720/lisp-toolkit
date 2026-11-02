@@ -1,6 +1,15 @@
 // check-v4.cjs — v3 协议的不变量检查器（纯文本契约，无 I/O）
 // 用法: node check-v3.cjs --impl <impl.lisp|impl.js> [--only 3,7] [--json]
 // 判据 36 条，全部为「同一条状态序列 → 精确输出比对」。空白规范化后比对。
+// 编号说明（2026-11-01 补注，不改行为）：
+//   本文件的用例编号为 1–80、83–86，共 84 条 —— **81 和 82 是空号，不是漏项。**
+//   它们对应的是 tasks/v3-full.spec.md L61（行尾卫生）与 L124（不依赖 cwd），
+//   因为判的是「进程级行为」（末尾字节、跨目录输出一致性，需要多次调用比对），
+//   和本文件「按行比对输出内容」不是一个机制，所以实现在 check-hygiene.cjs 里，
+//   编号为 H1 / H2。
+//   判别据总数时按 84(v4) + 2(hygiene) + 2(static) = 88 条计。
+//   盲跑复核时曾有子代理据「编号到 #86、分母 84」误推为「实际跑了 86 条用例」，
+//   这条注释就是为了消除该歧义。
 'use strict';
 const fs = require('fs'), os = require('os'), path = require('path');
 const { spawnSync } = require('child_process');
@@ -229,6 +238,22 @@ add(79, 'teacher 13 字符越界（规格 1–12）', ['add a abcdefghijklm r 1 
 add(80, "- 可被 edit 覆盖成真名", ['add a - - 1 1 2', 'edit a t9 r9'],
   ['ok add 1', 'ok edit 1', '#state', 'a|t9|r9|1|1-2']);
 
+// —— 83–84：补 SPEC-AUDIT 攻击出的真盲区（2026-11-01）——
+add(83, 'copyTo 复制到已占时段 → CONFLICT 且状态不变（规格 L162）',
+  ['add a t1 r1 1 1 2', 'add b t2 r2 1 3 4', 'copyTo a 1 3 4'],
+  ['ok add 1', 'ok add 1', 'err CONFLICT', '#state', 'a|t1|r1|1|1-2', 'b|t2|r2|1|3-4']);
+add(84, 'copyTo 复制到自身原时段 → CONFLICT（自撞也查）',
+  ['add a t1 r1 1 1 2', 'copyTo a 1 1 2'],
+  ['ok add 1', 'err CONFLICT', '#state', 'a|t1|r1|1|1-2']);
+// —— 85–86：攻击实验暴露的两处真盲区（2026-11-01）——
+// 85：判据期望里 n 只出现过 {0,1,2,3}，n>=4 从未被观测 → 补一条 n=4
+add(85, 'n >= 4（多位数 n 的书写形式）',
+  ['add a t1 r1 1 1 2', 'add b t1 r1 2 1 2', 'add c t1 r1 3 1 2', 'add d t1 r1 4 1 2', 'purge t1'],
+  ['ok add 1', 'ok add 1', 'ok add 1', 'ok add 1', 'ok purge 4', '#state']);
+// 86：copyTo 的 DUP 那一半（L161 需查重）原本无判据，CONFLICT 那一半已由 #83/#84 覆盖
+add(86, 'copyTo 目标名已存在 → DUP（规格 L161）',
+  ['add a t1 r1 1 1 2', 'add a_3 t2 r2 2 3 4', 'copyTo a 3 5 6'],
+  ['ok add 1', 'ok add 1', 'err DUP', '#state', 'a|t1|r1|1|1-2', 'a_3|t2|r2|2|3-4']);
 // —— 执行 ——
 const upto = arg('--upto') ? +arg('--upto') : 0;
 const want = only ? new Set(only.split(',').map((s) => +s.trim())) : (upto ? new Set(T.filter((x) => x.id <= upto).map((x) => x.id)) : null);

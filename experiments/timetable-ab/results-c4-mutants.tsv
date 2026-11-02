@@ -1,0 +1,13 @@
+mutant	scale_pass	scale_fail	closure_pass	closure_fail	verdict	closure_failing_ids
+js-L1.js	36	0	7	0	SURVIVED	-
+js-L30.js	36	0	6	1	KILLED	K1
+js-L99.js	36	0	6	1	KILLED	K6
+js-L157.js	36	0	6	1	KILLED	K2
+js-L187.js	36	0	6	1	KILLED	K7
+js-L216.js	36	0	6	1	KILLED	K3
+cl-L127.lisp	36	0	7	0	SURVIVED	-
+cl-L200.lisp	36	0	6	1	KILLED	K4
+cl-L282.lisp	36	0	6	1	KILLED	K5
+cl-L380.lisp	36	0	6	1	KILLED	K7
+cl-L427.lisp	36	0	7	0	SURVIVED	-
+cl-L444.lisp	36	0	7	0	SURVIVED	-

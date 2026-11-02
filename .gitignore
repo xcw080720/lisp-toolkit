@@ -10,3 +10,7 @@ out/
 experiments/**/node_modules/
 
 experiments/**/tmp/
+
+archive-zips/
+/tmp/
+

@@ -1,0 +1,40 @@
+{
+  "note": "v3-full 判据集（88 条）的指纹与基线地板。与 mutation-floors.json 分开：那个守 scale.spec（30 op / 36 条 + K1-K7），这个守 v3-full（15 op / 88 条）。",
+  "updated": "2026-11-02",
+  "total": 84,
+  "total_note": "分母 84 = check-v4 的用例数；编号 1-80 与 83-86，81/82 为空号（对应 check-hygiene 的 H1/H2）。判据总数 88 = 84 + 2 + 2。",
+  "criteria_sha256": {
+    "check-v4.cjs": "a1ecbe2d4c6e24ea2b1c34229813c615316bc4e1d2142c406d2da17206eb826d",
+    "check-hygiene.cjs": "4b2c6bf96587eb087a1c898e643f7a14c87dac8e8a0727ee85ae3a756114e8c9",
+    "check-static.cjs": "8412df366f111e8a8163df5ce15640ee2d2e996494df0ad2234d3964a75e2ce9"
+  },
+  "impls": [
+    "full-cl-macro/impl.lisp",
+    "full-cl-inline/impl.lisp",
+    "full-js-table/impl.js",
+    "full-js-inline/impl.js",
+    "d1-check-macro-1/impl.lisp",
+    "d1-check-macro-2/impl.lisp",
+    "d1-check-macro-3/impl.lisp",
+    "d1-check-macro-4/impl.lisp",
+    "d1-check-inline-1/impl.lisp",
+    "d1-check-inline-2/impl.lisp"
+  ],
+  "floors": {
+    "full-cl-macro/impl.lisp": 78,
+    "full-cl-inline/impl.lisp": 78,
+    "full-js-table/impl.js": 78,
+    "full-js-inline/impl.js": 78,
+    "d1-check-macro-1/impl.lisp": 84,
+    "d1-check-macro-2/impl.lisp": 78,
+    "d1-check-macro-3/impl.lisp": 84,
+    "d1-check-macro-4/impl.lisp": 78,
+    "d1-check-inline-1/impl.lisp": 78,
+    "d1-check-inline-2/impl.lisp": 78
+  },
+  "floor_note": "地板来自盲跑复核（两轮独立子代理，10/10 一致）。地板只能上调，不许下调；下调必须在提交信息里写理由。",
+  "pair_criteria": {
+    "check-hygiene.cjs": 2,
+    "check-static.cjs": 2
+  }
+}

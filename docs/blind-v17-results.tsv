@@ -1,0 +1,21 @@
+group	key	impl	v4_pass	v4_total	v4_fail	v4_crash	v4_fail_ids	H1	H2	S1	S2
+matrix	A1	runs/full-cl-macro/impl.lisp	78	84	6	0	#37:FAIL,#38:FAIL,#39:FAIL,#42:FAIL,#43:FAIL,#49:FAIL	ok	ok	ok	ok
+matrix	A2	runs/full-cl-inline/impl.lisp	78	84	6	0	#37:FAIL,#38:FAIL,#39:FAIL,#42:FAIL,#43:FAIL,#49:FAIL	ok	ok	ok	ok
+matrix	A3	runs/full-js-table/impl.js	78	84	6	0	#37:FAIL,#38:FAIL,#39:FAIL,#42:FAIL,#43:FAIL,#49:FAIL	ok	ok	ok	ok
+matrix	A4	runs/full-js-inline/impl.js	78	84	6	0	#37:FAIL,#38:FAIL,#39:FAIL,#42:FAIL,#43:FAIL,#49:FAIL	ok	ok	ok	ok
+matrix	A5	runs/d1-check-macro-1/impl.lisp	84	84	0	0	-	ok	ok	ok	ok
+matrix	A6	runs/d1-check-macro-2/impl.lisp	78	84	6	0	#37:FAIL,#38:FAIL,#39:FAIL,#42:FAIL,#43:FAIL,#49:FAIL	ok	ok	ok	ok
+matrix	A7	runs/d1-check-macro-3/impl.lisp	84	84	0	0	-	ok	ok	ok	ok
+matrix	A8	runs/d1-check-macro-4/impl.lisp	78	84	6	0	#37:FAIL,#38:FAIL,#39:FAIL,#42:FAIL,#43:FAIL,#49:FAIL	ok	ok	ok	ok
+matrix	A9	runs/d1-check-inline-1/impl.lisp	78	84	6	0	#37:FAIL,#38:FAIL,#39:FAIL,#42:FAIL,#43:FAIL,#49:FAIL	ok	ok	ok	ok
+matrix	A10	runs/d1-check-inline-2/impl.lisp	78	84	6	0	#37:FAIL,#38:FAIL,#39:FAIL,#42:FAIL,#43:FAIL,#49:FAIL	ok	ok	ok	ok
+attack	X-base	tmp/attack-base.js	84	84	0	0	-	ok	ok	ok	ok
+attack	X-copyto-noconf	tmp/attack-copyto-noconflict.js	76	84	8	0	#37:FAIL,#38:FAIL,#39:FAIL,#42:FAIL,#43:FAIL,#49:FAIL,#83:FAIL,#84:FAIL	ok	ok	ok	ok
+attack	X-copyto-nodup	tmp/attack-copyto-nodup.js	77	84	7	0	#37:FAIL,#38:FAIL,#39:FAIL,#42:FAIL,#43:FAIL,#49:FAIL,#86:FAIL	ok	ok	ok	ok
+attack	X-n4	tmp/attack-n4.js	11	84	73	0	#1:FAIL,#2:FAIL,#3:FAIL,#4:FAIL,#7:FAIL,#9:FAIL,#11:FAIL,#12:FAIL,#13:FAIL,#14:FAIL,#15:FAIL,#16:FAIL,#17:FAIL,#18:FAIL,#19:FAIL,#20:FAIL,#21:FAIL,#22:FAIL,#23:FAIL,#24:FAIL,#25:FAIL,#26:FAIL,#27:FAIL,#28:FAIL,#29:FAIL,#30:FAIL,#34:FAIL,#35:FAIL,#36:FAIL,#37:FAIL,#38:FAIL,#39:FAIL,#40:FAIL,#41:FAIL,#42:FAIL,#43:FAIL,#44:FAIL,#45:FAIL,#46:FAIL,#47:FAIL,#48:FAIL,#49:FAIL,#50:FAIL,#51:FAIL,#52:FAIL,#53:FAIL,#54:FAIL,#55:FAIL,#57:FAIL,#58:FAIL,#59:FAIL,#60:FAIL,#61:FAIL,#62:FAIL,#63:FAIL,#64:FAIL,#65:FAIL,#66:FAIL,#68:FAIL,#69:FAIL,#70:FAIL,#71:FAIL,#72:FAIL,#74:FAIL,#75:FAIL,#76:FAIL,#77:FAIL,#78:FAIL,#80:FAIL,#83:FAIL,#84:FAIL,#85:FAIL,#86:FAIL	ok	ok	ok	ok
+attack	X-leadspace	tmp/attack-leadspace.js	78	84	6	0	#37:FAIL,#38:FAIL,#39:FAIL,#42:FAIL,#43:FAIL,#49:FAIL	RED(行尾卫生（L61） → LEADING_WS line 1 | LEADING_WS line 2)	ok	ok	ok
+attack	X-io	tmp/attack-io.js	78	84	6	0	#37:FAIL,#38:FAIL,#39:FAIL,#42:FAIL,#43:FAIL,#49:FAIL	ok	ok	RED(禁止文件 IO（L94） → require('fs'))	ok
+attack	X-json	tmp/attack-json.js	78	84	6	0	#37:FAIL,#38:FAIL,#39:FAIL,#42:FAIL,#43:FAIL,#49:FAIL	ok	ok	ok	RED(禁止 JSON 序列化（L95） → JSON.parse()
+stability	S1	runs/full-cl-macro/impl.lisp	78	84	6	0	#37:FAIL,#38:FAIL,#39:FAIL,#42:FAIL,#43:FAIL,#49:FAIL	ok	ok	ok	ok
+stability	S2	runs/full-cl-macro/impl.lisp	78	84	6	0	#37:FAIL,#38:FAIL,#39:FAIL,#42:FAIL,#43:FAIL,#49:FAIL	ok	ok	ok	ok
+stability	S3	runs/full-cl-macro/impl.lisp	78	84	6	0	#37:FAIL,#38:FAIL,#39:FAIL,#42:FAIL,#43:FAIL,#49:FAIL	ok	ok	ok	ok

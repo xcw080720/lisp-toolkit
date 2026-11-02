@@ -41,17 +41,6 @@ footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--line);color:v
 </style>
 </head>
 <body>
-<div style="margin:0;padding:14px 18px;background:#fff4d6;border-bottom:2px solid #d9a400;font:15px/1.7 -apple-system,'Segoe UI',sans-serif;color:#3a2f00">
-<strong>更新（v1.6.1，2026-11-01）：本文里两个数字已撤回。</strong><br>
-<code>1.93×</code>（及由此得出的「Lisp 反而更长」）已撤回——三因叠加：JSON 生态、任务形状、方案不对等。<br>
-「抽象省 28–40%」已撤回，现值约 <strong>17%</strong>。<br>
-现在的数（n=6/臂，bootstrap 2 万次，4 个种子稳定）：语言效应 inline <strong>1.008×</strong> [0.825, 1.116]、抽象
-<strong>1.007×</strong> [0.879, 1.095]，<strong>两者区间都跨 1.0</strong>；方案效应 CL <strong>1.200×</strong> [1.077, 1.442]、
-JS <strong>1.200×</strong> [1.072, 1.362]（两语言同一个数）。<br>
-详见 <a href="B1-加n结果.md">B1-加n结果.md</a> 与 <a href="备忘录-CL错误分布与两口径.md">备忘录-CL错误分布与两口径.md</a>。
-本文其余内容保留原样，作为「当时怎么想」的记录。
-</div>
-
 <main>
 
 <h1>符号层成本实验 · 两层报告
@@ -87,6 +76,13 @@ JS <strong>1.200×</strong> [1.072, 1.362]（两语言同一个数）。<br>
 <tr><td>D1 允许自检六格</td><td class="num">76 / 76 / 70 / …</td><td class="num n"><b>76、76、70、70、70、70</b></td></tr>
 <tr><td>D1 禁自检</td><td class="num">0 / 76</td><td class="num">0 / 76（不变）</td></tr>
 </table>
+<code>1.93×</code>（及由此得出的「Lisp 反而更长」）已撤回——三因叠加：JSON 生态、任务形状、方案不对等。<br>
+「抽象省 28–40%」已撤回，现值约 <strong>17%</strong>。<br>
+现在的数（n=6/臂，bootstrap 2 万次，4 个种子稳定）：语言效应 inline <strong>1.008×</strong> [0.829, 1.116]、抽象
+<strong>1.007×</strong> [0.879, 1.095]，<strong>两者区间都跨 1.0</strong>；方案效应 CL <strong>1.200×</strong> [1.077, 1.442]、
+JS <strong>1.200×</strong> [1.072, 1.362]（两语言同一个数）。<br>
+详见 <a href="B1-加n结果.md">B1-加n结果.md</a> 与 <a href="备忘录-CL错误分布与两口径.md">备忘录-CL错误分布与两口径.md</a>。
+本文其余内容保留原样，作为「当时怎么想」的记录。
 <p style="margin-top:12px"><b>不受影响的部分</b>：字符比（0.92 / 0.81 / 1.39 / 1.58）与 C 组维护半径（op 层 0 : 28、改写行 3 : 439、hunk 4 : 34）——字符数与改动位置不取决于输出大小写。</p>
 <p><b>新结果</b>：8 个实现里只有 <b>2 个</b>遵守了这条明文（违例率 75%），而那 6 个违例者的自检都很足（编译 2–6 次、实跑 90–320 条、自建用例 26–149 条）。</p>
 <p class="mut">这是第 6 次判据错误，也是唯一一次<b>跑多少遍都不会暴露</b>的错：前 5 次是期望值算错（跑一遍现有实现就发现），这一次是读漏规格——而实现也读漏了同一行。</p>
@@ -117,7 +113,7 @@ JS <strong>1.200×</strong> [1.072, 1.362]（两语言同一个数）。<br>
 <tr><td>方案（CL）</td><td>inline / macro = 6095 / 5052</td><td class="num">1.21×</td></tr>
 <tr><td>方案（JS）</td><td>inline / table = 5543 / 3591</td><td class="num">1.54×</td></tr>
 </table>
-<p><b>方向与探索层一致：语言效应小（0.71–0.91×），方案效应大（1.21–1.54×）。</b></p>
+<p><b>方向与探索层一致：语言效应小（0.71–0.91×），方案效应大（1.21–1.54×）。</b><br><span class="mut">这几行是 <b>LAYER A 的 n=1 实测</b>（15 op，每格只生成一次）。B1 加 n 到 6 之后复测，语言效应变成 1.008× / 1.007×（两区间都跨 1）、方案效应 1.200×——见上文「现在的数」。<b>两批方向一致，量级以后者为准。</b></span></p>
 
 <h2><span class="n">A3</span>唯一一次干净失效：宏臂三轮迭代</h2>
 <p>失败由编译器报出，<b>不依赖任何语义解释</b>。</p>

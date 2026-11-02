@@ -1,0 +1,485 @@
+{
+  "generated_at": "2026-11-02T11:03:14.653Z",
+  "base": "base-clean.js",
+  "results": [
+    {
+      "name": "add-noclash",
+      "desc": "add 不查时段冲突",
+      "applied": 1,
+      "pass": 82,
+      "total": 84,
+      "fail": 2,
+      "crash": 0,
+      "reds": [
+        4,
+        57
+      ],
+      "exit": 1
+    },
+    {
+      "name": "add-day8",
+      "desc": "add 允许 day=8",
+      "applied": 1,
+      "pass": 82,
+      "total": 84,
+      "fail": 2,
+      "crash": 0,
+      "reds": [
+        6,
+        67
+      ],
+      "exit": 1
+    },
+    {
+      "name": "add-tofrom",
+      "desc": "add 不查 to<from",
+      "applied": 1,
+      "pass": 83,
+      "total": 84,
+      "fail": 1,
+      "crash": 0,
+      "reds": [
+        33
+      ],
+      "exit": 1
+    },
+    {
+      "name": "del-notfound",
+      "desc": "del 不存在返回 ok",
+      "applied": 1,
+      "pass": 82,
+      "total": 84,
+      "fail": 2,
+      "crash": 0,
+      "reds": [
+        8,
+        56
+      ],
+      "exit": 1
+    },
+    {
+      "name": "edit-notfound",
+      "desc": "edit 不存在返回 ok",
+      "applied": 1,
+      "pass": 83,
+      "total": 84,
+      "fail": 0,
+      "crash": 1,
+      "reds": [
+        10
+      ],
+      "exit": 1
+    },
+    {
+      "name": "move-noclash",
+      "desc": "move 不查冲突",
+      "applied": 1,
+      "pass": 83,
+      "total": 84,
+      "fail": 1,
+      "crash": 0,
+      "reds": [
+        12
+      ],
+      "exit": 1
+    },
+    {
+      "name": "swap-half",
+      "desc": "swap 只换 day 不换时段",
+      "applied": 1,
+      "pass": 83,
+      "total": 84,
+      "fail": 1,
+      "crash": 0,
+      "reds": [
+        13
+      ],
+      "exit": 1
+    },
+    {
+      "name": "rename-nodup",
+      "desc": "rename 不查重名",
+      "applied": 1,
+      "pass": 83,
+      "total": 84,
+      "fail": 1,
+      "crash": 0,
+      "reds": [
+        15
+      ],
+      "exit": 1
+    },
+    {
+      "name": "duplicate-nodup",
+      "desc": "duplicate 不查重名",
+      "applied": 1,
+      "pass": 83,
+      "total": 84,
+      "fail": 1,
+      "crash": 0,
+      "reds": [
+        17
+      ],
+      "exit": 1
+    },
+    {
+      "name": "trim-direction",
+      "desc": "trim 改 from 而不是 to",
+      "applied": 1,
+      "pass": 83,
+      "total": 84,
+      "fail": 1,
+      "crash": 0,
+      "reds": [
+        18
+      ],
+      "exit": 1
+    },
+    {
+      "name": "trim-noop",
+      "desc": "trim 什么都不改",
+      "applied": 1,
+      "pass": 81,
+      "total": 84,
+      "fail": 3,
+      "crash": 0,
+      "reds": [
+        18,
+        60,
+        75
+      ],
+      "exit": 1
+    },
+    {
+      "name": "clear-noop",
+      "desc": "clear 不删课程",
+      "applied": 1,
+      "pass": 81,
+      "total": 84,
+      "fail": 3,
+      "crash": 0,
+      "reds": [
+        20,
+        36,
+        59
+      ],
+      "exit": 1
+    },
+    {
+      "name": "shift-direction",
+      "desc": "shift 方向反了",
+      "applied": 1,
+      "pass": 82,
+      "total": 84,
+      "fail": 2,
+      "crash": 0,
+      "reds": [
+        21,
+        72
+      ],
+      "exit": 1
+    },
+    {
+      "name": "shift-bounds",
+      "desc": "shift 不查越界",
+      "applied": 1,
+      "pass": 83,
+      "total": 84,
+      "fail": 1,
+      "crash": 0,
+      "reds": [
+        22
+      ],
+      "exit": 1
+    },
+    {
+      "name": "copy-name",
+      "desc": "copy 生成的副本名不是 name_2",
+      "applied": 1,
+      "pass": 83,
+      "total": 84,
+      "fail": 1,
+      "crash": 0,
+      "reds": [
+        23
+      ],
+      "exit": 1
+    },
+    {
+      "name": "merge-keep",
+      "desc": "merge 不删被并的那门",
+      "applied": 1,
+      "pass": 83,
+      "total": 84,
+      "fail": 1,
+      "crash": 0,
+      "reds": [
+        24
+      ],
+      "exit": 1
+    },
+    {
+      "name": "filter-count",
+      "desc": "filter 报全表数而不是该天数",
+      "applied": 1,
+      "pass": 82,
+      "total": 84,
+      "fail": 2,
+      "crash": 0,
+      "reds": [
+        27,
+        36
+      ],
+      "exit": 1
+    },
+    {
+      "name": "count-fixed",
+      "desc": "count 恒报 0",
+      "applied": 1,
+      "pass": 80,
+      "total": 84,
+      "fail": 4,
+      "crash": 0,
+      "reds": [
+        29,
+        36,
+        55,
+        65
+      ],
+      "exit": 1
+    },
+    {
+      "name": "copyto-noclash",
+      "desc": "copyTo 不查时段冲突",
+      "applied": 1,
+      "pass": 82,
+      "total": 84,
+      "fail": 2,
+      "crash": 0,
+      "reds": [
+        83,
+        84
+      ],
+      "exit": 1
+    },
+    {
+      "name": "copyto-nodup",
+      "desc": "copyTo 不查重名",
+      "applied": 1,
+      "pass": 83,
+      "total": 84,
+      "fail": 1,
+      "crash": 0,
+      "reds": [
+        86
+      ],
+      "exit": 1
+    },
+    {
+      "name": "truncate-keepall",
+      "desc": "truncate 不删任何课",
+      "applied": 1,
+      "pass": 83,
+      "total": 84,
+      "fail": 1,
+      "crash": 0,
+      "reds": [
+        40
+      ],
+      "exit": 1
+    },
+    {
+      "name": "keep-keepall",
+      "desc": "keep 不删任何课",
+      "applied": 1,
+      "pass": 83,
+      "total": 84,
+      "fail": 1,
+      "crash": 0,
+      "reds": [
+        41
+      ],
+      "exit": 1
+    },
+    {
+      "name": "renameteacher-noop",
+      "desc": "renameTeacher 不改",
+      "applied": 1,
+      "pass": 83,
+      "total": 84,
+      "fail": 1,
+      "crash": 0,
+      "reds": [
+        42
+      ],
+      "exit": 1
+    },
+    {
+      "name": "renameloc-noop",
+      "desc": "renameLoc 不改",
+      "applied": 1,
+      "pass": 83,
+      "total": 84,
+      "fail": 1,
+      "crash": 0,
+      "reds": [
+        43
+      ],
+      "exit": 1
+    },
+    {
+      "name": "empty-cmd-ok",
+      "desc": "空命令串不报 BADARG",
+      "applied": 1,
+      "pass": 83,
+      "total": 84,
+      "fail": 1,
+      "crash": 0,
+      "reds": [
+        32
+      ],
+      "exit": 1
+    },
+    {
+      "name": "dedupe-noop",
+      "desc": "dedupe 不删重复",
+      "applied": 1,
+      "pass": 82,
+      "total": 84,
+      "fail": 2,
+      "crash": 0,
+      "reds": [
+        44,
+        70
+      ],
+      "exit": 1
+    },
+    {
+      "name": "compress-noop",
+      "desc": "compress 不重排",
+      "applied": 1,
+      "pass": 82,
+      "total": 84,
+      "fail": 2,
+      "crash": 0,
+      "reds": [
+        45,
+        62
+      ],
+      "exit": 1
+    },
+    {
+      "name": "compact-noop",
+      "desc": "compact 不重排",
+      "applied": 1,
+      "pass": 82,
+      "total": 84,
+      "fail": 2,
+      "crash": 0,
+      "reds": [
+        46,
+        71
+      ],
+      "exit": 1
+    },
+    {
+      "name": "mirror-wrongday",
+      "desc": "mirror 复制到源日而不是目标日",
+      "applied": 1,
+      "pass": 83,
+      "total": 84,
+      "fail": 1,
+      "crash": 0,
+      "reds": [
+        47
+      ],
+      "exit": 1
+    },
+    {
+      "name": "mirror-nodup",
+      "desc": "mirror 不查重名",
+      "applied": 1,
+      "pass": 83,
+      "total": 84,
+      "fail": 1,
+      "crash": 0,
+      "reds": [
+        69
+      ],
+      "exit": 1
+    },
+    {
+      "name": "absorb-noop",
+      "desc": "absorb 不改 a 的教师/地点",
+      "applied": 1,
+      "pass": 83,
+      "total": 84,
+      "fail": 1,
+      "crash": 0,
+      "reds": [
+        48
+      ],
+      "exit": 1
+    },
+    {
+      "name": "swapdays-noop",
+      "desc": "swapDays 不换日",
+      "applied": 1,
+      "pass": 83,
+      "total": 84,
+      "fail": 1,
+      "crash": 0,
+      "reds": [
+        49
+      ],
+      "exit": 1
+    }
+  ],
+  "covered": [
+    4,
+    6,
+    8,
+    10,
+    12,
+    13,
+    15,
+    17,
+    18,
+    20,
+    21,
+    22,
+    23,
+    24,
+    27,
+    29,
+    32,
+    33,
+    36,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    55,
+    56,
+    57,
+    59,
+    60,
+    62,
+    65,
+    67,
+    69,
+    70,
+    71,
+    72,
+    75,
+    83,
+    84,
+    86
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "note": "机器可读的禁改清单。由 make-frozen-list.cjs 从 FREEZE*.txt 生成；gate.cjs 第六步据此校验。每个文件可能有多个历史哈希（修订过），只有标 state=current 的那条有效。",
+  "files": {
+    "tasks/v3-full.spec.md": {
+      "sha256": "b202981ae0ae5659edab54acb4f3729462c1617a76b97e74bb7ebe9e982efce0",
+      "source": "FREEZE-reproducible-layer-v3.2.txt",
+      "note": "v3.2 冻结",
+      "state": "current"
+    },
+    "tasks/v3.spec.md": {
+      "sha256": "f2f5fb2ef3d309b5c8d164aee50a1dd5e190a4f7cdc2ff121cbd43d3ddd1ba20",
+      "source": "FREEZE-v1.6.1-amendment.txt",
+      "note": "v1.6.1 修订后（§4.1 转正）",
+      "state": "current"
+    },
+    "check-v3.cjs": {
+      "sha256": "7e11d726b6d6b5e79ed83835c0f28470e00d5b23fabd54c91b7587f772d1bce5",
+      "source": "FREEZE-v1.6.1-amendment.txt",
+      "note": "v1.6.1 修订后",
+      "state": "current"
+    }
+  },
+  "unresolved": []
+}

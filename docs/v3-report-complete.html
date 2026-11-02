@@ -40,11 +40,23 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);color:v
 </style>
 </head>
 <body>
+<!-- REVOKED-NUMBERS-BANNER -->
+<div style="margin:0 0 20px;padding:14px 18px;border-left:4px solid #c0392b;background:rgba(192,57,43,.07);font-size:14px;line-height:1.7">
+<b>⚠️ 本文含已撤回的数字。</b>这份文档写于 v1.3.0 前后。以下说法<b>已经撤回或改写</b>，请以 <a href="https://doi.org/10.5281/zenodo.23618044">concept DOI</a> 指向的最新版为准：
+<table style="margin:8px 0 0;font-size:13px">
+<tr><th align="left">文中说</th><th align="left">现在的值</th></tr>
+<tr><td>抽象省 <b>28–40%</b></td><td><b>省 17%</b>（1.200×，CL 与 JS 独立测出同一个数）</td></tr>
+<tr><td>语言 <b>0.97×</b> / <b>0.81×</b></td><td><b>1.008×</b> [0.829, 1.116] / <b>1.007×</b> [0.879, 1.095]，<b>两区间都跨 1</b></td></tr>
+<tr><td>CL 比 JS <b>1.93×</b></td><td>该数字由三种误差叠加而成，已撤回</td></tr>
+<tr><td>判据 <b>36</b> / <b>56</b> 条</td><td>现为 <b>88 条</b>（84 内容 + 2 形态 + 2 做法）</td></tr>
+</table>
+<b>正文一字未改</b>——这是历史记录，改了就看不出版本演进了。
+</div>
 <div style="margin:0;padding:14px 18px;background:#fff4d6;border-bottom:2px solid #d9a400;font:15px/1.7 -apple-system,'Segoe UI',sans-serif;color:#3a2f00">
 <strong>更新（v1.6.1，2026-11-01）：本文里两个数字已撤回。</strong><br>
 <code>1.93×</code>（及由此得出的「Lisp 反而更长」）已撤回——三因叠加：JSON 生态、任务形状、方案不对等。<br>
 「抽象省 28–40%」已撤回，现值约 <strong>17%</strong>。<br>
-现在的数（n=6/臂，bootstrap 2 万次，4 个种子稳定）：语言效应 inline <strong>1.008×</strong> [0.825, 1.116]、抽象
+现在的数（n=6/臂，bootstrap 2 万次，4 个种子稳定）：语言效应 inline <strong>1.008×</strong> [0.829, 1.116]、抽象
 <strong>1.007×</strong> [0.879, 1.095]，<strong>两者区间都跨 1.0</strong>；方案效应 CL <strong>1.200×</strong> [1.077, 1.442]、
 JS <strong>1.200×</strong> [1.072, 1.362]（两语言同一个数）。<br>
 详见 <a href="B1-加n结果.md">B1-加n结果.md</a> 与 <a href="备忘录-CL错误分布与两口径.md">备忘录-CL错误分布与两口径.md</a>。
